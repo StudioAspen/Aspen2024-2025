@@ -32,6 +32,8 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform swordAnchorTransform;
     [SerializeField] private Combo combo;
     private float instantaneousAttackAngle;
+    [SerializeField] private float swordLength = 1.25f;
+    [SerializeField] private float swordRadius = 0.2f;
     [SerializeField] private float maxComboDelay = 0.5f;
     [SerializeField] private float impactFramesDuration = 0.3f;
     private int comboIndex;
@@ -78,7 +80,13 @@ public class Player : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        Gizmos.color = IsSwinging ? Color.red : Color.white;
 
+        int segments = 5;
+        for(int i = 0; i < segments; i++)
+        {
+            Gizmos.DrawWireSphere(swordAnchorTransform.position + i / (float)segments * swordLength * swordAnchorTransform.up, swordRadius);
+        }
     }
 
     private void HandleFlatMovement()
@@ -206,9 +214,7 @@ public class Player : MonoBehaviour
 
         if (IsSwinging)
         {
-            Debug.DrawLine(swordAnchorTransform.position, swordAnchorTransform.position + 1.5f * swordAnchorTransform.up);
-
-            RaycastHit[] hits = Physics.SphereCastAll(swordAnchorTransform.position, 0.2f, swordAnchorTransform.up, 1.5f);
+            RaycastHit[] hits = Physics.SphereCastAll(swordAnchorTransform.position, swordRadius, swordAnchorTransform.up, swordLength);
 
             if (hits == null) return;
             if (hits.Length == 0) return;
@@ -237,10 +243,8 @@ public class Player : MonoBehaviour
                         enemy.TakeDamage(Random.Range(100, 10000), hit.point);
                         temp.transform.position = hit.point;
                     }
-                    temp.GetComponent<Renderer>().material.color = Color.red;
+                    temp.GetComponent<Renderer>().material.color = Color.black;
                     Destroy(temp, 2f);
-                    
-                    
                 }
             }
         }
@@ -273,7 +277,6 @@ public class Player : MonoBehaviour
 
         CanMove = false;
         IsAttacking = true;
-        
 
         animator.CrossFadeInFixedTime(animationName, 0.05f);
 

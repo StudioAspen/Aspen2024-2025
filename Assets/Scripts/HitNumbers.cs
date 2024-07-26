@@ -6,7 +6,10 @@ using TMPro;
 
 public class HitNumbers : MonoBehaviour
 {
-    public TMP_Text numberText;
+    [SerializeField] private TMP_Text numberText;
+    [SerializeField] private float minTextSize = 200f;
+    [SerializeField] private float maxTextSize = 400f;
+    [SerializeField] private int maxDamage = 10000;
 
     private void LateUpdate()
     {
@@ -16,17 +19,26 @@ public class HitNumbers : MonoBehaviour
     public void ActivateHitNumberText(int damage)
     {
         numberText.text = damage.ToString();
-        numberText.fontSize = (500 - 200) * (damage / 10000) + 200;
+        numberText.fontSize = (maxTextSize - minTextSize) * (damage / (float)maxDamage) + minTextSize;
 
         StartCoroutine(FloatUpAndFadeCoroutine(2f, 0.5f));
     }
 
     private IEnumerator FloatUpAndFadeCoroutine(float duration, float speed)
     {
-        for(float t = 0; t < duration; t += Time.unscaledDeltaTime)
+        float fullColorDuration = duration / 2;
+
+        for(float t = 0; t < fullColorDuration; t += Time.unscaledDeltaTime)
+        {
+            numberText.color = Color.red;
+            transform.Translate(speed * Vector3.up * Time.unscaledDeltaTime);
+            yield return null;
+        }
+
+        for(float t = 0; t < fullColorDuration; t += Time.unscaledDeltaTime)
         {
             transform.Translate(speed * Vector3.up * Time.unscaledDeltaTime);
-            numberText.color = new Color(255f, 0f, 0f, 1 - Mathf.Pow(t / duration, 2));
+            numberText.color = new Color(255f, 0f, 0f, 1 - Mathf.Pow(t / fullColorDuration, 2));
             yield return null;
         }
         numberText.color = Color.clear;
