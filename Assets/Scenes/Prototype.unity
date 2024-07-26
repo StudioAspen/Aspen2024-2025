@@ -1707,11 +1707,17 @@ MonoBehaviour:
   CanMove: 1
   IsMoving: 0
   IsSprinting: 0
+  IsDashing: 0
   IsAttacking: 0
   IsSwinging: 0
   swordAnchorTransform: {fileID: 1770697535}
   combo: {fileID: 11400000, guid: 5a881eca4a2645847936f07fe2899b01, type: 2}
   maxComboDelay: 0.5
+  dashDuration: 0.5
+  initialDashVelocity: 5
+  dashDelayDuration: 0.5
+  sprintDurationAfterDash: 2
+  shiftKeyPressDurationThresholdForSprint: 0.25
   CameraLocked: 1
 --- !u!4 &2062323804686032954
 Transform:

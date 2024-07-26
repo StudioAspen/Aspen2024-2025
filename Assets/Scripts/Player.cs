@@ -21,8 +21,9 @@ public class Player : MonoBehaviour
     #region Flags
     [HideInInspector] public bool IsGrounded;
     [HideInInspector] public bool CanMove = true;
-    [HideInInspector] public bool IsMoving;
-    [HideInInspector] public bool IsSprinting;
+     public bool IsMoving;
+     public bool IsSprinting;
+     public bool IsDashing;
     [HideInInspector] public bool IsAttacking;
     [HideInInspector] public bool IsSwinging;
     #endregion
@@ -37,6 +38,16 @@ public class Player : MonoBehaviour
     private Coroutine slowTimeCoroutine;
     private List<Enemy> enemiesHitByCurrentAttack = new List<Enemy>();
 
+    [Header("Dash")]
+    [SerializeField] private float dashDuration = 1f;
+    [SerializeField] private float initialDashVelocity = 5f;
+    [SerializeField] private float dashDelayDuration = 1f;
+    [SerializeField] private float sprintDurationAfterDash = 2f;
+    [SerializeField] private float shiftKeyPressDurationThresholdForSprint = 0.25f;
+    private float shiftKeyPressTimer;
+    private float dashDelayTimer = Mathf.Infinity;
+    private Coroutine dashCoroutine;
+
     [Header("Camera")]
     public bool CameraLocked = true;
 
@@ -48,10 +59,13 @@ public class Player : MonoBehaviour
     void Update()
     {
         HandleFlatMovement();
-        CheckGrounded();
-        HandleJump();
-        HandleGravity();
         HandleSpeed();
+        HandleSprint();
+        HandleDash();
+
+        HandleJump();
+        CheckGrounded();
+        HandleGravity();
 
         HandleAnimations();
 
@@ -71,6 +85,7 @@ public class Player : MonoBehaviour
         if (!CanMove)
         {
             currentMovementSpeed = 0f;
+            return;
         }
 
         float x = Input.GetAxisRaw("Horizontal");
@@ -87,7 +102,7 @@ public class Player : MonoBehaviour
             Vector3 targetDirection = targetRotation * Vector3.forward;
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            transform.Translate(currentMovementSpeed * targetDirection * Time.deltaTime, Space.World);
+            transform.Translate(currentMovementSpeed * movementDirection.magnitude * targetDirection * Time.deltaTime, Space.World);
         }
 
     }
@@ -138,10 +153,22 @@ public class Player : MonoBehaviour
         animator.SetFloat("MovementSpeed", currentMovementSpeed/sprintSpeed);
     }
 
+    private void HandleSprint()
+    {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            shiftKeyPressTimer += Time.deltaTime;
+            if (!IsMoving)
+            {
+                IsSprinting = false;
+                return;
+            }
+            IsSprinting = true;
+        }
+    }
+
     private void HandleSpeed()
     {
-        IsSprinting = Input.GetKey(KeyCode.LeftShift) && IsMoving;
-
         if (IsSprinting)
         {
             currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, sprintSpeed, 10f * Time.deltaTime);
@@ -164,7 +191,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            currentSwingingCoroutine = StartCoroutine(SwingCoroutine(combo.WeaponSwings[comboIndex].AnimationClipName, 1f));
+            currentSwingingCoroutine = StartCoroutine(SwingCoroutine(combo.WeaponSwings[comboIndex].AnimationClipName, maxComboDelay));
         }
     }
 
@@ -307,5 +334,59 @@ public class Player : MonoBehaviour
         }
 
         return 0f;
+    }
+
+    private void HandleDash()
+    {
+        dashDelayTimer += Time.deltaTime;
+
+        if (dashDelayTimer < dashDelayDuration) return;
+        if (IsDashing) return;
+
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            IsSprinting = false;
+
+            if (shiftKeyPressTimer < shiftKeyPressDurationThresholdForSprint)
+            {
+                if(dashCoroutine != null) StopCoroutine(dashCoroutine);
+                dashCoroutine = StartCoroutine(DashCoroutine());
+            }
+            shiftKeyPressTimer = 0f;
+        }
+    }
+
+    private IEnumerator DashCoroutine()
+    {
+        IsDashing = true;
+
+        float currDashVelocity = initialDashVelocity;
+        for(float t = 0; t < dashDuration; t += Time.deltaTime)
+        {
+            currDashVelocity = initialDashVelocity * (1 - Mathf.Sqrt(1-Mathf.Pow(t/dashDuration - 1, 2)));
+
+            currentMovementSpeed = currDashVelocity + sprintSpeed;
+
+            transform.Translate(currDashVelocity * transform.forward * Time.deltaTime, Space.World);
+            yield return null;
+        }
+
+        currentMovementSpeed = sprintSpeed;
+        IsSprinting = true;
+        IsDashing = false;
+
+        dashDelayTimer = 0f;
+
+        for(float t = 0; t < sprintDurationAfterDash; t += Time.deltaTime)
+        {
+            if (!IsMoving)
+            {
+                IsSprinting = false;
+                yield break;
+            }
+            yield return null;
+        }
+
+        IsSprinting = false;
     }
 }
