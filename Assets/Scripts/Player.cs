@@ -147,6 +147,8 @@ public class Player : MonoBehaviour
 
     private void HandleSprint()
     {
+        if (!IsGrounded) return;
+
         if (Input.GetKey(KeyCode.LeftShift))
         {
             shiftKeyPressTimer += Time.deltaTime;
@@ -294,6 +296,8 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
+            if (!IsGrounded) return;
+
             IsSprinting = false;
 
             if (shiftKeyPressTimer < shiftKeyPressDurationThresholdForSprint)
