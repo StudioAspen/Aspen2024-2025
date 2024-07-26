@@ -29,11 +29,10 @@ public class Player : MonoBehaviour
 
     [Header("Combat")]
     [SerializeField] private Transform swordAnchorTransform;
-    [SerializeField] private float maxComboDelay = 0.3f;
-    [SerializeField] private int maxComboCount = 3;
+    [SerializeField] private Combo combo;
     private float instantaneousAttackAngle;
+    [SerializeField] private float maxComboDelay = 0.5f;
     private int comboIndex;
-    public float comboDelayTimer;
     private Coroutine currentSwingingCoroutine;
     private Coroutine slowTimeCoroutine;
     private List<Enemy> enemiesHitByCurrentAttack = new List<Enemy>();
@@ -165,7 +164,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            currentSwingingCoroutine = StartCoroutine(SwingCoroutine("Slash1", 0.25f));
+            currentSwingingCoroutine = StartCoroutine(SwingCoroutine(combo.WeaponSwings[comboIndex].AnimationClipName, 1f));
         }
     }
 
@@ -180,7 +179,9 @@ public class Player : MonoBehaviour
         if (IsSwinging)
         {
             Debug.DrawLine(swordAnchorTransform.position, swordAnchorTransform.position + 1.5f * swordAnchorTransform.up);
+
             RaycastHit[] hits = Physics.SphereCastAll(swordAnchorTransform.position, 0.2f, swordAnchorTransform.up, 1.5f);
+
             if (hits == null) return;
             if (hits.Length == 0) return;
 
@@ -192,7 +193,7 @@ public class Player : MonoBehaviour
                     enemiesHitByCurrentAttack.Add(enemy);
 
                     if (slowTimeCoroutine != null) StopCoroutine(slowTimeCoroutine);
-                    slowTimeCoroutine = StartCoroutine(SlowTimePerHitCoroutine(0.025f, 0.15f));
+                    slowTimeCoroutine = StartCoroutine(SlowTimePerHitCoroutine(0.025f, 0.3f));
                     CameraShakeManager.Instance.ShakeCamera(5f, 0.25f);
 
                     GameObject temp = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -217,9 +218,17 @@ public class Player : MonoBehaviour
 
     private IEnumerator SlowTimePerHitCoroutine(float timeScale, float duration)
     {
+        float speedUpTime = duration / 4;
+
         Time.timeScale = timeScale;
 
-        yield return new WaitForSecondsRealtime(duration);
+        yield return new WaitForSecondsRealtime(duration - speedUpTime);
+
+        for (float t = 0; t < speedUpTime; t += Time.unscaledDeltaTime)
+        {
+            Time.timeScale = Mathf.Lerp(timeScale, 1f, t / speedUpTime);
+            yield return null;
+        }
 
         Time.timeScale = 1f;
     }
@@ -230,24 +239,28 @@ public class Player : MonoBehaviour
 
         enemiesHitByCurrentAttack.Clear();
 
-        comboDelayTimer = 0f;
-
         instantaneousAttackAngle = Camera.main.transform.rotation.eulerAngles.y;
 
         CanMove = false;
         IsAttacking = true;
+        
+
+        animator.CrossFadeInFixedTime(animationName, 0.05f);
+
+        float timeToStartDamage = combo.WeaponSwings[comboIndex].TimeToStartDamage;
+        yield return new WaitForSeconds(timeToStartDamage);
         IsSwinging = true;
 
-        animator.CrossFadeInFixedTime(animationName, animationFadeSpeed);
+        float timeToStopDamage = combo.WeaponSwings[comboIndex].TimeToStopDamage;
+        yield return new WaitForSeconds(timeToStopDamage - timeToStartDamage);
+        IsSwinging = false;
 
         float animationDuration = GetAnimationDuration(animationName);
-        yield return new WaitForSeconds(animationDuration);
-
-        IsSwinging = false;
+        yield return new WaitForSeconds(animationDuration - timeToStopDamage);
 
         animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed);
 
-        if (comboIndex == maxComboCount - 1)
+        if (comboIndex == combo.WeaponSwings.Count - 1)
         {
             comboIndex = 0;
 
@@ -255,25 +268,22 @@ public class Player : MonoBehaviour
             IsAttacking = false;
 
             //Debug.Log("Broke Combo, Combo delay waiting");
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.3f);
 
             yield break;
         }
 
         CanMove = true;
 
-        for(float t = 0; t < maxComboDelay; t += Time.deltaTime)
+        for(float t = 0; t < maxComboDelay; t += Time.unscaledDeltaTime)
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 comboIndex++;
 
-                if(comboIndex == 1)
-                {
-                    StopCoroutine(currentSwingingCoroutine);
-                    currentSwingingCoroutine = StartCoroutine(SwingCoroutine("Slash2", 0.25f));
-                    yield break;
-                }
+                StopCoroutine(currentSwingingCoroutine);
+                currentSwingingCoroutine = StartCoroutine(SwingCoroutine(combo.WeaponSwings[comboIndex].AnimationClipName, 1f));
+                yield break;
             }
 
             yield return null;
@@ -281,7 +291,6 @@ public class Player : MonoBehaviour
 
         IsAttacking = false;
 
-        Debug.Log("Broke combo");
         comboIndex = 0;
     }
 
