@@ -21,9 +21,9 @@ public class Player : MonoBehaviour
     #region Flags
     [HideInInspector] public bool IsGrounded;
     [HideInInspector] public bool CanMove = true;
-     public bool IsMoving;
-     public bool IsSprinting;
-     public bool IsDashing;
+    [HideInInspector] public bool IsMoving;
+    [HideInInspector] public bool IsSprinting;
+    [HideInInspector] public bool IsDashing;
     [HideInInspector] public bool IsAttacking;
     [HideInInspector] public bool IsSwinging;
     #endregion
@@ -33,6 +33,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Combo combo;
     private float instantaneousAttackAngle;
     [SerializeField] private float maxComboDelay = 0.5f;
+    [SerializeField] private float impactFramesDuration = 0.3f;
     private int comboIndex;
     private Coroutine currentSwingingCoroutine;
     private Coroutine slowTimeCoroutine;
@@ -63,8 +64,8 @@ public class Player : MonoBehaviour
         HandleSprint();
         HandleDash();
 
-        HandleJump();
         CheckGrounded();
+        HandleJump();
         HandleGravity();
 
         HandleAnimations();
@@ -220,24 +221,26 @@ public class Player : MonoBehaviour
                     enemiesHitByCurrentAttack.Add(enemy);
 
                     if (slowTimeCoroutine != null) StopCoroutine(slowTimeCoroutine);
-                    slowTimeCoroutine = StartCoroutine(SlowTimePerHitCoroutine(0.025f, 0.3f));
+                    slowTimeCoroutine = StartCoroutine(SlowTimePerHitCoroutine(0.025f, impactFramesDuration));
                     CameraShakeManager.Instance.ShakeCamera(5f, 0.25f);
 
                     GameObject temp = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     temp.GetComponent<Collider>().enabled = false;
-                    temp.transform.localScale = 0.25f * Vector3.one;
+                    temp.transform.localScale = 0.1f * Vector3.one;
                     if (hit.distance == 0)
                     {
-                        temp.transform.position = hit.collider.ClosestPoint(swordAnchorTransform.position);
+                        enemy.TakeDamage(Random.Range(100, 10000), hit.collider.ClosestPointOnBounds(swordAnchorTransform.position));
+                        temp.transform.position = hit.collider.ClosestPointOnBounds(swordAnchorTransform.position);
                     }
                     else
                     {
+                        enemy.TakeDamage(Random.Range(100, 10000), hit.point);
                         temp.transform.position = hit.point;
                     }
                     temp.GetComponent<Renderer>().material.color = Color.red;
                     Destroy(temp, 2f);
                     
-                    enemy.TakeDamage(1);
+                    
                 }
             }
         }
@@ -309,7 +312,7 @@ public class Player : MonoBehaviour
                 comboIndex++;
 
                 StopCoroutine(currentSwingingCoroutine);
-                currentSwingingCoroutine = StartCoroutine(SwingCoroutine(combo.WeaponSwings[comboIndex].AnimationClipName, 1f));
+                currentSwingingCoroutine = StartCoroutine(SwingCoroutine(combo.WeaponSwings[comboIndex].AnimationClipName, maxComboDelay));
                 yield break;
             }
 
@@ -367,7 +370,19 @@ public class Player : MonoBehaviour
 
             currentMovementSpeed = currDashVelocity + sprintSpeed;
 
-            transform.Translate(currDashVelocity * transform.forward * Time.deltaTime, Space.World);
+
+            float x = Input.GetAxisRaw("Horizontal");
+            float z = Input.GetAxisRaw("Vertical");
+
+            Vector3 movementDirection = new Vector3(x, 0, z);
+
+            float angle = Mathf.Atan2(x, z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+            Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
+            Vector3 targetDirection = targetRotation * Vector3.forward;
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+            transform.Translate(currDashVelocity * targetDirection * Time.deltaTime, Space.World);
             yield return null;
         }
 
