@@ -985,11 +985,8 @@ MonoBehaviour:
   IsSprinting: 0
   IsDashing: 0
   IsAttacking: 0
-  IsSwinging: 0
-  swordAnchorTransform: {fileID: 4747862426573643491}
-  combo: {fileID: 11400000, guid: 5a881eca4a2645847936f07fe2899b01, type: 2}
+  weapon: {fileID: 196489911609782724}
   maxComboDelay: 0.5
-  impactFramesDuration: 0.3
   dashDuration: 0.5
   initialDashVelocity: 7
   dashDelayDuration: 0.5
@@ -2379,7 +2376,7 @@ Transform:
   - {fileID: 1565776888913867858}
   - {fileID: 5741060743324829426}
   - {fileID: 2946457314855181895}
-  - {fileID: 7009537029474283427}
+  - {fileID: 830465856438363978}
   m_Father: {fileID: 3132937054902596554}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8625965699097919645
@@ -2606,13 +2603,19 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d172d41f775a35d4593cc6dec1b8eed0, type: 3}
---- !u!4 &4747862426573643491 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2382167382557116116, guid: d172d41f775a35d4593cc6dec1b8eed0,
+--- !u!114 &196489911609782724 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 618815233110515994, guid: d172d41f775a35d4593cc6dec1b8eed0,
     type: 3}
   m_PrefabInstance: {fileID: 733079198189867230}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &7009537029474283427 stripped
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b15be1641a6715409d644911d004bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &830465856438363978 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 119912662750246804, guid: d172d41f775a35d4593cc6dec1b8eed0,
     type: 3}
