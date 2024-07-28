@@ -28,7 +28,6 @@ public class Player : MonoBehaviour
     #endregion
 
     [Header("Combat")]
-
     [SerializeField] private WeaponHandler weapon;
     private float instantaneousAttackAngle;
     [SerializeField] private float maxComboDelay = 0.5f;
@@ -193,7 +192,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            currentSwingingCoroutine = StartCoroutine(SwingCoroutine(weapon.Combo.WeaponSwings[comboIndex].AnimationClipName, maxComboDelay));
+            SwingMeleeWeapon(weapon.Combo.WeaponSwings[comboIndex].AnimationClipName);
         }
     }
 
@@ -221,6 +220,14 @@ public class Player : MonoBehaviour
         }
 
         Time.timeScale = 1f;
+    }
+
+    private void SwingMeleeWeapon(string animationName)
+    {
+        if (dashCoroutine != null) StopDashing();
+
+        if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
+        currentSwingingCoroutine = StartCoroutine(SwingCoroutine(animationName, maxComboDelay));
     }
 
     private IEnumerator SwingCoroutine(string animationName, float animationFadeSpeed)
@@ -280,6 +287,19 @@ public class Player : MonoBehaviour
         comboIndex = 0;
     }
 
+    private void StopCurrentSwingCoroutine()
+    {
+        if (currentSwingingCoroutine != null) StopCoroutine(currentSwingingCoroutine);
+
+        animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
+
+        comboIndex = 0;
+
+        weapon.DisableTriggers();
+        CanMove = true;
+        IsAttacking = false;
+    }
+
     private float GetAnimationDuration(string animationName)
     {
         AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
@@ -310,16 +330,32 @@ public class Player : MonoBehaviour
 
             if (shiftKeyPressTimer < shiftKeyPressDurationThresholdForSprint)
             {
-                if(dashCoroutine != null) StopCoroutine(dashCoroutine);
-                dashCoroutine = StartCoroutine(DashCoroutine());
+                Dash();
             }
             shiftKeyPressTimer = 0f;
         }
     }
 
+    private void Dash()
+    {
+        if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
+
+        if (dashCoroutine != null) StopCoroutine(dashCoroutine);
+        dashCoroutine = StartCoroutine(DashCoroutine());
+    }
+
+    private void StopDashing()
+    {
+        if (dashCoroutine != null) StopCoroutine(dashCoroutine);
+
+        IsDashing = false;
+        IsSprinting = false;
+    }
+
     private IEnumerator DashCoroutine()
     {
         IsDashing = true;
+        animator.CrossFadeInFixedTime("Dash", 0.1f);
 
         float currDashVelocity = initialDashVelocity;
         for(float t = 0; t < dashDuration; t += Time.deltaTime)
@@ -347,6 +383,8 @@ public class Player : MonoBehaviour
         currentMovementSpeed = sprintSpeed;
         IsSprinting = true;
         IsDashing = false;
+
+        animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
 
         dashDelayTimer = 0f;
 
