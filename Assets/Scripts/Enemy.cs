@@ -12,6 +12,21 @@ public class Enemy : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
+
+        IgnoreCollisionsWithSelf();
+    }
+
+    private void IgnoreCollisionsWithSelf()
+    {
+        Collider[] colliders = GetComponents<Collider>();
+
+        foreach(Collider c1 in colliders)
+        {
+            foreach(Collider c2 in colliders)
+            {
+                Physics.IgnoreCollision(c1, c2);
+            }
+        }
     }
 
     public void TakeDamage(int damage, Vector3 hitPoint)

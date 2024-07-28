@@ -48,9 +48,17 @@ public class Player : MonoBehaviour
     [Header("Camera")]
     public bool CameraLocked = true;
 
-    void Start()
+    private void Awake()
     {
         animator = GetComponent<Animator>();
+
+        QualitySettings.vSyncCount = 0;  // VSync must be disabled
+        Application.targetFrameRate = 60;
+    }
+
+    void Start()
+    {
+        IgnoreMyOwnColliders();
     }
 
     void Update()
@@ -353,5 +361,27 @@ public class Player : MonoBehaviour
         }
 
         IsSprinting = false;
+    }
+
+    private void IgnoreMyOwnColliders()
+    {
+        Collider baseCollider = GetComponent<Collider>();
+        Collider[] damageableColliders = GetComponentsInChildren<Collider>();
+        List<Collider> ignoreColliders = new List<Collider>();
+
+        foreach(Collider collider in damageableColliders)
+        {
+            ignoreColliders.Add(collider);
+        }
+
+        ignoreColliders.Add(baseCollider);
+
+        foreach(Collider c1 in ignoreColliders)
+        {
+            foreach(Collider c2 in ignoreColliders)
+            {
+                Physics.IgnoreCollision(c1, c2, true);
+            }
+        }
     }
 }
