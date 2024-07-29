@@ -14,7 +14,7 @@ public class ResetActionFlags : StateMachineBehaviour
         }
         else
         {
-            player.IsJumping = false;
+            //player.IsJumping = false;
         }
     }
 

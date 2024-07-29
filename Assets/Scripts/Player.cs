@@ -13,16 +13,13 @@ public class Player : MonoBehaviour
     [SerializeField] private float walkSpeed = 3f;
     [SerializeField] private float sprintSpeed = 5f;
     [SerializeField] private float rotationSpeed = 5f;
+    private Vector3 movementDirection;
 
     [Header("Player Gravity")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float jumpHeight = 3f;
-    [SerializeField] private float groundCheckSphereRadius = 0.25f;
-    [SerializeField] private float yVelocity;
-    [SerializeField] private float groundedYVelocity = -20f;
-    [SerializeField] private float fallStartYVelocity = -5f;
     [SerializeField] private float gravityForce = -9.81f;
-    private bool fallingVelocityHasBeenSet = false;
+    private float yVelocity;
     private float inAirTimer = 0;
 
     #region Flags
@@ -77,33 +74,30 @@ public class Player : MonoBehaviour
         HandleDash();
 
         CheckGrounded();
-        HandleJump();
+        HandleJumpInput();
+        HandleGravity();
 
         HandleAnimations();
 
-        HandleSwing();
+        HandleSwingInput();
         HandleAttacking();
 
         Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(transform.position, groundCheckSphereRadius);
-    }
-
     private void HandleFlatMovement()
     {
-        if (!CanMove)
-        {
-            currentMovementSpeed = 0f;
-            return;
-        }
-
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
-        Vector3 movementDirection = new Vector3(x, 0, z);
+        movementDirection = new Vector3(x, 0, z);
+
+        if (!CanMove)
+        {
+            currentMovementSpeed = 0f;
+            IsMoving = false;
+            return;
+        }
 
         IsMoving = movementDirection.magnitude > 0;
 
@@ -114,57 +108,63 @@ public class Player : MonoBehaviour
             Vector3 targetDirection = targetRotation * Vector3.forward;
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            characterController.Move(currentMovementSpeed * movementDirection.magnitude * targetDirection * Time.deltaTime);
+            characterController.Move(currentMovementSpeed * targetDirection * Time.deltaTime);
         }
-
     }
 
-    private void HandleJump()
+    private void HandleJumpInput()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded && !IsJumping)
-        {
-            animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
-            IsJumping = true;
-            IsGrounded = false;
-        }
+        if (!IsGrounded) return;
+        if (IsJumping) return;
+        if (IsAttacking) return;
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            yVelocity = 0f;
+            yVelocity += Mathf.Sqrt(jumpHeight * -2f * gravityForce);
+
+            IsJumping = true;
+            animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
+        }
+    }
+
+    private void HandleGravity()
+    {
         if (IsGrounded)
         {
-            if (yVelocity < 0f)
-            {
-                inAirTimer = 0f;
-                fallingVelocityHasBeenSet = false;
-                yVelocity = groundedYVelocity;
-            }
+            inAirTimer = 0f;
+            IsJumping = false;
         }
-        else
+
+        if(IsGrounded && yVelocity < 0f)
         {
-            if(!IsJumping && !fallingVelocityHasBeenSet)
-            {
-                fallingVelocityHasBeenSet = true;
-                yVelocity = fallStartYVelocity;
-            }
-
-            inAirTimer += Time.deltaTime;
-
-            yVelocity += gravityForce * Time.deltaTime;
+            yVelocity = 0f;
         }
+
+        if(!IsGrounded && !IsJumping)
+        {
+            inAirTimer += Time.deltaTime;
+        }
+
+        yVelocity += gravityForce * Time.deltaTime;
+
         characterController.Move(yVelocity * Time.deltaTime * Vector3.up);
     }
 
     public void ApplyJumpingVelocity()
     {
-        yVelocity = Mathf.Sqrt(jumpHeight * -2f * gravityForce);
+        //yVelocity = Mathf.Sqrt(jumpHeight * -2f * gravityForce);
     }
 
     private void CheckGrounded()
     {
-        IsGrounded = Physics.CheckSphere(transform.position, groundCheckSphereRadius, groundLayer);
+        IsGrounded = Physics.CheckSphere(transform.position + characterController.radius/2 * Vector3.up, characterController.radius, groundLayer);
     }
 
     private void HandleAnimations()
     {
         animator.SetFloat("MovementSpeed", currentMovementSpeed/sprintSpeed);
+        animator.SetFloat("InAirTimer", inAirTimer);
         animator.SetBool("IsGrounded", IsGrounded);
     }
 
@@ -186,6 +186,11 @@ public class Player : MonoBehaviour
 
     private void HandleSpeed()
     {
+        if (!IsMoving)
+        {
+            IsSprinting = false;
+        }
+
         if (IsSprinting)
         {
             currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, sprintSpeed, 10f * Time.deltaTime);
@@ -202,8 +207,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void HandleSwing()
+    private void HandleSwingInput()
     {
+        if (!IsGrounded) return;
         if (IsAttacking) return;
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -221,23 +227,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    private IEnumerator SlowTimePerHitCoroutine(float timeScale, float duration)
-    {
-        float speedUpTime = duration / 4;
-
-        Time.timeScale = timeScale;
-
-        yield return new WaitForSecondsRealtime(duration - speedUpTime);
-
-        for (float t = 0; t < speedUpTime; t += Time.unscaledDeltaTime)
-        {
-            Time.timeScale = Mathf.Lerp(timeScale, 1f, t / speedUpTime);
-            yield return null;
-        }
-
-        Time.timeScale = 1f;
-    }
-
     private void SwingMeleeWeapon(string animationName)
     {
         if (dashCoroutine != null) StopDashing();
@@ -250,7 +239,7 @@ public class Player : MonoBehaviour
     {
         weapon.ClearEnemiesHitList();
 
-        instantaneousAttackAngle = Camera.main.transform.rotation.eulerAngles.y;
+        instantaneousAttackAngle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
 
         CanMove = false;
         IsAttacking = true;
@@ -358,7 +347,7 @@ public class Player : MonoBehaviour
     {
         if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
 
-        if (dashCoroutine != null) StopCoroutine(dashCoroutine);
+        if (dashCoroutine != null) StopDashing();
         dashCoroutine = StartCoroutine(DashCoroutine());
     }
 
@@ -368,11 +357,13 @@ public class Player : MonoBehaviour
 
         IsDashing = false;
         IsSprinting = false;
+        CanMove = true;
     }
 
     private IEnumerator DashCoroutine()
     {
         IsDashing = true;
+        CanMove = false;
         animator.CrossFadeInFixedTime("Dash", 0.1f);
 
         float currDashVelocity = initialDashVelocity;
@@ -380,14 +371,7 @@ public class Player : MonoBehaviour
         {
             currDashVelocity = initialDashVelocity * (1 - Mathf.Sqrt(1-Mathf.Pow(t/dashDuration - 1, 2)));
 
-            currentMovementSpeed = currDashVelocity + sprintSpeed;
-
-            float x = Input.GetAxisRaw("Horizontal");
-            float z = Input.GetAxisRaw("Vertical");
-
-            Vector3 movementDirection = new Vector3(x, 0, z);
-
-            float angle = Mathf.Atan2(x, z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+            float angle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
             Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
             Vector3 targetDirection = targetRotation * Vector3.forward;
 
@@ -397,9 +381,10 @@ public class Player : MonoBehaviour
             yield return null;
         }
 
-        currentMovementSpeed = sprintSpeed;
-        IsSprinting = true;
         IsDashing = false;
+        CanMove = true;
+        IsSprinting = true;
+        currentMovementSpeed = sprintSpeed;
 
         animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
 
@@ -407,7 +392,7 @@ public class Player : MonoBehaviour
 
         for(float t = 0; t < sprintDurationAfterDash; t += Time.deltaTime)
         {
-            if (!IsMoving)
+            if (movementDirection.magnitude == 0)
             {
                 IsSprinting = false;
                 yield break;
