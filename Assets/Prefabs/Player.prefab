@@ -1079,9 +1079,9 @@ GameObject:
   - component: {fileID: 7536978621657743438}
   - component: {fileID: 9018130139546683757}
   - component: {fileID: 2171180168782530629}
-  - component: {fileID: 5791265898874837889}
+  - component: {fileID: 7237775664649881152}
   - component: {fileID: 5104155415629920173}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1096,7 +1096,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3617256968821117999}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1121,14 +1121,22 @@ MonoBehaviour:
   walkSpeed: 1.5
   sprintSpeed: 3
   rotationSpeed: 5
-  jumpHeight: 1
-  gravity: -9.81
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  jumpHeight: 3
+  groundCheckSphereRadius: 0.25
+  yVelocity: 0
+  groundedYVelocity: -20
+  fallStartYVelocity: -5
+  gravityForce: -9.81
   IsGrounded: 0
   CanMove: 1
   IsMoving: 0
   IsSprinting: 0
   IsDashing: 0
   IsAttacking: 0
+  IsJumping: 0
   weapon: {fileID: 196489911609782724}
   maxComboDelay: 0.5
   dashDuration: 0.5
@@ -1150,16 +1158,19 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 50d240aa279a9be409ed39946418d119, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
+    are already bound by a Humanoid avatar. These transforms can only be changed
+    by Humanoid clips.\n\tTransform 'Spine'\n\tTransform 'Spine'\n\tFrom animation
+    clip 'Dash'"
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!136 &5791265898874837889
-CapsuleCollider:
+--- !u!143 &7237775664649881152
+CharacterController:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1176,10 +1187,13 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.25
+  serializedVersion: 3
   m_Height: 2
-  m_Direction: 1
+  m_Radius: 0.25
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
 --- !u!54 &5104155415629920173
 Rigidbody:
@@ -1190,8 +1204,8 @@ Rigidbody:
   m_GameObject: {fileID: 3617256968821117999}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 100000000
-  m_AngularDrag: 100000000
+  m_Drag: 0
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1204,10 +1218,10 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 116
-  m_CollisionDetection: 2
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &3988759057116635544
 GameObject:
   m_ObjectHideFlags: 0
@@ -1329,7 +1343,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4608920070975825999}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Geometry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1480,7 +1494,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3759550947609592753}
   - component: {fileID: 6984206866885531703}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Armature_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1666,7 +1680,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8214223060932716130}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Skeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3088,7 +3102,17 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 3649179186203773579, guid: d172d41f775a35d4593cc6dec1b8eed0,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 6871507518177977818, guid: d172d41f775a35d4593cc6dec1b8eed0,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6918874709248315491, guid: d172d41f775a35d4593cc6dec1b8eed0,
         type: 3}
       propertyPath: m_Layer
       value: 6

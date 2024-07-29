@@ -13,12 +13,6 @@ MonoBehaviour:
   m_Name: 3Slashes
   m_EditorClassIdentifier: 
   <WeaponSwings>k__BackingField:
-  - <AnimationClipName>k__BackingField: OneHand_Up_Attack_1_InPlace
-    <TimeToStartDamage>k__BackingField: 0.3666667
-    <TimeToStopDamage>k__BackingField: 1
-  - <AnimationClipName>k__BackingField: OneHand_Up_Attack_2_InPlace
-    <TimeToStartDamage>k__BackingField: 0.1
-    <TimeToStopDamage>k__BackingField: 0.6
-  - <AnimationClipName>k__BackingField: OneHand_Up_Attack_3_InPlace
-    <TimeToStartDamage>k__BackingField: 0
-    <TimeToStopDamage>k__BackingField: 0.3666667
+  - <AnimationClipName>k__BackingField: OneHand_Up_Attack_1
+  - <AnimationClipName>k__BackingField: OneHand_Up_Attack_2
+  - <AnimationClipName>k__BackingField: OneHand_Up_Attack_3

@@ -6,6 +6,4 @@ using UnityEngine;
 public class WeaponSwing
 {
     [field: SerializeField] public string AnimationClipName { get; private set; }
-    [field: SerializeField] public float TimeToStartDamage { get; private set; }
-    [field: SerializeField] public float TimeToStopDamage { get; private set; }
 }

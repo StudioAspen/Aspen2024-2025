@@ -52,7 +52,7 @@ public class WeaponHandler : MonoBehaviour
         if (enemiesHitByCurrentAttack.Contains(enemy)) return;
         enemiesHitByCurrentAttack.Add(enemy);
 
-        StartImpactFrames(0.025f);
+        StartImpactFrames(0.1f);
         CameraShakeManager.Instance.ShakeCamera(5f, 0.25f);
 
         Vector3 hitPoint = other.ClosestPointOnBounds(colliderStartTransform.position);
@@ -113,7 +113,7 @@ public class WeaponHandler : MonoBehaviour
             if (enemiesHitByCurrentAttack.Contains(enemy)) continue;
             enemiesHitByCurrentAttack.Add(enemy);
 
-            StartImpactFrames(0.025f);
+            StartImpactFrames(0.1f);
             CameraShakeManager.Instance.ShakeCamera(5f, 0.25f);
 
             Vector3 hitPoint = hit.collider.ClosestPointOnBounds(hit.point);

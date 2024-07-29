@@ -6,6 +6,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private Animator animator;
+    private CharacterController characterController;
 
     [Header("Player Speed")]
     [SerializeField] private float currentMovementSpeed;
@@ -14,9 +15,15 @@ public class Player : MonoBehaviour
     [SerializeField] private float rotationSpeed = 5f;
 
     [Header("Player Gravity")]
+    [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float jumpHeight = 3f;
-    [SerializeField] private float gravity = -9.81f;
-    private float velocityY;
+    [SerializeField] private float groundCheckSphereRadius = 0.25f;
+    [SerializeField] private float yVelocity;
+    [SerializeField] private float groundedYVelocity = -20f;
+    [SerializeField] private float fallStartYVelocity = -5f;
+    [SerializeField] private float gravityForce = -9.81f;
+    private bool fallingVelocityHasBeenSet = false;
+    private float inAirTimer = 0;
 
     #region Flags
     [HideInInspector] public bool IsGrounded;
@@ -25,6 +32,7 @@ public class Player : MonoBehaviour
     [HideInInspector] public bool IsSprinting;
     [HideInInspector] public bool IsDashing;
     [HideInInspector] public bool IsAttacking;
+    [HideInInspector] public bool IsJumping;
     #endregion
 
     [Header("Combat")]
@@ -50,9 +58,10 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        characterController = GetComponent<CharacterController>();
 
         QualitySettings.vSyncCount = 0;  // VSync must be disabled
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = 0;
     }
 
     void Start()
@@ -69,7 +78,6 @@ public class Player : MonoBehaviour
 
         CheckGrounded();
         HandleJump();
-        HandleGravity();
 
         HandleAnimations();
 
@@ -77,6 +85,11 @@ public class Player : MonoBehaviour
         HandleAttacking();
 
         Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.position, groundCheckSphereRadius);
     }
 
     private void HandleFlatMovement()
@@ -101,55 +114,58 @@ public class Player : MonoBehaviour
             Vector3 targetDirection = targetRotation * Vector3.forward;
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            transform.Translate(currentMovementSpeed * movementDirection.magnitude * targetDirection * Time.deltaTime, Space.World);
+            characterController.Move(currentMovementSpeed * movementDirection.magnitude * targetDirection * Time.deltaTime);
         }
 
     }
 
     private void HandleJump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded && !IsJumping)
         {
-            velocityY = Mathf.Sqrt(-2f * gravity * jumpHeight);
+            animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
+            IsJumping = true;
             IsGrounded = false;
         }
-    }
-
-    private void HandleGravity()
-    {
-        float displacement = velocityY * Time.deltaTime + 0.5f * gravity * (Time.deltaTime * Time.deltaTime);
-
-        velocityY += gravity * Time.deltaTime;
 
         if (IsGrounded)
         {
-            velocityY = 0f;
-            return;
+            if (yVelocity < 0f)
+            {
+                inAirTimer = 0f;
+                fallingVelocityHasBeenSet = false;
+                yVelocity = groundedYVelocity;
+            }
         }
+        else
+        {
+            if(!IsJumping && !fallingVelocityHasBeenSet)
+            {
+                fallingVelocityHasBeenSet = true;
+                yVelocity = fallStartYVelocity;
+            }
 
-        transform.Translate(displacement * Vector3.up);
+            inAirTimer += Time.deltaTime;
+
+            yVelocity += gravityForce * Time.deltaTime;
+        }
+        characterController.Move(yVelocity * Time.deltaTime * Vector3.up);
+    }
+
+    public void ApplyJumpingVelocity()
+    {
+        yVelocity = Mathf.Sqrt(jumpHeight * -2f * gravityForce);
     }
 
     private void CheckGrounded()
     {
-        float distance = 0.1f;
-        Vector3 upOffset = distance * Vector3.up;
-
-        bool middle = Physics.Raycast(transform.position + upOffset, Vector3.down, distance);
-
-        CapsuleCollider c = GetComponent<CapsuleCollider>();
-
-        bool left = Physics.Raycast(transform.position + c.radius * Vector3.up + c.radius * Vector3.left + upOffset, Vector3.down, distance);
-        bool right = Physics.Raycast(transform.position + c.radius * Vector3.up + c.radius * Vector3.right + upOffset, Vector3.down, distance);
-        bool forward = Physics.Raycast(transform.position + c.radius * Vector3.up + c.radius * Vector3.forward + upOffset, Vector3.down, distance);
-        bool backward = Physics.Raycast(transform.position + c.radius * Vector3.up + c.radius * Vector3.back + upOffset, Vector3.down, distance);
-        
-        IsGrounded = middle || left || right || forward || backward;
+        IsGrounded = Physics.CheckSphere(transform.position, groundCheckSphereRadius, groundLayer);
     }
 
     private void HandleAnimations()
     {
         animator.SetFloat("MovementSpeed", currentMovementSpeed/sprintSpeed);
+        animator.SetBool("IsGrounded", IsGrounded);
     }
 
     private void HandleSprint()
@@ -241,16 +257,8 @@ public class Player : MonoBehaviour
 
         animator.CrossFadeInFixedTime(animationName, 0.05f);
 
-        float timeToStartDamage = weapon.Combo.WeaponSwings[comboIndex].TimeToStartDamage;
-        yield return new WaitForSeconds(timeToStartDamage);
-        weapon.EnableTriggers();
-
-        float timeToStopDamage = weapon.Combo.WeaponSwings[comboIndex].TimeToStopDamage;
-        yield return new WaitForSeconds(timeToStopDamage - timeToStartDamage);
-        weapon.DisableTriggers();
-
         float animationDuration = GetAnimationDuration(animationName);
-        yield return new WaitForSeconds(animationDuration - timeToStopDamage);
+        yield return new WaitForSeconds(animationDuration);
 
         animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed);
 
@@ -298,6 +306,16 @@ public class Player : MonoBehaviour
         weapon.DisableTriggers();
         CanMove = true;
         IsAttacking = false;
+    }
+
+    public void EnableWeaponTriggers()
+    {
+        weapon.EnableTriggers();
+    }
+
+    public void DisableWeaponTriggers()
+    {
+        weapon.DisableTriggers();
     }
 
     private float GetAnimationDuration(string animationName)
@@ -364,7 +382,6 @@ public class Player : MonoBehaviour
 
             currentMovementSpeed = currDashVelocity + sprintSpeed;
 
-
             float x = Input.GetAxisRaw("Horizontal");
             float z = Input.GetAxisRaw("Vertical");
 
@@ -376,7 +393,7 @@ public class Player : MonoBehaviour
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-            transform.Translate(currDashVelocity * targetDirection * Time.deltaTime, Space.World);
+            characterController.Move(currDashVelocity * targetDirection * Time.deltaTime);
             yield return null;
         }
 
