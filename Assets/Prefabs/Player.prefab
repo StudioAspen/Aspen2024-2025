@@ -1120,27 +1120,25 @@ MonoBehaviour:
   currentMovementSpeed: 0
   walkSpeed: 1.5
   sprintSpeed: 3
-  rotationSpeed: 5
+  rotationSpeed: 10
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
-  jumpHeight: 3
-  groundCheckSphereRadius: 0.25
-  yVelocity: 0
-  groundedYVelocity: -20
-  fallStartYVelocity: -5
-  gravityForce: -9.81
+  jumpHeight: 1.5
+  gravityForce: -20
+  flatAcceleration: 4
   IsGrounded: 0
   CanMove: 1
   IsMoving: 0
   IsSprinting: 0
   IsDashing: 0
   IsAttacking: 0
+  CanAttack: 1
   IsJumping: 0
   weapon: {fileID: 196489911609782724}
   maxComboDelay: 0.5
   dashDuration: 0.5
-  initialDashVelocity: 7
+  initialDashVelocity: 25
   dashDelayDuration: 0.5
   sprintDurationAfterDash: 2
   shiftKeyPressDurationThresholdForSprint: 0.25
@@ -1190,7 +1188,7 @@ CharacterController:
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.25
-  m_SlopeLimit: 45
+  m_SlopeLimit: 90
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001

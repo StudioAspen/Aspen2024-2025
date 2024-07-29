@@ -1251,11 +1251,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 7237775664649881152, guid: 19dae7578bc56674dae55670ec5dfbf5,
-        type: 3}
-      propertyPath: m_SlopeLimit
-      value: 90
-      objectReference: {fileID: 0}
     - target: {fileID: 7536978621657743438, guid: 19dae7578bc56674dae55670ec5dfbf5,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1305,36 +1300,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018130139546683757, guid: 19dae7578bc56674dae55670ec5dfbf5,
-        type: 3}
-      propertyPath: jumpHeight
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018130139546683757, guid: 19dae7578bc56674dae55670ec5dfbf5,
-        type: 3}
-      propertyPath: gravityForce
-      value: -20
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018130139546683757, guid: 19dae7578bc56674dae55670ec5dfbf5,
-        type: 3}
-      propertyPath: rotationSpeed
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018130139546683757, guid: 19dae7578bc56674dae55670ec5dfbf5,
-        type: 3}
-      propertyPath: flatAcceleration
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018130139546683757, guid: 19dae7578bc56674dae55670ec5dfbf5,
-        type: 3}
-      propertyPath: initialDashVelocity
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018130139546683757, guid: 19dae7578bc56674dae55670ec5dfbf5,
-        type: 3}
-      propertyPath: groundCheckSphereRadius
-      value: 0.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
