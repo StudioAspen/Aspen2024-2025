@@ -19,7 +19,8 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float jumpHeight = 3f;
     [SerializeField] private float gravityForce = -9.81f;
-    private float yVelocity;
+    [SerializeField] private float flatAcceleration = 2f;
+    private Vector3 velocity;
     private float inAirTimer = 0;
 
     #region Flags
@@ -29,6 +30,7 @@ public class Player : MonoBehaviour
     [HideInInspector] public bool IsSprinting;
     [HideInInspector] public bool IsDashing;
     [HideInInspector] public bool IsAttacking;
+    [HideInInspector] public bool CanAttack = true;
     [HideInInspector] public bool IsJumping;
     #endregion
 
@@ -99,6 +101,13 @@ public class Player : MonoBehaviour
             return;
         }
 
+/*        if (!IsGrounded)
+        {
+            currentMovementSpeed = 0f;
+            IsMoving = false;
+            return;
+        }*/
+
         IsMoving = movementDirection.magnitude > 0;
 
         if (IsMoving)
@@ -120,10 +129,14 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            yVelocity = 0f;
-            yVelocity += Mathf.Sqrt(jumpHeight * -2f * gravityForce);
+/*            velocity.x = currentMovementSpeed * transform.forward.x;
+            velocity.z = currentMovementSpeed * transform.forward.z;*/
+
+            velocity.y = 0f;
+            velocity.y += Mathf.Sqrt(jumpHeight * -2f * gravityForce);
 
             IsJumping = true;
+            IsGrounded = false;
             animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
         }
     }
@@ -134,11 +147,14 @@ public class Player : MonoBehaviour
         {
             inAirTimer = 0f;
             IsJumping = false;
+
+            velocity.x = 0f;
+            velocity.z = 0f;
         }
 
-        if(IsGrounded && yVelocity < 0f)
+        if(IsGrounded && velocity.y < 0f)
         {
-            yVelocity = 0f;
+            velocity.y = 0f;
         }
 
         if(!IsGrounded && !IsJumping)
@@ -146,14 +162,27 @@ public class Player : MonoBehaviour
             inAirTimer += Time.deltaTime;
         }
 
-        yVelocity += gravityForce * Time.deltaTime;
+/*        if (!IsGrounded)
+        {
+            if(movementDirection.magnitude > 0)
+            {
+                float angle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+                Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
+                Vector3 targetDirection = targetRotation * Vector3.forward;
+                targetDirection.Normalize();
 
-        characterController.Move(yVelocity * Time.deltaTime * Vector3.up);
-    }
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-    public void ApplyJumpingVelocity()
-    {
-        //yVelocity = Mathf.Sqrt(jumpHeight * -2f * gravityForce);
+                velocity.x += flatAcceleration * targetDirection.x * Time.deltaTime;
+                velocity.z += flatAcceleration * targetDirection.z * Time.deltaTime;
+
+                Debug.Log($"{new Vector2(velocity.x, velocity.z).magnitude}");
+            }
+        }*/
+
+        velocity.y += gravityForce * Time.deltaTime;
+
+        characterController.Move(Time.deltaTime * velocity);
     }
 
     private void CheckGrounded()
@@ -209,6 +238,7 @@ public class Player : MonoBehaviour
 
     private void HandleSwingInput()
     {
+        if (!CanAttack) return;
         if (!IsGrounded) return;
         if (IsAttacking) return;
 
@@ -369,7 +399,7 @@ public class Player : MonoBehaviour
         float currDashVelocity = initialDashVelocity;
         for(float t = 0; t < dashDuration; t += Time.deltaTime)
         {
-            currDashVelocity = initialDashVelocity * (1 - Mathf.Sqrt(1-Mathf.Pow(t/dashDuration - 1, 2)));
+            currDashVelocity = (initialDashVelocity - sprintSpeed) * (1 - Mathf.Sqrt(1-Mathf.Pow(t/dashDuration - 1, 2))) + sprintSpeed;
 
             float angle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
             Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
