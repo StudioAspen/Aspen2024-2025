@@ -19,7 +19,6 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float jumpHeight = 3f;
     [SerializeField] private float gravityForce = -9.81f;
-    [SerializeField] private float flatAcceleration = 2f;
     private Vector3 velocity;
     private float inAirTimer = 0;
 
@@ -101,13 +100,6 @@ public class Player : MonoBehaviour
             return;
         }
 
-/*        if (!IsGrounded)
-        {
-            currentMovementSpeed = 0f;
-            IsMoving = false;
-            return;
-        }*/
-
         IsMoving = movementDirection.magnitude > 0;
 
         if (IsMoving)
@@ -129,9 +121,6 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-/*            velocity.x = currentMovementSpeed * transform.forward.x;
-            velocity.z = currentMovementSpeed * transform.forward.z;*/
-
             velocity.y = 0f;
             velocity.y += Mathf.Sqrt(jumpHeight * -2f * gravityForce);
 
@@ -161,24 +150,6 @@ public class Player : MonoBehaviour
         {
             inAirTimer += Time.deltaTime;
         }
-
-/*        if (!IsGrounded)
-        {
-            if(movementDirection.magnitude > 0)
-            {
-                float angle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
-                Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
-                Vector3 targetDirection = targetRotation * Vector3.forward;
-                targetDirection.Normalize();
-
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
-                velocity.x += flatAcceleration * targetDirection.x * Time.deltaTime;
-                velocity.z += flatAcceleration * targetDirection.z * Time.deltaTime;
-
-                Debug.Log($"{new Vector2(velocity.x, velocity.z).magnitude}");
-            }
-        }*/
 
         velocity.y += gravityForce * Time.deltaTime;
 
@@ -299,6 +270,17 @@ public class Player : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
+                if (!CanAttack)
+                {
+                    StopCurrentSwingCoroutine();
+                    yield break;
+                }
+                if (!IsGrounded)
+                {
+                    StopCurrentSwingCoroutine();
+                    yield break;
+                }
+
                 comboIndex++;
 
                 StopCoroutine(currentSwingingCoroutine);
@@ -416,7 +398,7 @@ public class Player : MonoBehaviour
         IsSprinting = true;
         currentMovementSpeed = sprintSpeed;
 
-        animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
+        if(IsGrounded) animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
 
         dashDelayTimer = 0f;
 
