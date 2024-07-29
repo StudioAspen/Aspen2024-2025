@@ -69,7 +69,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        HandleFlatMovement();
+        HandleGroundedMovement();
         HandleSpeed();
         HandleSprint();
         HandleDash();
@@ -81,12 +81,11 @@ public class Player : MonoBehaviour
         HandleAnimations();
 
         HandleSwingInput();
-        HandleAttacking();
 
         Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
     }
 
-    private void HandleFlatMovement()
+    private void HandleGroundedMovement()
     {
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
@@ -166,6 +165,12 @@ public class Player : MonoBehaviour
         animator.SetFloat("MovementSpeed", currentMovementSpeed/sprintSpeed);
         animator.SetFloat("InAirTimer", inAirTimer);
         animator.SetBool("IsGrounded", IsGrounded);
+
+        if (IsAttacking && !CanMove)
+        {
+            Quaternion targetRotation = Quaternion.Euler(0, instantaneousAttackAngle, 0);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 2f * rotationSpeed * Time.deltaTime);
+        }
     }
 
     private void HandleSprint()
@@ -216,15 +221,6 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             SwingMeleeWeapon(weapon.Combo.WeaponSwings[comboIndex].AnimationClipName);
-        }
-    }
-
-    private void HandleAttacking()
-    {
-        if (IsAttacking && !CanMove)
-        {
-            Quaternion targetRotation = Quaternion.Euler(0, instantaneousAttackAngle, 0);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 2f * rotationSpeed * Time.deltaTime);
         }
     }
 
