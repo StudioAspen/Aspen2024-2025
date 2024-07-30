@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6930ec783baaa4d980dc4fde685503, type: 3}
   m_Name: 3Slashes
   m_EditorClassIdentifier: 
-  <WeaponSwings>k__BackingField:
+  <PrimaryCombo>k__BackingField:
   - <AnimationClipName>k__BackingField: OneHand_Up_Attack_1
   - <AnimationClipName>k__BackingField: OneHand_Up_Attack_2
   - <AnimationClipName>k__BackingField: OneHand_Up_Attack_3
+  <JumpAttack>k__BackingField:
+    <AnimationClipName>k__BackingField: OverhandSlam

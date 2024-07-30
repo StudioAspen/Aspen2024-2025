@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class WeaponSwing
+public class MeleeSwing
 {
     [field: SerializeField] public string AnimationClipName { get; private set; }
 }

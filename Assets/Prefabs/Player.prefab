@@ -1118,15 +1118,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentMovementSpeed: 0
-  walkSpeed: 1.5
-  sprintSpeed: 3
+  walkSpeed: 3
+  sprintSpeed: 6
   rotationSpeed: 10
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
   jumpHeight: 1.5
   gravityForce: -20
-  flatAcceleration: 4
   IsGrounded: 0
   CanMove: 1
   IsMoving: 0
@@ -1188,9 +1187,9 @@ CharacterController:
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.25
-  m_SlopeLimit: 90
+  m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.08
+  m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
 --- !u!54 &5104155415629920173

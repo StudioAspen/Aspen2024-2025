@@ -116,7 +116,6 @@ public class Player : MonoBehaviour
     {
         if (!IsGrounded) return;
         if (IsJumping) return;
-        if (IsAttacking) return;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -145,7 +144,7 @@ public class Player : MonoBehaviour
             velocity.y = 0f;
         }
 
-        if(!IsGrounded && !IsJumping)
+        if(!IsGrounded)
         {
             inAirTimer += Time.deltaTime;
         }
@@ -214,13 +213,12 @@ public class Player : MonoBehaviour
 
     private void HandleSwingInput()
     {
-        if (!CanAttack) return;
-        if (!IsGrounded) return;
-        if (IsAttacking) return;
-
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            SwingMeleeWeapon(weapon.Combo.WeaponSwings[comboIndex].AnimationClipName);
+            if (!CanAttack) return;
+            if (IsAttacking) return;
+
+            SwingMeleeWeapon(weapon.Combo.PrimaryCombo[comboIndex].AnimationClipName);
         }
     }
 
@@ -232,13 +230,18 @@ public class Player : MonoBehaviour
         currentSwingingCoroutine = StartCoroutine(SwingCoroutine(animationName, maxComboDelay));
     }
 
+    private void PerformJumpAttack(string animationName)
+    {
+        if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
+        currentSwingingCoroutine = StartCoroutine(JumpAttackCoroutine(animationName, 0.2f));
+    }
+
     private IEnumerator SwingCoroutine(string animationName, float animationFadeSpeed)
     {
         weapon.ClearEnemiesHitList();
 
         instantaneousAttackAngle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
 
-        CanMove = false;
         IsAttacking = true;
 
         animator.CrossFadeInFixedTime(animationName, 0.05f);
@@ -248,7 +251,7 @@ public class Player : MonoBehaviour
 
         animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed);
 
-        if (comboIndex == weapon.Combo.WeaponSwings.Count - 1)
+        if (comboIndex == weapon.Combo.PrimaryCombo.Count - 1)
         {
             comboIndex = 0;
 
@@ -259,8 +262,6 @@ public class Player : MonoBehaviour
 
             yield break;
         }
-
-        CanMove = true;
 
         for(float t = 0; t < maxComboDelay; t += Time.unscaledDeltaTime)
         {
@@ -280,7 +281,7 @@ public class Player : MonoBehaviour
                 comboIndex++;
 
                 StopCoroutine(currentSwingingCoroutine);
-                currentSwingingCoroutine = StartCoroutine(SwingCoroutine(weapon.Combo.WeaponSwings[comboIndex].AnimationClipName, maxComboDelay));
+                currentSwingingCoroutine = StartCoroutine(SwingCoroutine(weapon.Combo.PrimaryCombo[comboIndex].AnimationClipName, maxComboDelay));
                 yield break;
             }
 
@@ -290,6 +291,24 @@ public class Player : MonoBehaviour
         IsAttacking = false;
 
         comboIndex = 0;
+    }
+
+    private IEnumerator JumpAttackCoroutine(string animationName, float animationFadeSpeed)
+    {
+        weapon.ClearEnemiesHitList();
+
+        instantaneousAttackAngle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+
+        CanMove = false;
+        IsAttacking = true;
+
+        animator.CrossFadeInFixedTime(animationName, animationFadeSpeed);
+
+        float animationDuration = GetAnimationDuration(animationName);
+        yield return new WaitForSeconds(animationDuration);
+
+        CanMove = true;
+        IsAttacking = false;
     }
 
     private void StopCurrentSwingCoroutine()
@@ -339,8 +358,6 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            if (!IsGrounded) return;
-
             IsSprinting = false;
 
             if (shiftKeyPressTimer < shiftKeyPressDurationThresholdForSprint)

@@ -5,5 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/Combo", order = 1)]
 public class Combo : ScriptableObject
 {
-    [field: SerializeField] public List<WeaponSwing> WeaponSwings { get; private set; } = new List<WeaponSwing>();
+    [field: SerializeField] public List<MeleeSwing> PrimaryCombo { get; private set; } = new List<MeleeSwing>();
+    [field: SerializeField] public MeleeSwing JumpAttack { get; private set; }
 }
