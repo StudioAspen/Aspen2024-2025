@@ -10,23 +10,21 @@ public class Player : MonoBehaviour
 
     [Header("Player Speed")]
     [SerializeField] private float currentMovementSpeed;
-    [SerializeField] private float walkSpeed = 3f;
-    [SerializeField] private float sprintSpeed = 5f;
+    [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float rotationSpeed = 5f;
     private Vector3 movementDirection;
 
     [Header("Player Gravity")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float jumpHeight = 3f;
-    [SerializeField] private float gravityForce = -9.81f;
-    private Vector3 velocity;
+    [SerializeField] private Vector3 acceleration = new Vector3(0f, -9.81f, 0f);
+    [SerializeField] private Vector3 velocity;
     private float inAirTimer = 0;
 
     #region Flags
     [HideInInspector] public bool IsGrounded;
     [HideInInspector] public bool CanMove = true;
     [HideInInspector] public bool IsMoving;
-    [HideInInspector] public bool IsSprinting;
     [HideInInspector] public bool IsDashing;
     [HideInInspector] public bool IsAttacking;
     [HideInInspector] public bool CanAttack = true;
@@ -94,22 +92,35 @@ public class Player : MonoBehaviour
 
         if (!CanMove)
         {
-            currentMovementSpeed = 0f;
-            IsMoving = false;
             return;
         }
 
+        Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
+
         IsMoving = movementDirection.magnitude > 0;
+
+        Vector3 targetDirection = Vector3.zero;
 
         if (IsMoving)
         {
-            float angle = Mathf.Atan2(x, z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+            float angle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
             Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
-            Vector3 targetDirection = targetRotation * Vector3.forward;
+            targetDirection = targetRotation * Vector3.forward;
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            characterController.Move(currentMovementSpeed * targetDirection * Time.deltaTime);
+
+            velocity.x = Mathf.Lerp(velocity.x, maxSpeed * targetDirection.x, acceleration.x * Time.deltaTime);
+            velocity.z = Mathf.Lerp(velocity.z, maxSpeed * targetDirection.z, acceleration.z * Time.deltaTime);
         }
+        else
+        {
+            velocity.x = Mathf.Lerp(velocity.x, 0f, acceleration.x * Time.deltaTime);
+            velocity.z = Mathf.Lerp(velocity.z, 0f, acceleration.z * Time.deltaTime);
+        }
+
+        groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, maxSpeed);
+        currentMovementSpeed = groundedVelocity.magnitude;
+        characterController.Move(groundedVelocity * Time.deltaTime);
     }
 
     private void HandleJumpInput()
@@ -120,7 +131,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             velocity.y = 0f;
-            velocity.y += Mathf.Sqrt(jumpHeight * -2f * gravityForce);
+            velocity.y += Mathf.Sqrt(jumpHeight * -2f * acceleration.y);
 
             IsJumping = true;
             IsGrounded = false;
@@ -134,9 +145,6 @@ public class Player : MonoBehaviour
         {
             inAirTimer = 0f;
             IsJumping = false;
-
-            velocity.x = 0f;
-            velocity.z = 0f;
         }
 
         if(IsGrounded && velocity.y < 0f)
@@ -149,9 +157,9 @@ public class Player : MonoBehaviour
             inAirTimer += Time.deltaTime;
         }
 
-        velocity.y += gravityForce * Time.deltaTime;
+        velocity.y += acceleration.y * Time.deltaTime;
 
-        characterController.Move(Time.deltaTime * velocity);
+        characterController.Move(Time.deltaTime * velocity.y * Vector3.up);
     }
 
     private void CheckGrounded()
@@ -161,7 +169,7 @@ public class Player : MonoBehaviour
 
     private void HandleAnimations()
     {
-        animator.SetFloat("MovementSpeed", currentMovementSpeed/sprintSpeed);
+        animator.SetFloat("MovementSpeed", currentMovementSpeed/maxSpeed);
         animator.SetFloat("InAirTimer", inAirTimer);
         animator.SetBool("IsGrounded", IsGrounded);
 
@@ -179,36 +187,12 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift))
         {
             shiftKeyPressTimer += Time.deltaTime;
-            if (!IsMoving)
-            {
-                IsSprinting = false;
-                return;
-            }
-            IsSprinting = true;
         }
     }
 
     private void HandleSpeed()
     {
-        if (!IsMoving)
-        {
-            IsSprinting = false;
-        }
-
-        if (IsSprinting)
-        {
-            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, sprintSpeed, 10f * Time.deltaTime);
-        }
-
-        if(IsMoving && !IsSprinting)
-        {
-            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, walkSpeed, 10f * Time.deltaTime);
-        }
-
-        if (!IsMoving)
-        {
-            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, 0f, 10f * Time.deltaTime);
-        }
+        
     }
 
     private void HandleSwingInput()
@@ -358,8 +342,6 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            IsSprinting = false;
-
             if (shiftKeyPressTimer < shiftKeyPressDurationThresholdForSprint)
             {
                 Dash();
@@ -381,7 +363,6 @@ public class Player : MonoBehaviour
         if (dashCoroutine != null) StopCoroutine(dashCoroutine);
 
         IsDashing = false;
-        IsSprinting = false;
         CanMove = true;
     }
 
@@ -394,7 +375,7 @@ public class Player : MonoBehaviour
         float currDashVelocity = initialDashVelocity;
         for(float t = 0; t < dashDuration; t += Time.deltaTime)
         {
-            currDashVelocity = (initialDashVelocity - sprintSpeed) * (1 - Mathf.Sqrt(1-Mathf.Pow(t/dashDuration - 1, 2))) + sprintSpeed;
+            currDashVelocity = (initialDashVelocity - maxSpeed) * (1 - Mathf.Sqrt(1-Mathf.Pow(t/dashDuration - 1, 2))) + maxSpeed;
 
             float angle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
             Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
@@ -402,30 +383,19 @@ public class Player : MonoBehaviour
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-            characterController.Move(currDashVelocity * targetDirection * Time.deltaTime);
+            velocity.x = currDashVelocity * targetDirection.x;
+            velocity.z = currDashVelocity * targetDirection.z;
+
+            characterController.Move(new Vector3(velocity.x, 0f, velocity.z) * Time.deltaTime);
             yield return null;
         }
 
         IsDashing = false;
         CanMove = true;
-        IsSprinting = true;
-        currentMovementSpeed = sprintSpeed;
 
         if(IsGrounded) animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
 
         dashDelayTimer = 0f;
-
-        for(float t = 0; t < sprintDurationAfterDash; t += Time.deltaTime)
-        {
-            if (movementDirection.magnitude == 0)
-            {
-                IsSprinting = false;
-                yield break;
-            }
-            yield return null;
-        }
-
-        IsSprinting = false;
     }
 
     private void IgnoreMyOwnColliders()
