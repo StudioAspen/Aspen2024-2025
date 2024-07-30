@@ -1118,25 +1118,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentMovementSpeed: 0
-  walkSpeed: 2
-  sprintSpeed: 4
+  maxSpeed: 5
   rotationSpeed: 10
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  jumpHeight: 1.5
+  jumpHeight: 2
+  maxJumpCount: 2
   acceleration: {x: 2, y: -9.81, z: 2}
   velocity: {x: 0, y: 0, z: 0}
   IsGrounded: 0
   CanMove: 1
   IsMoving: 0
-  IsSprinting: 0
   IsDashing: 0
   IsAttacking: 0
   CanAttack: 1
   IsJumping: 0
   weapon: {fileID: 196489911609782724}
   maxComboDelay: 0.5
+  attackAnimationSpeedMultiplier: 3
   dashDuration: 0.5
   initialDashVelocity: 25
   dashDelayDuration: 0.5
@@ -1188,7 +1188,7 @@ CharacterController:
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.25
-  m_SlopeLimit: 45
+  m_SlopeLimit: 30
   m_StepOffset: 0.3
   m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001

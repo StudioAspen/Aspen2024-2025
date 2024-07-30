@@ -5104,7 +5104,7 @@ MonoBehaviour:
   colliderStartTransform: {fileID: 2382167382557116116}
   colliderEndTransform: {fileID: 2628417811129990337}
   Combo: {fileID: 11400000, guid: 5a881eca4a2645847936f07fe2899b01, type: 2}
-  impactFramesDuration: 0.3
+  impactFramesDuration: 0.1
   trailObject: {fileID: 6918874709248315491}
 --- !u!136 &1259378818332639156
 CapsuleCollider:

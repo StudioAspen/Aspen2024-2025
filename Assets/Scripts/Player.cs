@@ -17,9 +17,11 @@ public class Player : MonoBehaviour
     [Header("Player Gravity")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float jumpHeight = 3f;
+    [SerializeField] private int maxJumpCount = 2;
     [SerializeField] private Vector3 acceleration = new Vector3(0f, -9.81f, 0f);
     [SerializeField] private Vector3 velocity;
     private float inAirTimer = 0;
+    private int currentJumpCount;
 
     #region Flags
     [HideInInspector] public bool IsGrounded;
@@ -35,6 +37,7 @@ public class Player : MonoBehaviour
     [SerializeField] private WeaponHandler weapon;
     private float instantaneousAttackAngle;
     [SerializeField] private float maxComboDelay = 0.5f;
+    [SerializeField] private float attackAnimationSpeedMultiplier = 3f;
     private int comboIndex;
     private Coroutine currentSwingingCoroutine;
 
@@ -68,9 +71,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         HandleGroundedMovement();
-        HandleSpeed();
-        HandleSprint();
-        HandleDash();
+        HandleDashInput();
 
         CheckGrounded();
         HandleJumpInput();
@@ -125,8 +126,7 @@ public class Player : MonoBehaviour
 
     private void HandleJumpInput()
     {
-        if (!IsGrounded) return;
-        if (IsJumping) return;
+        if (!IsGrounded && currentJumpCount == maxJumpCount) return;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -136,6 +136,8 @@ public class Player : MonoBehaviour
             IsJumping = true;
             IsGrounded = false;
             animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
+
+            currentJumpCount++;
         }
     }
 
@@ -145,6 +147,7 @@ public class Player : MonoBehaviour
         {
             inAirTimer = 0f;
             IsJumping = false;
+            currentJumpCount = 0;
         }
 
         if(IsGrounded && velocity.y < 0f)
@@ -171,6 +174,7 @@ public class Player : MonoBehaviour
     {
         animator.SetFloat("MovementSpeed", currentMovementSpeed/maxSpeed);
         animator.SetFloat("InAirTimer", inAirTimer);
+        animator.SetFloat("AttackAnimationSpeedMultiplier", attackAnimationSpeedMultiplier);
         animator.SetBool("IsGrounded", IsGrounded);
 
         if (IsAttacking && !CanMove)
@@ -180,19 +184,16 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void HandleSprint()
+    private void HandleDashInput()
     {
-        if (!IsGrounded) return;
+        dashDelayTimer += Time.deltaTime;
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (dashDelayTimer < dashDelayDuration) return;
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            shiftKeyPressTimer += Time.deltaTime;
+            Dash();
         }
-    }
-
-    private void HandleSpeed()
-    {
-        
     }
 
     private void HandleSwingInput()
@@ -230,7 +231,7 @@ public class Player : MonoBehaviour
 
         animator.CrossFadeInFixedTime(animationName, 0.05f);
 
-        float animationDuration = GetAnimationDuration(animationName);
+        float animationDuration = GetAnimationDuration(animationName)/attackAnimationSpeedMultiplier;
         yield return new WaitForSeconds(animationDuration);
 
         animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed);
@@ -333,29 +334,15 @@ public class Player : MonoBehaviour
         return 0f;
     }
 
-    private void HandleDash()
-    {
-        dashDelayTimer += Time.deltaTime;
-
-        if (dashDelayTimer < dashDelayDuration) return;
-        if (IsDashing) return;
-
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            if (shiftKeyPressTimer < shiftKeyPressDurationThresholdForSprint)
-            {
-                Dash();
-            }
-            shiftKeyPressTimer = 0f;
-        }
-    }
-
     private void Dash()
     {
+        if (IsDashing) return;
+
         if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
 
         if (dashCoroutine != null) StopDashing();
         dashCoroutine = StartCoroutine(DashCoroutine());
+        dashDelayTimer = 0f;
     }
 
     private void StopDashing()
@@ -370,7 +357,8 @@ public class Player : MonoBehaviour
     {
         IsDashing = true;
         CanMove = false;
-        animator.CrossFadeInFixedTime("Dash", 0.1f);
+
+        if(IsGrounded) animator.CrossFadeInFixedTime("Dash", 0.1f);
 
         float currDashVelocity = initialDashVelocity;
         for(float t = 0; t < dashDuration; t += Time.deltaTime)
