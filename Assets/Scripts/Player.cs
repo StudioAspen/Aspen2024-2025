@@ -19,6 +19,8 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float jumpHeight = 3f;
     [SerializeField] private float gravityForce = -9.81f;
+    [SerializeField] private int maxJumpCount = 2;
+    private int currentJumpCount;
     private Vector3 velocity;
     private float inAirTimer = 0;
 
@@ -114,17 +116,18 @@ public class Player : MonoBehaviour
 
     private void HandleJumpInput()
     {
-        if (!IsGrounded) return;
-        if (IsJumping) return;
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            if (!IsGrounded && currentJumpCount == maxJumpCount) return;
+
             velocity.y = 0f;
             velocity.y += Mathf.Sqrt(jumpHeight * -2f * gravityForce);
 
             IsJumping = true;
             IsGrounded = false;
-            animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
+
+            currentJumpCount++;
+            //animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
         }
     }
 
@@ -137,6 +140,8 @@ public class Player : MonoBehaviour
 
             velocity.x = 0f;
             velocity.z = 0f;
+
+            currentJumpCount = 0;
         }
 
         if(IsGrounded && velocity.y < 0f)
@@ -174,8 +179,6 @@ public class Player : MonoBehaviour
 
     private void HandleSprint()
     {
-        if (!IsGrounded) return;
-
         if (Input.GetKey(KeyCode.LeftShift))
         {
             shiftKeyPressTimer += Time.deltaTime;
@@ -389,7 +392,7 @@ public class Player : MonoBehaviour
     {
         IsDashing = true;
         CanMove = false;
-        animator.CrossFadeInFixedTime("Dash", 0.1f);
+        //animator.CrossFadeInFixedTime("Dash", 0.1f);
 
         float currDashVelocity = initialDashVelocity;
         for(float t = 0; t < dashDuration; t += Time.deltaTime)

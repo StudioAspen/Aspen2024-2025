@@ -6,5 +6,4 @@ using UnityEngine;
 public class Combo : ScriptableObject
 {
     [field: SerializeField] public List<MeleeSwing> PrimaryCombo { get; private set; } = new List<MeleeSwing>();
-    [field: SerializeField] public MeleeSwing JumpAttack { get; private set; }
 }

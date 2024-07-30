@@ -13,8 +13,6 @@ MonoBehaviour:
   m_Name: 3Slashes
   m_EditorClassIdentifier: 
   <PrimaryCombo>k__BackingField:
-  - <AnimationClipName>k__BackingField: OneHand_Up_Attack_1
-  - <AnimationClipName>k__BackingField: OneHand_Up_Attack_2
-  - <AnimationClipName>k__BackingField: OneHand_Up_Attack_3
-  <JumpAttack>k__BackingField:
-    <AnimationClipName>k__BackingField: OverhandSlam
+  - <AnimationClipName>k__BackingField: Swing1
+  - <AnimationClipName>k__BackingField: Swing2
+  - <AnimationClipName>k__BackingField: Swing3
