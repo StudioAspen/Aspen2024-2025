@@ -1125,7 +1125,7 @@ MonoBehaviour:
     m_Bits: 256
   jumpHeight: 2
   maxJumpCount: 2
-  acceleration: {x: 2, y: -9.81, z: 2}
+  acceleration: {x: 4, y: -20, z: 4}
   velocity: {x: 0, y: 0, z: 0}
   IsGrounded: 0
   CanMove: 1

@@ -257,11 +257,6 @@ public class Player : MonoBehaviour
                     StopCurrentSwingCoroutine();
                     yield break;
                 }
-                if (!IsGrounded)
-                {
-                    StopCurrentSwingCoroutine();
-                    yield break;
-                }
 
                 comboIndex++;
 
