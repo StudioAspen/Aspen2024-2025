@@ -23,8 +23,11 @@ public class Player : MonoBehaviour
     [SerializeField] private int maxJumpCount = 2;
     [SerializeField] private Vector3 acceleration = new Vector3(4f, -20f, 4f);
     [SerializeField] private Vector3 velocity;
+    [SerializeField] private float groundedYVelocity = 10f;
+    [SerializeField] private float fallingStartingYVelocity = 0f;
     private float inAirTimer = 0;
     private int currentJumpCount;
+    private bool fallVelocityApplied;
 
     #region Flags
     [HideInInspector] public bool IsGrounded;
@@ -48,8 +51,6 @@ public class Player : MonoBehaviour
     [SerializeField] private float dashDuration = 1f;
     [SerializeField] private float initialDashVelocity = 5f;
     [SerializeField] private float dashDelayDuration = 1f;
-    [SerializeField] private float sprintDurationAfterDash = 2f;
-    [SerializeField] private float shiftKeyPressDurationThresholdForSprint = 0.25f;
     [SerializeField] private GameObject dashTrailObject;
     private float shiftKeyPressTimer;
     private float dashDelayTimer = Mathf.Infinity;
@@ -82,11 +83,17 @@ public class Player : MonoBehaviour
 
         HandleGroundedMovement();
         HandleGravity();
-        HandleDashing();
+
+        HandleWeaponCollisions();
 
         HandleAnimations();
 
         Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawLine(transform.position, transform.position + currentMovementSpeed * targetForwardDirection);
     }
 
     private void CheckGrounded()
@@ -104,15 +111,17 @@ public class Player : MonoBehaviour
 
     private void HandleJumpInput()
     {
-        if (!IsGrounded && currentJumpCount == maxJumpCount) return;
+        if (!IsGrounded && currentJumpCount >= maxJumpCount) return;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            velocity.y = 0f;
-            velocity.y += Mathf.Sqrt(jumpHeight * -2f * acceleration.y);
+            StopCurrentSwingCoroutine();
 
             IsJumping = true;
             IsGrounded = false;
+
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * acceleration.y);
+
             animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
 
             currentJumpCount++;
@@ -182,21 +191,24 @@ public class Player : MonoBehaviour
         if (IsGrounded)
         {
             inAirTimer = 0f;
-            IsJumping = false;
-            currentJumpCount = 0;
-        }
-
-        if(IsGrounded && velocity.y < 0f)
-        {
-            velocity.y = 0f;
+            if(velocity.y < groundedYVelocity)
+            {
+                IsJumping = false;
+                currentJumpCount = 0;
+                fallVelocityApplied = false;
+            }
         }
 
         if(!IsGrounded)
         {
+            if (!IsJumping && !fallVelocityApplied)
+            {
+                fallVelocityApplied = true;
+                velocity.y = fallingStartingYVelocity;
+            }
             inAirTimer += Time.deltaTime;
+            velocity.y += acceleration.y * Time.deltaTime;
         }
-
-        velocity.y += acceleration.y * Time.deltaTime;
 
         characterController.Move(Time.deltaTime * velocity.y * Vector3.up);
     }
@@ -219,8 +231,6 @@ public class Player : MonoBehaviour
 
     private void SwingMeleeWeapon(string animationName)
     {
-        if (dashCoroutine != null) StopDashing();
-
         if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
         currentSwingingCoroutine = StartCoroutine(SwingCoroutine(animationName, maxComboDelay));
     }
@@ -336,11 +346,11 @@ public class Player : MonoBehaviour
         CanMove = true;
     }
 
-    private void HandleDashing()
+    private void HandleWeaponCollisions()
     {
-        if (IsDashing)
+        if (!IsAttacking)
         {
-            weapon.DisableTriggers();
+            DisableWeaponTriggers();
         }
     }
 
