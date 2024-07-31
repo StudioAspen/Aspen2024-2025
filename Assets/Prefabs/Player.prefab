@@ -1128,6 +1128,8 @@ MonoBehaviour:
   maxJumpCount: 2
   acceleration: {x: 4, y: -20, z: 4}
   velocity: {x: 0, y: 0, z: 0}
+  groundedYVelocity: -5
+  fallingStartingYVelocity: 0
   IsGrounded: 0
   CanMove: 1
   IsMoving: 0
@@ -1141,8 +1143,6 @@ MonoBehaviour:
   dashDuration: 0.5
   initialDashVelocity: 25
   dashDelayDuration: 0.5
-  sprintDurationAfterDash: 2
-  shiftKeyPressDurationThresholdForSprint: 0.25
   dashTrailObject: {fileID: 3883737560833677611}
   CameraLocked: 1
 --- !u!95 &2171180168782530629

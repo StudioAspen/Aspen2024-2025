@@ -19,11 +19,11 @@ public class Player : MonoBehaviour
 
     [Header("Player Gravity")]
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float jumpHeight = 3f;
+    [SerializeField] private float jumpHeight = 2f;
     [SerializeField] private int maxJumpCount = 2;
     [SerializeField] private Vector3 acceleration = new Vector3(4f, -20f, 4f);
     [SerializeField] private Vector3 velocity;
-    [SerializeField] private float groundedYVelocity = 10f;
+    [SerializeField] private float groundedYVelocity = -5f;
     [SerializeField] private float fallingStartingYVelocity = 0f;
     private float inAirTimer = 0;
     private int currentJumpCount;
@@ -48,9 +48,9 @@ public class Player : MonoBehaviour
     private Coroutine currentSwingingCoroutine;
 
     [Header("Dash")]
-    [SerializeField] private float dashDuration = 1f;
-    [SerializeField] private float initialDashVelocity = 5f;
-    [SerializeField] private float dashDelayDuration = 1f;
+    [SerializeField] private float dashDuration = 0.5f;
+    [SerializeField] private float initialDashVelocity = 25f;
+    [SerializeField] private float dashDelayDuration = 0.5f;
     [SerializeField] private GameObject dashTrailObject;
     private float shiftKeyPressTimer;
     private float dashDelayTimer = Mathf.Infinity;
