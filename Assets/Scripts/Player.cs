@@ -8,17 +8,20 @@ public class Player : MonoBehaviour
     private Animator animator;
     private CharacterController characterController;
 
-    [Header("Player Speed")]
+    [Header("Player Grounded Movement")]
     [SerializeField] private float currentMovementSpeed;
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float rotationSpeed = 5f;
     private Vector3 movementDirection;
+    private float forwardAngleBasedOnCamera;
+    private Quaternion targetForwardRotation;
+    private Vector3 targetForwardDirection;
 
     [Header("Player Gravity")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float jumpHeight = 3f;
     [SerializeField] private int maxJumpCount = 2;
-    [SerializeField] private Vector3 acceleration = new Vector3(0f, -9.81f, 0f);
+    [SerializeField] private Vector3 acceleration = new Vector3(4f, -20f, 4f);
     [SerializeField] private Vector3 velocity;
     private float inAirTimer = 0;
     private int currentJumpCount;
@@ -47,6 +50,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float dashDelayDuration = 1f;
     [SerializeField] private float sprintDurationAfterDash = 2f;
     [SerializeField] private float shiftKeyPressDurationThresholdForSprint = 0.25f;
+    [SerializeField] private GameObject dashTrailObject;
     private float shiftKeyPressTimer;
     private float dashDelayTimer = Mathf.Infinity;
     private Coroutine dashCoroutine;
@@ -58,70 +62,44 @@ public class Player : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
-
-        QualitySettings.vSyncCount = 0;  // VSync must be disabled
-        Application.targetFrameRate = 0;
     }
 
     void Start()
     {
         IgnoreMyOwnColliders();
+
+        dashTrailObject.SetActive(false);
     }
 
     void Update()
     {
-        HandleGroundedMovement();
-        HandleDashInput();
-
         CheckGrounded();
+        
+        HandleGroundedMovementInput();
         HandleJumpInput();
+        HandleDashInput();
+        HandleSwingInput();
+
+        HandleGroundedMovement();
         HandleGravity();
+        HandleDashing();
 
         HandleAnimations();
-
-        HandleSwingInput();
 
         Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
     }
 
-    private void HandleGroundedMovement()
+    private void CheckGrounded()
+    {
+        IsGrounded = Physics.CheckSphere(transform.position + characterController.radius / 2 * Vector3.up, characterController.radius, groundLayer);
+    }
+
+    private void HandleGroundedMovementInput()
     {
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
         movementDirection = new Vector3(x, 0, z);
-
-        if (!CanMove)
-        {
-            return;
-        }
-
-        Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
-
-        IsMoving = movementDirection.magnitude > 0;
-
-        Vector3 targetDirection = Vector3.zero;
-
-        if (IsMoving)
-        {
-            float angle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
-            Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
-            targetDirection = targetRotation * Vector3.forward;
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
-            velocity.x = Mathf.Lerp(velocity.x, maxSpeed * targetDirection.x, acceleration.x * Time.deltaTime);
-            velocity.z = Mathf.Lerp(velocity.z, maxSpeed * targetDirection.z, acceleration.z * Time.deltaTime);
-        }
-        else
-        {
-            velocity.x = Mathf.Lerp(velocity.x, 0f, acceleration.x * Time.deltaTime);
-            velocity.z = Mathf.Lerp(velocity.z, 0f, acceleration.z * Time.deltaTime);
-        }
-
-        groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, maxSpeed);
-        currentMovementSpeed = groundedVelocity.magnitude;
-        characterController.Move(groundedVelocity * Time.deltaTime);
     }
 
     private void HandleJumpInput()
@@ -138,49 +116,6 @@ public class Player : MonoBehaviour
             animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
 
             currentJumpCount++;
-        }
-    }
-
-    private void HandleGravity()
-    {
-        if (IsGrounded)
-        {
-            inAirTimer = 0f;
-            IsJumping = false;
-            currentJumpCount = 0;
-        }
-
-        if(IsGrounded && velocity.y < 0f)
-        {
-            velocity.y = 0f;
-        }
-
-        if(!IsGrounded)
-        {
-            inAirTimer += Time.deltaTime;
-        }
-
-        velocity.y += acceleration.y * Time.deltaTime;
-
-        characterController.Move(Time.deltaTime * velocity.y * Vector3.up);
-    }
-
-    private void CheckGrounded()
-    {
-        IsGrounded = Physics.CheckSphere(transform.position + characterController.radius/2 * Vector3.up, characterController.radius, groundLayer);
-    }
-
-    private void HandleAnimations()
-    {
-        animator.SetFloat("MovementSpeed", currentMovementSpeed/maxSpeed);
-        animator.SetFloat("InAirTimer", inAirTimer);
-        animator.SetFloat("AttackAnimationSpeedMultiplier", attackAnimationSpeedMultiplier);
-        animator.SetBool("IsGrounded", IsGrounded);
-
-        if (IsAttacking && !CanMove)
-        {
-            Quaternion targetRotation = Quaternion.Euler(0, instantaneousAttackAngle, 0);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 2f * rotationSpeed * Time.deltaTime);
         }
     }
 
@@ -207,18 +142,87 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void HandleGroundedMovement()
+    {
+        if (!CanMove)
+        {
+            return;
+        }
+
+        Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
+
+        IsMoving = movementDirection.magnitude > 0;
+
+        targetForwardDirection = Vector3.zero;
+
+        if (IsMoving)
+        {
+            forwardAngleBasedOnCamera = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+            targetForwardRotation = Quaternion.Euler(0, forwardAngleBasedOnCamera, 0);
+            targetForwardDirection = targetForwardRotation * Vector3.forward;
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
+
+            velocity.x = Mathf.Lerp(velocity.x, maxSpeed * targetForwardDirection.x, acceleration.x * Time.deltaTime);
+            velocity.z = Mathf.Lerp(velocity.z, maxSpeed * targetForwardDirection.z, acceleration.z * Time.deltaTime);
+        }
+        else
+        {
+            velocity.x = Mathf.Lerp(velocity.x, 0f, acceleration.x * Time.deltaTime);
+            velocity.z = Mathf.Lerp(velocity.z, 0f, acceleration.z * Time.deltaTime);
+        }
+
+        groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, maxSpeed);
+        currentMovementSpeed = groundedVelocity.magnitude;
+        characterController.Move(groundedVelocity * Time.deltaTime);
+    }
+
+    private void HandleGravity()
+    {
+        if (IsGrounded)
+        {
+            inAirTimer = 0f;
+            IsJumping = false;
+            currentJumpCount = 0;
+        }
+
+        if(IsGrounded && velocity.y < 0f)
+        {
+            velocity.y = 0f;
+        }
+
+        if(!IsGrounded)
+        {
+            inAirTimer += Time.deltaTime;
+        }
+
+        velocity.y += acceleration.y * Time.deltaTime;
+
+        characterController.Move(Time.deltaTime * velocity.y * Vector3.up);
+    }
+
+    private void HandleAnimations()
+    {
+        animator.SetFloat("MovementSpeed", currentMovementSpeed/maxSpeed);
+        animator.SetFloat("InAirTimer", inAirTimer);
+        animator.SetFloat("AttackAnimationSpeedMultiplier", attackAnimationSpeedMultiplier);
+        animator.SetBool("IsGrounded", IsGrounded);
+
+        if (IsAttacking && !CanMove)
+        {
+            Quaternion targetRotation = Quaternion.Euler(0, instantaneousAttackAngle, 0);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 2f * rotationSpeed * Time.deltaTime);
+        }
+
+        dashTrailObject.SetActive(IsDashing);
+    }
+
     private void SwingMeleeWeapon(string animationName)
     {
         if (dashCoroutine != null) StopDashing();
 
         if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
         currentSwingingCoroutine = StartCoroutine(SwingCoroutine(animationName, maxComboDelay));
-    }
-
-    private void PerformJumpAttack(string animationName)
-    {
-        if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
-        currentSwingingCoroutine = StartCoroutine(JumpAttackCoroutine(animationName, 0.2f));
     }
 
     private IEnumerator SwingCoroutine(string animationName, float animationFadeSpeed)
@@ -231,7 +235,7 @@ public class Player : MonoBehaviour
 
         animator.CrossFadeInFixedTime(animationName, 0.05f);
 
-        float animationDuration = GetAnimationDuration(animationName)/attackAnimationSpeedMultiplier;
+        float animationDuration = GetAnimationDuration(animationName) / attackAnimationSpeedMultiplier;
         yield return new WaitForSeconds(animationDuration);
 
         animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed);
@@ -248,7 +252,7 @@ public class Player : MonoBehaviour
             yield break;
         }
 
-        for(float t = 0; t < maxComboDelay; t += Time.unscaledDeltaTime)
+        for (float t = 0; t < maxComboDelay; t += Time.unscaledDeltaTime)
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
@@ -273,24 +277,6 @@ public class Player : MonoBehaviour
         comboIndex = 0;
     }
 
-    private IEnumerator JumpAttackCoroutine(string animationName, float animationFadeSpeed)
-    {
-        weapon.ClearEnemiesHitList();
-
-        instantaneousAttackAngle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
-
-        CanMove = false;
-        IsAttacking = true;
-
-        animator.CrossFadeInFixedTime(animationName, animationFadeSpeed);
-
-        float animationDuration = GetAnimationDuration(animationName);
-        yield return new WaitForSeconds(animationDuration);
-
-        CanMove = true;
-        IsAttacking = false;
-    }
-
     private void StopCurrentSwingCoroutine()
     {
         if (currentSwingingCoroutine != null) StopCoroutine(currentSwingingCoroutine);
@@ -302,6 +288,60 @@ public class Player : MonoBehaviour
         weapon.DisableTriggers();
         CanMove = true;
         IsAttacking = false;
+    }
+
+    private void Dash()
+    {
+        if (IsDashing) return;
+
+        if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
+
+        if (dashCoroutine != null) StopDashing();
+        dashCoroutine = StartCoroutine(DashCoroutine());
+        dashDelayTimer = 0f;
+    }
+
+    private IEnumerator DashCoroutine()
+    {
+        IsDashing = true;
+        CanMove = false;
+
+        if (IsGrounded) animator.CrossFadeInFixedTime("Dash", 0.1f);
+
+        float currDashVelocity = initialDashVelocity;
+        for (float t = 0; t < dashDuration; t += Time.deltaTime)
+        {
+            currDashVelocity = (initialDashVelocity - maxSpeed) * (1 - Mathf.Sqrt(1 - Mathf.Pow(t / dashDuration - 1, 2))) + maxSpeed;
+
+            velocity.x = currDashVelocity * transform.forward.x;
+            velocity.z = currDashVelocity * transform.forward.z;
+
+            characterController.Move(new Vector3(velocity.x, 0f, velocity.z) * Time.deltaTime);
+            yield return null;
+        }
+
+        IsDashing = false;
+        CanMove = true;
+
+        if (IsGrounded) animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
+
+        dashDelayTimer = 0f;
+    }
+
+    private void StopDashing()
+    {
+        if (dashCoroutine != null) StopCoroutine(dashCoroutine);
+
+        IsDashing = false;
+        CanMove = true;
+    }
+
+    private void HandleDashing()
+    {
+        if (IsDashing)
+        {
+            weapon.DisableTriggers();
+        }
     }
 
     public void EnableWeaponTriggers()
@@ -327,58 +367,6 @@ public class Player : MonoBehaviour
         }
 
         return 0f;
-    }
-
-    private void Dash()
-    {
-        if (IsDashing) return;
-
-        if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
-
-        if (dashCoroutine != null) StopDashing();
-        dashCoroutine = StartCoroutine(DashCoroutine());
-        dashDelayTimer = 0f;
-    }
-
-    private void StopDashing()
-    {
-        if (dashCoroutine != null) StopCoroutine(dashCoroutine);
-
-        IsDashing = false;
-        CanMove = true;
-    }
-
-    private IEnumerator DashCoroutine()
-    {
-        IsDashing = true;
-        CanMove = false;
-
-        if(IsGrounded) animator.CrossFadeInFixedTime("Dash", 0.1f);
-
-        float currDashVelocity = initialDashVelocity;
-        for(float t = 0; t < dashDuration; t += Time.deltaTime)
-        {
-            currDashVelocity = (initialDashVelocity - maxSpeed) * (1 - Mathf.Sqrt(1-Mathf.Pow(t/dashDuration - 1, 2))) + maxSpeed;
-
-            float angle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
-            Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
-            Vector3 targetDirection = targetRotation * Vector3.forward;
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
-            velocity.x = currDashVelocity * targetDirection.x;
-            velocity.z = currDashVelocity * targetDirection.z;
-
-            characterController.Move(new Vector3(velocity.x, 0f, velocity.z) * Time.deltaTime);
-            yield return null;
-        }
-
-        IsDashing = false;
-        CanMove = true;
-
-        if(IsGrounded) animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
-
-        dashDelayTimer = 0f;
     }
 
     private void IgnoreMyOwnColliders()

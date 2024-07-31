@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3750713553461160237}
+  - component: {fileID: 5332358636057589605}
   - component: {fileID: 7302632207106114671}
   - component: {fileID: 4080639347902308497}
   - component: {fileID: 5588855609017333920}
-  - component: {fileID: 5332358636057589605}
   m_Layer: 5
   m_Name: HitNumbersCanvas
   m_TagString: Untagged
@@ -37,9 +37,25 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 1.8909912}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5332358636057589605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2683215560520021940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebf71cbee83e2e44cb361d41f357ebb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numberText: {fileID: 4103003527715522000}
+  minTextSize: 200
+  maxTextSize: 400
+  maxDamage: 1000
 --- !u!223 &7302632207106114671
 Canvas:
   m_ObjectHideFlags: 0
@@ -103,22 +119,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &5332358636057589605
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2683215560520021940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebf71cbee83e2e44cb361d41f357ebb5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numberText: {fileID: 4103003527715522000}
-  minTextSize: 200
-  maxTextSize: 400
-  maxDamage: 10000
 --- !u!1 &7659626685547371926
 GameObject:
   m_ObjectHideFlags: 0

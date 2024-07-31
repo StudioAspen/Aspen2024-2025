@@ -19,6 +19,9 @@ public class WeaponHandler : MonoBehaviour
     [Header("Combo")]
     public Combo Combo;
 
+    [Header("Stats")]
+    [SerializeField] private Vector2 attackDamageRange = new Vector2(100, 200);
+
     [Header("Impact Frames")]
     [SerializeField] private float impactFramesDuration = 0.3f;
     private Coroutine impactFramesCoroutine;
@@ -57,14 +60,9 @@ public class WeaponHandler : MonoBehaviour
 
         Vector3 hitPoint = other.ClosestPointOnBounds(colliderStartTransform.position);
 
-        GameObject temp = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        temp.GetComponent<Collider>().enabled = false;
-        temp.transform.localScale = 0.1f * Vector3.one;
-        temp.transform.position = hitPoint;
-        temp.GetComponent<Renderer>().material.color = Color.black;
-        Destroy(temp, 2f);
+        CreateTempHitVisual(hitPoint, Color.green, 1.5f);
 
-        enemy.TakeDamage(Random.Range(100, 10000), hitPoint);
+        enemy.TakeDamage((int)Random.Range(attackDamageRange.x, attackDamageRange.y), hitPoint);
     }
 
     private void HandleHitDetectionBetweenFrames()
@@ -119,18 +117,24 @@ public class WeaponHandler : MonoBehaviour
             Vector3 hitPoint = hit.collider.ClosestPointOnBounds(hit.point);
             if (hit.distance == 0) hitPoint = hit.collider.ClosestPointOnBounds((colliderStartTransform.position + colliderEndTransform.position) / 2);
 
-            GameObject temp = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            temp.GetComponent<Collider>().enabled = false;
-            temp.transform.localScale = 0.1f * Vector3.one;
-            temp.transform.position = hitPoint;
-            temp.GetComponent<Renderer>().material.color = Color.black;
-            Destroy(temp, 2f);
+            CreateTempHitVisual(hitPoint, Color.red, 1.5f);
 
-            enemy.TakeDamage(Random.Range(100, 10000), hitPoint);
+            enemy.TakeDamage((int)Random.Range(attackDamageRange.x, attackDamageRange.y), hitPoint);
         }
     }
 
-    public void StartImpactFrames(float timeScale)
+    private void CreateTempHitVisual(Vector3 pos, Color color, float duration)
+    {
+        GameObject temp = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        temp.name = "TempHitVisual";
+        temp.GetComponent<Collider>().enabled = false;
+        temp.transform.localScale = 0.1f * Vector3.one;
+        temp.transform.position = pos;
+        temp.GetComponent<Renderer>().material.color = color;
+        Destroy(temp, duration);
+    }
+
+    private void StartImpactFrames(float timeScale)
     {
         if (impactFramesCoroutine != null) StopCoroutine(impactFramesCoroutine);
         StartCoroutine(ImpactFramesCoroutine(timeScale, impactFramesDuration));
