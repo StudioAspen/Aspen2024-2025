@@ -39,6 +39,7 @@ public class Player : MonoBehaviour
     [HideInInspector] public bool IsAttacking;
     [HideInInspector] public bool CanAttack = true;
     [HideInInspector] public bool IsJumping;
+    [HideInInspector] public bool IsUsingSkill;
     #endregion
 
     [Header("Combat")]
@@ -113,10 +114,17 @@ public class Player : MonoBehaviour
         float z = Input.GetAxisRaw("Vertical");
 
         movementDirection = new Vector3(x, 0, z);
+
+        IsMoving = movementDirection.magnitude > 0;
+
+        forwardAngleBasedOnCamera = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+        targetForwardRotation = Quaternion.Euler(0, forwardAngleBasedOnCamera, 0);
+        targetForwardDirection = targetForwardRotation * Vector3.forward;
     }
 
     private void HandleJumpInput()
     {
+        if (!CanMove) return;
         if (!IsGrounded && currentJumpCount >= maxJumpCount) return;
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -136,6 +144,8 @@ public class Player : MonoBehaviour
 
     private void HandleSprintInput()
     {
+        if (!CanMove) return;
+
         if (Input.GetKey(KeyCode.LeftShift))
         {
             IsSprinting = true;
@@ -177,15 +187,8 @@ public class Player : MonoBehaviour
 
     private void HandleGroundedMovement()
     {
-        Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
-
-        IsMoving = movementDirection.magnitude > 0;
-
-        forwardAngleBasedOnCamera = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
-        targetForwardRotation = Quaternion.Euler(0, forwardAngleBasedOnCamera, 0);
-        targetForwardDirection = targetForwardRotation * Vector3.forward;
-
         if (!CanMove) return;
+        if (IsDashing) return;
 
         if (IsMoving)
         {
@@ -200,6 +203,7 @@ public class Player : MonoBehaviour
             velocity.z = Mathf.Lerp(velocity.z, 0f, acceleration.z * Time.deltaTime);
         }
 
+        Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
         groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, currentMovementSpeed);
 
         characterController.Move(groundedVelocity * Time.deltaTime);
@@ -354,7 +358,6 @@ public class Player : MonoBehaviour
     private IEnumerator DashCoroutine()
     {
         IsDashing = true;
-        CanMove = false;
 
         if (IsGrounded) animator.CrossFadeInFixedTime("Dash", 0.1f);
 
@@ -373,7 +376,6 @@ public class Player : MonoBehaviour
 
         IsDashing = false;
         IsSprinting = true;
-        CanMove = true;
 
         dashDelayTimer = 0f;
 
