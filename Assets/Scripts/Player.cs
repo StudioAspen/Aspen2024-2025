@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
 
     [Header("Player Grounded Movement")]
     [SerializeField] private float currentMovementSpeed;
+    [SerializeField] private float walkSpeed = 3f;
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float rotationSpeed = 5f;
     private Vector3 movementDirection;
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour
     [HideInInspector] public bool IsGrounded;
     [HideInInspector] public bool CanMove = true;
     [HideInInspector] public bool IsMoving;
+    [HideInInspector] public bool IsSprinting;
     [HideInInspector] public bool IsDashing;
     [HideInInspector] public bool IsAttacking;
     [HideInInspector] public bool CanAttack = true;
@@ -51,6 +53,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float dashDuration = 0.5f;
     [SerializeField] private float initialDashVelocity = 25f;
     [SerializeField] private float dashDelayDuration = 0.5f;
+    [SerializeField] private float sprintDurationAfterDash = 2f;
+    [SerializeField] private float shiftKeyPressMaxDurationForDash = 0.1f;
     [SerializeField] private GameObject dashTrailObject;
     private float shiftKeyPressTimer;
     private float dashDelayTimer = Mathf.Infinity;
@@ -78,11 +82,13 @@ public class Player : MonoBehaviour
         
         HandleGroundedMovementInput();
         HandleJumpInput();
+        HandleSprintInput();
         HandleDashInput();
         HandleSwingInput();
 
         HandleGroundedMovement();
         HandleGravity();
+        HandleSpeed();
 
         HandleWeaponCollisions();
 
@@ -128,15 +134,33 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void HandleSprintInput()
+    {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            IsSprinting = true;
+            shiftKeyPressTimer += Time.unscaledDeltaTime;
+        }
+    }
+
     private void HandleDashInput()
     {
-        dashDelayTimer += Time.deltaTime;
+        if(!IsDashing) dashDelayTimer += Time.deltaTime;
 
-        if (dashDelayTimer < dashDelayDuration) return;
-
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            Dash();
+            if (dashDelayTimer > dashDelayDuration)
+            {
+                if (shiftKeyPressTimer < shiftKeyPressMaxDurationForDash)
+                {
+                    Dash();
+                }
+                else
+                {
+                    IsSprinting = false;
+                }
+            }
+            shiftKeyPressTimer = 0f;
         }
     }
 
@@ -153,27 +177,22 @@ public class Player : MonoBehaviour
 
     private void HandleGroundedMovement()
     {
-        if (!CanMove)
-        {
-            return;
-        }
-
         Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
 
         IsMoving = movementDirection.magnitude > 0;
 
-        targetForwardDirection = Vector3.zero;
+        forwardAngleBasedOnCamera = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+        targetForwardRotation = Quaternion.Euler(0, forwardAngleBasedOnCamera, 0);
+        targetForwardDirection = targetForwardRotation * Vector3.forward;
+
+        if (!CanMove) return;
 
         if (IsMoving)
         {
-            forwardAngleBasedOnCamera = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
-            targetForwardRotation = Quaternion.Euler(0, forwardAngleBasedOnCamera, 0);
-            targetForwardDirection = targetForwardRotation * Vector3.forward;
-
             transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
 
-            velocity.x = Mathf.Lerp(velocity.x, maxSpeed * targetForwardDirection.x, acceleration.x * Time.deltaTime);
-            velocity.z = Mathf.Lerp(velocity.z, maxSpeed * targetForwardDirection.z, acceleration.z * Time.deltaTime);
+            velocity.x = Mathf.Lerp(velocity.x, currentMovementSpeed * targetForwardDirection.x, acceleration.x * Time.deltaTime);
+            velocity.z = Mathf.Lerp(velocity.z, currentMovementSpeed * targetForwardDirection.z, acceleration.z * Time.deltaTime);
         }
         else
         {
@@ -181,8 +200,8 @@ public class Player : MonoBehaviour
             velocity.z = Mathf.Lerp(velocity.z, 0f, acceleration.z * Time.deltaTime);
         }
 
-        groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, maxSpeed);
-        currentMovementSpeed = groundedVelocity.magnitude;
+        groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, currentMovementSpeed);
+
         characterController.Move(groundedVelocity * Time.deltaTime);
     }
 
@@ -211,6 +230,27 @@ public class Player : MonoBehaviour
         }
 
         characterController.Move(Time.deltaTime * velocity.y * Vector3.up);
+    }
+
+    private void HandleSpeed()
+    {
+        if (!IsMoving)
+        {
+            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, 0f, 10f * Time.deltaTime);
+            return;
+        }
+
+        if (IsSprinting)
+        {
+            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, maxSpeed, 10f * Time.deltaTime);
+        }
+
+        if (!IsSprinting)
+        {
+            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, walkSpeed, 10f * Time.deltaTime);
+        }
+
+
     }
 
     private void HandleAnimations()
@@ -323,19 +363,29 @@ public class Player : MonoBehaviour
         {
             currDashVelocity = (initialDashVelocity - maxSpeed) * (1 - Mathf.Sqrt(1 - Mathf.Pow(t / dashDuration - 1, 2))) + maxSpeed;
 
-            velocity.x = currDashVelocity * transform.forward.x;
-            velocity.z = currDashVelocity * transform.forward.z;
+            velocity.x = currDashVelocity * targetForwardDirection.x;
+            velocity.z = currDashVelocity * targetForwardDirection.z;
 
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
             characterController.Move(new Vector3(velocity.x, 0f, velocity.z) * Time.deltaTime);
             yield return null;
         }
 
         IsDashing = false;
+        IsSprinting = true;
         CanMove = true;
+
+        dashDelayTimer = 0f;
 
         if (IsGrounded) animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
 
-        dashDelayTimer = 0f;
+        for(float t = 0; t < sprintDurationAfterDash; t += Time.deltaTime)
+        {
+            if (!IsMoving) break;
+            yield return null;
+        }
+
+        IsSprinting = false;
     }
 
     private void StopDashing()

@@ -1119,6 +1119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentMovementSpeed: 0
+  walkSpeed: 3
   maxSpeed: 5
   rotationSpeed: 10
   groundLayer:
@@ -1133,6 +1134,7 @@ MonoBehaviour:
   IsGrounded: 0
   CanMove: 1
   IsMoving: 0
+  IsSprinting: 0
   IsDashing: 0
   IsAttacking: 0
   CanAttack: 1
@@ -1143,6 +1145,8 @@ MonoBehaviour:
   dashDuration: 0.5
   initialDashVelocity: 25
   dashDelayDuration: 0.5
+  sprintDurationAfterDash: 2
+  shiftKeyPressMaxDurationForDash: 0.25
   dashTrailObject: {fileID: 3883737560833677611}
   CameraLocked: 1
 --- !u!95 &2171180168782530629
