@@ -3770,6 +3770,27 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6052383663745716427, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: islandToSpawn
+      value: 
+      objectReference: {fileID: 2939626751093247222, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+    - target: {fileID: 6052383663745716427, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: islandSpawnOS.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 6052383663745716427, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: islandSpawnOS.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 6052383663745716427, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: islandSpawnOS.z
+      value: -15
+      objectReference: {fileID: 0}
     - target: {fileID: 6771442140504413720, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
       propertyPath: m_Name

@@ -23,7 +23,8 @@ public class SqaureManager : MonoBehaviour
     RaycastHit wallHit3;
     RaycastHit wallHit4;
 
-
+    public GameObject islandToSpawn;
+    public Vector3 islandSpawnOS;
 
 
 
@@ -35,7 +36,7 @@ public class SqaureManager : MonoBehaviour
     
     void Update()
     {
-        Ray rayFront = new Ray(transform.position + raycastoffset, transform.TransformDirection(Vector3.forward));
+        Ray rayFront = new Ray(transform.position, transform.TransformDirection(Vector3.forward));
         Ray rayRight = new Ray(transform.position, transform.TransformDirection(Vector3.right));
         Ray rayLeft = new Ray(transform.position, transform.TransformDirection(Vector3.left));
         Ray rayBack = new Ray(transform.position, transform.TransformDirection(Vector3.back));
@@ -51,8 +52,7 @@ public class SqaureManager : MonoBehaviour
         }
                 
        
-        if (sqaureScore > 0) 
-        {
+
         
             if (Physics.Raycast(rayFront, out wallHit, 100f))
             {
@@ -60,6 +60,10 @@ public class SqaureManager : MonoBehaviour
                 wallHitScore = 1;
                 Debug.Log(wallHit.point);
 
+                if (Input.GetKeyDown(KeyCode.E)) 
+                {
+                Instantiate(islandToSpawn, wallHit.point + islandSpawnOS, Quaternion.identity);
+                }
          
             }
             else { wallHitScore = 0; }
@@ -90,7 +94,7 @@ public class SqaureManager : MonoBehaviour
             }
             else { wallHitScore4 = 0; }
         
-        }
+        
 
      
 
