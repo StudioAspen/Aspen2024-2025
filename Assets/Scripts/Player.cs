@@ -15,8 +15,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float rotationSpeed = 5f;
     private Vector3 movementDirection;
     private float forwardAngleBasedOnCamera;
-    private Quaternion targetForwardRotation;
-    private Vector3 targetForwardDirection;
+    private Quaternion targetForwardRotation = Quaternion.identity;
+    private Vector3 targetForwardDirection = Vector3.forward;
 
     [Header("Player Gravity")]
     [SerializeField] private LayerMask groundLayer;
@@ -116,6 +116,8 @@ public class Player : MonoBehaviour
         movementDirection = new Vector3(x, 0, z);
 
         IsMoving = movementDirection.magnitude > 0;
+
+        if (!IsMoving) return;
 
         forwardAngleBasedOnCamera = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
         targetForwardRotation = Quaternion.Euler(0, forwardAngleBasedOnCamera, 0);
