@@ -68,6 +68,8 @@ public class Player : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
+
+        Application.targetFrameRate = 0;
     }
 
     void Start()
