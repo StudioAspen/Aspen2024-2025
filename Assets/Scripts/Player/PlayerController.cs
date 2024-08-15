@@ -10,11 +10,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Self] private InputReader input;
     [SerializeField, Self] private Animator animator;
 
-    [field: Header("Player Grounded Movement")]
-    public float CurrentMovementSpeed { get; private set; }
+    [Header("Player Grounded Movement")]
     [SerializeField] private float walkSpeed = 3f;
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float rotationSpeed = 5f;
+    private float currentMovementSpeed;
     private float forwardAngleBasedOnCamera;
     private Quaternion targetForwardRotation = Quaternion.identity;
     private Vector3 targetForwardDirection = Vector3.forward;
@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector3 velocity;
     [SerializeField] private float groundedYVelocity = -5f;
     [SerializeField] private float fallingStartingYVelocity = 0f;
-    public float InAirTimer { get; private set; } = 0;
+    private float inAirTimer = 0;
     private int currentJumpCount;
     private bool fallVelocityApplied;
 
@@ -105,7 +105,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawLine(transform.position, transform.position + CurrentMovementSpeed * targetForwardDirection);
+        Gizmos.DrawLine(transform.position, transform.position + currentMovementSpeed * targetForwardDirection);
     }
 
     private void CheckGrounded()
@@ -196,8 +196,8 @@ public class PlayerController : MonoBehaviour
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
 
-            velocity.x = Mathf.Lerp(velocity.x, CurrentMovementSpeed * targetForwardDirection.x, acceleration.x * Time.deltaTime);
-            velocity.z = Mathf.Lerp(velocity.z, CurrentMovementSpeed * targetForwardDirection.z, acceleration.z * Time.deltaTime);
+            velocity.x = Mathf.Lerp(velocity.x, currentMovementSpeed * targetForwardDirection.x, acceleration.x * Time.deltaTime);
+            velocity.z = Mathf.Lerp(velocity.z, currentMovementSpeed * targetForwardDirection.z, acceleration.z * Time.deltaTime);
         }
         else
         {
@@ -206,7 +206,7 @@ public class PlayerController : MonoBehaviour
         }
 
         Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
-        groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, CurrentMovementSpeed);
+        groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, currentMovementSpeed);
 
         controller.Move(groundedVelocity * Time.deltaTime);
     }
@@ -215,7 +215,7 @@ public class PlayerController : MonoBehaviour
     {
         if (IsGrounded)
         {
-            InAirTimer = 0f;
+            inAirTimer = 0f;
             if(velocity.y < groundedYVelocity)
             {
                 IsJumping = false;
@@ -231,7 +231,7 @@ public class PlayerController : MonoBehaviour
                 fallVelocityApplied = true;
                 velocity.y = fallingStartingYVelocity;
             }
-            InAirTimer += Time.deltaTime;
+            inAirTimer += Time.deltaTime;
             velocity.y += acceleration.y * Time.deltaTime;
         }
 
@@ -242,18 +242,18 @@ public class PlayerController : MonoBehaviour
     {
         if (!IsMoving)
         {
-            CurrentMovementSpeed = Mathf.Lerp(CurrentMovementSpeed, 0f, 10f * Time.deltaTime);
+            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, 0f, 10f * Time.deltaTime);
             return;
         }
 
         if (IsSprinting)
         {
-            CurrentMovementSpeed = Mathf.Lerp(CurrentMovementSpeed, maxSpeed, 10f * Time.deltaTime);
+            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, maxSpeed, 10f * Time.deltaTime);
         }
 
         if (!IsSprinting)
         {
-            CurrentMovementSpeed = Mathf.Lerp(CurrentMovementSpeed, walkSpeed, 10f * Time.deltaTime);
+            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, walkSpeed, 10f * Time.deltaTime);
         }
 
 
@@ -261,8 +261,8 @@ public class PlayerController : MonoBehaviour
 
     private void HandleAnimations()
     {
-        animator.SetFloat("MovementSpeed", CurrentMovementSpeed/maxSpeed);
-        animator.SetFloat("InAirTimer", InAirTimer);
+        animator.SetFloat("MovementSpeed", currentMovementSpeed/maxSpeed);
+        animator.SetFloat("InAirTimer", inAirTimer);
         animator.SetFloat("AttackAnimationSpeedMultiplier", attackAnimationSpeedMultiplier);
         animator.SetBool("IsGrounded", IsGrounded);
 

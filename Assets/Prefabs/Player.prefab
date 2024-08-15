@@ -1119,6 +1119,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1985448995bc84eb7e5f317c32b1eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MoveDirection: {x: 0, y: 0, z: 0}
+  Jump: 0
+  SprintHold: 0
+  SprintRelease: 0
+  Attack: 0
 --- !u!114 &9018130139546683757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1131,10 +1136,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a99b0e06f1ff884a9605c658cd6a4ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 2171180168782530629}
   controller: {fileID: 7237775664649881152}
   input: {fileID: 6714409095086020908}
-  currentMovementSpeed: 0
+  animator: {fileID: 2171180168782530629}
   walkSpeed: 3
   maxSpeed: 5
   rotationSpeed: 10
@@ -1158,7 +1162,7 @@ MonoBehaviour:
   IsUsingSkill: 0
   weapon: {fileID: 196489911609782724}
   maxComboDelay: 0.5
-  attackAnimationSpeedMultiplier: 3
+  attackAnimationSpeedMultiplier: 2.5
   dashDuration: 0.5
   initialDashVelocity: 25
   dashDelayDuration: 0.5
