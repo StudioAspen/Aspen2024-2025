@@ -1077,6 +1077,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7536978621657743438}
+  - component: {fileID: 6714409095086020908}
   - component: {fileID: 9018130139546683757}
   - component: {fileID: 2171180168782530629}
   - component: {fileID: 7237775664649881152}
@@ -1106,6 +1107,18 @@ Transform:
   - {fileID: 5292498394847870872}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6714409095086020908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3617256968821117999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1985448995bc84eb7e5f317c32b1eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &9018130139546683757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1118,6 +1131,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a99b0e06f1ff884a9605c658cd6a4ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 2171180168782530629}
+  controller: {fileID: 7237775664649881152}
+  input: {fileID: 6714409095086020908}
   currentMovementSpeed: 0
   walkSpeed: 3
   maxSpeed: 5
@@ -1139,6 +1155,7 @@ MonoBehaviour:
   IsAttacking: 0
   CanAttack: 1
   IsJumping: 0
+  IsUsingSkill: 0
   weapon: {fileID: 196489911609782724}
   maxComboDelay: 0.5
   attackAnimationSpeedMultiplier: 3

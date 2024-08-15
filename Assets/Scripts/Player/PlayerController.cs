@@ -1,19 +1,20 @@
+using KBCore.Refs;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
-    private Animator animator;
-    private CharacterController characterController;
+    [Header("References")]
+    [SerializeField, Self] private CharacterController controller;
+    [SerializeField, Self] private InputReader input;
+    [SerializeField, Self] private Animator animator;
 
-    [Header("Player Grounded Movement")]
-    [SerializeField] private float currentMovementSpeed;
+    [field: Header("Player Grounded Movement")]
+    public float CurrentMovementSpeed { get; private set; }
     [SerializeField] private float walkSpeed = 3f;
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float rotationSpeed = 5f;
-    private Vector3 movementDirection;
     private float forwardAngleBasedOnCamera;
     private Quaternion targetForwardRotation = Quaternion.identity;
     private Vector3 targetForwardDirection = Vector3.forward;
@@ -26,7 +27,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Vector3 velocity;
     [SerializeField] private float groundedYVelocity = -5f;
     [SerializeField] private float fallingStartingYVelocity = 0f;
-    private float inAirTimer = 0;
+    public float InAirTimer { get; private set; } = 0;
     private int currentJumpCount;
     private bool fallVelocityApplied;
 
@@ -64,10 +65,14 @@ public class Player : MonoBehaviour
     [Header("Camera")]
     public bool CameraLocked = true;
 
+    private void OnValidate()
+    {
+        this.ValidateRefs();
+    }
+
     private void Awake()
     {
-        animator = GetComponent<Animator>();
-        characterController = GetComponent<CharacterController>();
+        
     }
 
     void Start()
@@ -100,26 +105,21 @@ public class Player : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawLine(transform.position, transform.position + currentMovementSpeed * targetForwardDirection);
+        Gizmos.DrawLine(transform.position, transform.position + CurrentMovementSpeed * targetForwardDirection);
     }
 
     private void CheckGrounded()
     {
-        IsGrounded = Physics.CheckSphere(transform.position + characterController.radius / 2 * Vector3.up, characterController.radius, groundLayer);
+        IsGrounded = Physics.CheckSphere(transform.position + controller.radius / 2 * Vector3.up, controller.radius, groundLayer);
     }
 
     private void HandleGroundedMovementInput()
     {
-        float x = Input.GetAxisRaw("Horizontal");
-        float z = Input.GetAxisRaw("Vertical");
-
-        movementDirection = new Vector3(x, 0, z);
-
-        IsMoving = movementDirection.magnitude > 0;
+        IsMoving = input.MoveDirection.magnitude > 0;
 
         if (!IsMoving) return;
 
-        forwardAngleBasedOnCamera = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+        forwardAngleBasedOnCamera = Mathf.Atan2(input.MoveDirection.x, input.MoveDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
         targetForwardRotation = Quaternion.Euler(0, forwardAngleBasedOnCamera, 0);
         targetForwardDirection = targetForwardRotation * Vector3.forward;
     }
@@ -129,7 +129,7 @@ public class Player : MonoBehaviour
         if (!CanMove) return;
         if (!IsGrounded && currentJumpCount >= maxJumpCount) return;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (input.Jump)
         {
             StopCurrentSwingCoroutine();
 
@@ -148,7 +148,7 @@ public class Player : MonoBehaviour
     {
         if (!CanMove) return;
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (input.SprintHold)
         {
             IsSprinting = true;
             shiftKeyPressTimer += Time.unscaledDeltaTime;
@@ -159,7 +159,7 @@ public class Player : MonoBehaviour
     {
         if(!IsDashing) dashDelayTimer += Time.deltaTime;
 
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        if (input.SprintRelease)
         {
             if (dashDelayTimer > dashDelayDuration)
             {
@@ -178,7 +178,7 @@ public class Player : MonoBehaviour
 
     private void HandleSwingInput()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (input.Attack)
         {
             if (!CanAttack) return;
             if (IsAttacking) return;
@@ -196,8 +196,8 @@ public class Player : MonoBehaviour
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
 
-            velocity.x = Mathf.Lerp(velocity.x, currentMovementSpeed * targetForwardDirection.x, acceleration.x * Time.deltaTime);
-            velocity.z = Mathf.Lerp(velocity.z, currentMovementSpeed * targetForwardDirection.z, acceleration.z * Time.deltaTime);
+            velocity.x = Mathf.Lerp(velocity.x, CurrentMovementSpeed * targetForwardDirection.x, acceleration.x * Time.deltaTime);
+            velocity.z = Mathf.Lerp(velocity.z, CurrentMovementSpeed * targetForwardDirection.z, acceleration.z * Time.deltaTime);
         }
         else
         {
@@ -206,16 +206,16 @@ public class Player : MonoBehaviour
         }
 
         Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
-        groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, currentMovementSpeed);
+        groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, CurrentMovementSpeed);
 
-        characterController.Move(groundedVelocity * Time.deltaTime);
+        controller.Move(groundedVelocity * Time.deltaTime);
     }
 
     private void HandleGravity()
     {
         if (IsGrounded)
         {
-            inAirTimer = 0f;
+            InAirTimer = 0f;
             if(velocity.y < groundedYVelocity)
             {
                 IsJumping = false;
@@ -231,29 +231,29 @@ public class Player : MonoBehaviour
                 fallVelocityApplied = true;
                 velocity.y = fallingStartingYVelocity;
             }
-            inAirTimer += Time.deltaTime;
+            InAirTimer += Time.deltaTime;
             velocity.y += acceleration.y * Time.deltaTime;
         }
 
-        characterController.Move(Time.deltaTime * velocity.y * Vector3.up);
+        controller.Move(Time.deltaTime * velocity.y * Vector3.up);
     }
 
     private void HandleSpeed()
     {
         if (!IsMoving)
         {
-            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, 0f, 10f * Time.deltaTime);
+            CurrentMovementSpeed = Mathf.Lerp(CurrentMovementSpeed, 0f, 10f * Time.deltaTime);
             return;
         }
 
         if (IsSprinting)
         {
-            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, maxSpeed, 10f * Time.deltaTime);
+            CurrentMovementSpeed = Mathf.Lerp(CurrentMovementSpeed, maxSpeed, 10f * Time.deltaTime);
         }
 
         if (!IsSprinting)
         {
-            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, walkSpeed, 10f * Time.deltaTime);
+            CurrentMovementSpeed = Mathf.Lerp(CurrentMovementSpeed, walkSpeed, 10f * Time.deltaTime);
         }
 
 
@@ -261,8 +261,8 @@ public class Player : MonoBehaviour
 
     private void HandleAnimations()
     {
-        animator.SetFloat("MovementSpeed", currentMovementSpeed/maxSpeed);
-        animator.SetFloat("InAirTimer", inAirTimer);
+        animator.SetFloat("MovementSpeed", CurrentMovementSpeed/maxSpeed);
+        animator.SetFloat("InAirTimer", InAirTimer);
         animator.SetFloat("AttackAnimationSpeedMultiplier", attackAnimationSpeedMultiplier);
         animator.SetBool("IsGrounded", IsGrounded);
 
@@ -285,7 +285,7 @@ public class Player : MonoBehaviour
     {
         weapon.ClearEnemiesHitList();
 
-        instantaneousAttackAngle = Mathf.Atan2(movementDirection.x, movementDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+        instantaneousAttackAngle = Mathf.Atan2(input.MoveDirection.x, input.MoveDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
 
         IsAttacking = true;
 
@@ -310,7 +310,7 @@ public class Player : MonoBehaviour
 
         for (float t = 0; t < maxComboDelay; t += Time.unscaledDeltaTime)
         {
-            if (Input.GetKeyDown(KeyCode.Mouse0))
+            if (input.Attack)
             {
                 if (!CanAttack)
                 {
@@ -372,7 +372,7 @@ public class Player : MonoBehaviour
             velocity.z = currDashVelocity * targetForwardDirection.z;
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
-            characterController.Move(new Vector3(velocity.x, 0f, velocity.z) * Time.deltaTime);
+            controller.Move(new Vector3(velocity.x, 0f, velocity.z) * Time.deltaTime);
             yield return null;
         }
 
