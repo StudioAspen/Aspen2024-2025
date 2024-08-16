@@ -1,3 +1,4 @@
+using KBCore.Refs;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
@@ -5,16 +6,16 @@ using UnityEngine;
 
 public class WeaponHandler : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField, Self] private CapsuleCollider capsuleCollider;
+
     [Header("Collisions")]
     [SerializeField] private LayerMask damageableCollidersLayerMask;
     [SerializeField] private Transform colliderStartTransform;
     [SerializeField] private Transform colliderEndTransform;
-    private CapsuleCollider capsuleCollider;
     private Ray currentFrameCollisionRay;
     private Ray previousFrameCollisionRay;
     private int currentHitFrame;
-
-    private bool canHit;
 
     [Header("Combo")]
     public Combo Combo;
@@ -30,23 +31,26 @@ public class WeaponHandler : MonoBehaviour
     [Header("Trail")]
     [SerializeField] private GameObject trailObject;
 
+    private void OnValidate()
+    {
+        this.ValidateRefs();
+    }
+
     private void Awake()
     {
-        capsuleCollider = GetComponent<CapsuleCollider>();
-
         AssignColliderStartEndPositions();
     }
 
     private void Update()
     {
-        trailObject.SetActive(canHit);
+        trailObject.SetActive(capsuleCollider.enabled);
 
         HandleHitDetectionBetweenFrames();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        if (!canHit) return;
+        if (!capsuleCollider.enabled) return;
 
         Enemy enemy = other.GetComponentInParent<Enemy>();
 
@@ -67,7 +71,7 @@ public class WeaponHandler : MonoBehaviour
 
     private void HandleHitDetectionBetweenFrames()
     {
-        if (!canHit)
+        if (!capsuleCollider.enabled)
         {
             currentHitFrame = 0;
             return;
@@ -86,7 +90,7 @@ public class WeaponHandler : MonoBehaviour
                 Vector3 currPoint = currentFrameCollisionRay.origin + i / (float)segments * currentFrameCollisionRay.direction;
                 Vector3 prevPoint = previousFrameCollisionRay.origin + i / (float)segments * previousFrameCollisionRay.direction;
 
-                CheckCollisionsWithRays(new Ray(prevPoint, currPoint), Vector3.Distance(currPoint, prevPoint));
+                CheckCollisionsWithRays(new Ray(prevPoint, currPoint-prevPoint), Vector3.Distance(currPoint, prevPoint));
 
                 Debug.DrawLine(currPoint, prevPoint, Color.red);
             }
@@ -170,11 +174,11 @@ public class WeaponHandler : MonoBehaviour
 
     public void EnableTriggers()
     {
-        canHit = true;
+        capsuleCollider.enabled = true;
     }
 
     public void DisableTriggers()
     {
-        canHit = false;
+        capsuleCollider.enabled = false;
     }
 }
