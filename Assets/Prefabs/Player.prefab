@@ -1152,6 +1152,7 @@ MonoBehaviour:
   groundedYVelocity: -5
   fallingStartingYVelocity: 0
   IsGrounded: 0
+  IsSliding: 0
   CanMove: 1
   IsMoving: 0
   IsSprinting: 0
@@ -1182,7 +1183,7 @@ Animator:
   m_Avatar: {fileID: 9000000, guid: 97ada40f57d401540b8eafeeba1f0e9c, type: 3}
   m_Controller: {fileID: 9100000, guid: 50d240aa279a9be409ed39946418d119, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 1
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0

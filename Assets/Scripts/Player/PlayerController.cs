@@ -108,11 +108,12 @@ public class PlayerController : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.DrawLine(transform.position, transform.position + currentMovementSpeed * targetForwardDirection);
+        Gizmos.DrawWireSphere(transform.position + 9f * controller.radius / 10f * Vector3.up, controller.radius);
     }
 
     private void CheckGrounded()
     {
-        IsGrounded = Physics.CheckSphere(transform.position + controller.radius / 2 * Vector3.up, controller.radius, groundLayer);
+        IsGrounded = Physics.CheckSphere(transform.position + 9f * controller.radius / 10f * Vector3.up, controller.radius, groundLayer);
     }
 
     private void HandleGroundedMovementInput()
@@ -219,12 +220,9 @@ public class PlayerController : MonoBehaviour
         if (IsGrounded)
         {
             inAirTimer = 0f;
-            if(velocity.y < groundedYVelocity)
-            {
-                IsJumping = false;
-                currentJumpCount = 0;
-                fallVelocityApplied = false;
-            }
+            fallVelocityApplied = false;
+            IsJumping = false;
+            currentJumpCount = 0;
         }
 
         if(!IsGrounded)
@@ -233,6 +231,7 @@ public class PlayerController : MonoBehaviour
             {
                 fallVelocityApplied = true;
                 velocity.y = fallingStartingYVelocity;
+                print("Applying fall vel");
             }
             inAirTimer += Time.deltaTime;
             velocity.y += acceleration.y * Time.deltaTime;
@@ -243,6 +242,13 @@ public class PlayerController : MonoBehaviour
 
     private void HandleSlopeSliding()
     {
+        if (IsSliding)
+        {
+            currentJumpCount = 0;
+            fallVelocityApplied = false;
+            IsJumping = false;
+        }
+
         if (!IsGrounded)
         {
             IsSliding = false;
@@ -250,7 +256,7 @@ public class PlayerController : MonoBehaviour
         }
 
         RaycastHit hitBelow;
-        Physics.Raycast(transform.position, Vector3.down, out hitBelow, 10f, groundLayer);
+        Physics.Raycast(transform.position, Vector3.down, out hitBelow, 5f, groundLayer);
 
         if (hitBelow.collider == null)
         {
@@ -266,10 +272,10 @@ public class PlayerController : MonoBehaviour
         {
             IsSliding = true;
 
-            // Projection written out // Vector3 slideDirection = new Vector3(normal.x, 0, normal.z) - (normal.x * normal.x + normal.z * normal.z) / (normal.x * normal.x + normal.z * normal.z + normal.y * normal.y) * normal;
             Vector3 slideDirection = Vector3.ProjectOnPlane(Vector3.down, normal);
 
-            controller.Move(slideDirection * 10f * Time.deltaTime);
+            velocity.y = groundedYVelocity;
+            controller.Move(slideDirection * -velocity.y * Time.deltaTime);
         }
         else
         {
