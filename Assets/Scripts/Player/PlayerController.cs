@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
 
     #region Flags
     [HideInInspector] public bool IsGrounded;
+    [HideInInspector] public bool IsSliding;
     [HideInInspector] public bool CanMove = true;
     [HideInInspector] public bool IsMoving;
     [HideInInspector] public bool IsSprinting;
@@ -94,6 +95,7 @@ public class PlayerController : MonoBehaviour
 
         HandleGroundedMovement();
         HandleGravity();
+        HandleSlopeSliding();
         HandleSpeed();
 
         HandleWeaponCollisions();
@@ -128,6 +130,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!CanMove) return;
         if (!IsGrounded && currentJumpCount >= maxJumpCount) return;
+        if (IsSliding) return;
 
         if (input.Jump)
         {
@@ -236,6 +239,42 @@ public class PlayerController : MonoBehaviour
         }
 
         controller.Move(Time.deltaTime * velocity.y * Vector3.up);
+    }
+
+    private void HandleSlopeSliding()
+    {
+        if (!IsGrounded)
+        {
+            IsSliding = false;
+            return;
+        }
+
+        RaycastHit hitBelow;
+        Physics.Raycast(transform.position, Vector3.down, out hitBelow, 10f, groundLayer);
+
+        if (hitBelow.collider == null)
+        {
+            IsSliding = false;
+            return;
+        }
+
+        Vector3 normal = hitBelow.normal;
+
+        float slopeAngle = Vector3.Angle(normal, Vector3.up);
+
+        if (slopeAngle > controller.slopeLimit)
+        {
+            IsSliding = true;
+
+            // Projection written out // Vector3 slideDirection = new Vector3(normal.x, 0, normal.z) - (normal.x * normal.x + normal.z * normal.z) / (normal.x * normal.x + normal.z * normal.z + normal.y * normal.y) * normal;
+            Vector3 slideDirection = Vector3.ProjectOnPlane(Vector3.down, normal);
+
+            controller.Move(slideDirection * 10f * Time.deltaTime);
+        }
+        else
+        {
+            IsSliding = false;
+        }
     }
 
     private void HandleSpeed()
