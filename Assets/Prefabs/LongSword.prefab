@@ -5098,12 +5098,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b15be1641a6715409d644911d004bcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  capsuleCollider: {fileID: 1259378818332639156}
+  colliderStartTransform: {fileID: 2382167382557116116}
+  colliderEndTransform: {fileID: 2628417811129990337}
   damageableCollidersLayerMask:
     serializedVersion: 2
     m_Bits: 64
-  colliderStartTransform: {fileID: 2382167382557116116}
-  colliderEndTransform: {fileID: 2628417811129990337}
   Combo: {fileID: 11400000, guid: 5a881eca4a2645847936f07fe2899b01, type: 2}
+  attackDamageRange: {x: 100, y: 200}
   impactFramesDuration: 0.1
   trailObject: {fileID: 6918874709248315491}
 --- !u!136 &1259378818332639156
