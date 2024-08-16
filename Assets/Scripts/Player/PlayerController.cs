@@ -219,10 +219,13 @@ public class PlayerController : MonoBehaviour
     {
         if (IsGrounded)
         {
+            if (!IsSliding)
+            {
+                currentJumpCount = 0;
+            }
             inAirTimer = 0f;
             fallVelocityApplied = false;
             IsJumping = false;
-            currentJumpCount = 0;
         }
 
         if(!IsGrounded)
@@ -231,7 +234,6 @@ public class PlayerController : MonoBehaviour
             {
                 fallVelocityApplied = true;
                 velocity.y = fallingStartingYVelocity;
-                print("Applying fall vel");
             }
             inAirTimer += Time.deltaTime;
             velocity.y += acceleration.y * Time.deltaTime;
@@ -244,9 +246,7 @@ public class PlayerController : MonoBehaviour
     {
         if (IsSliding)
         {
-            currentJumpCount = 0;
-            fallVelocityApplied = false;
-            IsJumping = false;
+            IsGrounded = true;
         }
 
         if (!IsGrounded)
@@ -256,7 +256,7 @@ public class PlayerController : MonoBehaviour
         }
 
         RaycastHit hitBelow;
-        Physics.Raycast(transform.position, Vector3.down, out hitBelow, 5f, groundLayer);
+        Physics.SphereCast(transform.position + controller.height/2 * Vector3.up, controller.radius, Vector3.down, out hitBelow, controller.height, groundLayer);
 
         if (hitBelow.collider == null)
         {
