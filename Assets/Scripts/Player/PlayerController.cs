@@ -113,6 +113,12 @@ public class PlayerController : MonoBehaviour
 
     private void CheckGrounded()
     {
+        if (inAirTimer > 0f && inAirTimer < 0.1f)
+        {
+            IsGrounded = false;
+            return;
+        }
+
         IsGrounded = Physics.CheckSphere(transform.position + 9f * controller.radius / 10f * Vector3.up, controller.radius, groundLayer);
     }
 
@@ -182,11 +188,11 @@ public class PlayerController : MonoBehaviour
 
     private void HandleSwingInput()
     {
+        if (!CanAttack) return;
+        if (IsAttacking) return;
+
         if (input.Attack)
         {
-            if (!CanAttack) return;
-            if (IsAttacking) return;
-
             SwingMeleeWeapon(weapon.Combo.PrimaryCombo[comboIndex].AnimationClipName);
         }
     }
