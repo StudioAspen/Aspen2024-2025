@@ -1079,6 +1079,7 @@ GameObject:
   - component: {fileID: 7536978621657743438}
   - component: {fileID: 6714409095086020908}
   - component: {fileID: 9018130139546683757}
+  - component: {fileID: 5620550920081884860}
   - component: {fileID: 2171180168782530629}
   - component: {fileID: 7237775664649881152}
   - component: {fileID: 5104155415629920173}
@@ -1147,7 +1148,7 @@ MonoBehaviour:
     m_Bits: 256
   jumpHeight: 2
   maxJumpCount: 1
-  acceleration: {x: 4, y: -20, z: 4}
+  acceleration: {x: 5, y: -20, z: 5}
   velocity: {x: 0, y: 0, z: 0}
   groundedYVelocity: -5
   fallingStartingYVelocity: 0
@@ -1161,9 +1162,6 @@ MonoBehaviour:
   CanAttack: 1
   IsJumping: 0
   IsUsingSkill: 0
-  weapon: {fileID: 196489911609782724}
-  maxComboDelay: 0.5
-  attackAnimationSpeedMultiplier: 2.5
   dashDuration: 0.5
   initialDashVelocity: 25
   dashDelayDuration: 0.5
@@ -1171,6 +1169,27 @@ MonoBehaviour:
   shiftKeyPressMaxDurationForDash: 0.25
   dashTrailObject: {fileID: 3883737560833677611}
   CameraLocked: 1
+--- !u!114 &5620550920081884860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3617256968821117999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da8e255f5d8dfd84d95b9016a330a0c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  input: {fileID: 6714409095086020908}
+  player: {fileID: 9018130139546683757}
+  animator: {fileID: 2171180168782530629}
+  weapon: {fileID: 196489911609782724}
+  rotationSpeed: 5
+  maxComboDelay: 0.5
+  attackAnimationSpeedMultiplier: 2
+  comboTimer: 0
+  comboIndex: 0
 --- !u!95 &2171180168782530629
 Animator:
   serializedVersion: 5
@@ -8041,7 +8060,7 @@ PrefabInstance:
     - target: {fileID: 784140094486146350, guid: d172d41f775a35d4593cc6dec1b8eed0,
         type: 3}
       propertyPath: m_Name
-      value: SM_Wep_Sword_03 Variant
+      value: LongSword
       objectReference: {fileID: 0}
     - target: {fileID: 784140094486146350, guid: d172d41f775a35d4593cc6dec1b8eed0,
         type: 3}

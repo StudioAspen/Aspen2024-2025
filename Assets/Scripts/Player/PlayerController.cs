@@ -44,14 +44,6 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool IsUsingSkill;
     #endregion
 
-    [Header("Combat")]
-    [SerializeField] private WeaponHandler weapon;
-    private float instantaneousAttackAngle;
-    [SerializeField] private float maxComboDelay = 0.5f;
-    [SerializeField] private float attackAnimationSpeedMultiplier = 3f;
-    private int comboIndex;
-    private Coroutine currentSwingingCoroutine;
-
     [Header("Dash")]
     [SerializeField] private float dashDuration = 0.5f;
     [SerializeField] private float initialDashVelocity = 25f;
@@ -91,14 +83,11 @@ public class PlayerController : MonoBehaviour
         HandleJumpInput();
         HandleSprintInput();
         HandleDashInput();
-        HandleSwingInput();
 
         HandleGroundedMovement();
         HandleGravity();
         HandleSlopeSliding();
         HandleSpeed();
-
-        HandleWeaponCollisions();
 
         HandleAnimations();
 
@@ -141,7 +130,7 @@ public class PlayerController : MonoBehaviour
 
         if (input.Jump)
         {
-            StopCurrentSwingCoroutine();
+            //StopCurrentSwingCoroutine();
 
             IsJumping = true;
             IsGrounded = false;
@@ -186,17 +175,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void HandleSwingInput()
-    {
-        if (!CanAttack) return;
-        if (IsAttacking) return;
-
-        if (input.Attack)
-        {
-            SwingMeleeWeapon(weapon.Combo.PrimaryCombo[comboIndex].AnimationClipName);
-        }
-    }
-
     private void HandleGroundedMovement()
     {
         if (!CanMove) return;
@@ -233,10 +211,9 @@ public class PlayerController : MonoBehaviour
             fallVelocityApplied = false;
             IsJumping = false;
         }
-
-        if(!IsGrounded)
+        else // in air
         {
-            if (!IsJumping && !fallVelocityApplied)
+            if (!IsJumping && !fallVelocityApplied) // falling without jumping
             {
                 fallVelocityApplied = true;
                 velocity.y = fallingStartingYVelocity;
@@ -250,10 +227,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleSlopeSliding()
     {
-        if (IsSliding)
-        {
-            IsGrounded = true;
-        }
+        if (IsSliding) IsGrounded = true;
 
         if (!IsGrounded)
         {
@@ -314,94 +288,16 @@ public class PlayerController : MonoBehaviour
     {
         animator.SetFloat("MovementSpeed", currentMovementSpeed/maxSpeed);
         animator.SetFloat("InAirTimer", inAirTimer);
-        animator.SetFloat("AttackAnimationSpeedMultiplier", attackAnimationSpeedMultiplier);
         animator.SetBool("IsGrounded", IsGrounded);
 
-        if (IsAttacking && !CanMove)
-        {
-            Quaternion targetRotation = Quaternion.Euler(0, instantaneousAttackAngle, 0);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 2f * rotationSpeed * Time.deltaTime);
-        }
-
         dashTrailObject.SetActive(IsDashing);
-    }
-
-    private void SwingMeleeWeapon(string animationName)
-    {
-        if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
-        currentSwingingCoroutine = StartCoroutine(SwingCoroutine(animationName, maxComboDelay));
-    }
-
-    private IEnumerator SwingCoroutine(string animationName, float animationFadeSpeed)
-    {
-        weapon.ClearEnemiesHitList();
-
-        instantaneousAttackAngle = Mathf.Atan2(input.MoveDirection.x, input.MoveDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
-
-        IsAttacking = true;
-
-        animator.CrossFadeInFixedTime(animationName, 0.05f);
-
-        float animationDuration = GetAnimationDuration(animationName) / attackAnimationSpeedMultiplier;
-        yield return new WaitForSeconds(animationDuration);
-
-        animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed);
-
-        if (comboIndex == weapon.Combo.PrimaryCombo.Count - 1)
-        {
-            comboIndex = 0;
-
-            CanMove = true;
-            IsAttacking = false;
-
-            yield return new WaitForSeconds(0.3f);
-
-            yield break;
-        }
-
-        for (float t = 0; t < maxComboDelay; t += Time.unscaledDeltaTime)
-        {
-            if (input.Attack)
-            {
-                if (!CanAttack)
-                {
-                    StopCurrentSwingCoroutine();
-                    yield break;
-                }
-
-                comboIndex++;
-
-                StopCoroutine(currentSwingingCoroutine);
-                currentSwingingCoroutine = StartCoroutine(SwingCoroutine(weapon.Combo.PrimaryCombo[comboIndex].AnimationClipName, maxComboDelay));
-                yield break;
-            }
-
-            yield return null;
-        }
-
-        IsAttacking = false;
-
-        comboIndex = 0;
-    }
-
-    private void StopCurrentSwingCoroutine()
-    {
-        if (currentSwingingCoroutine != null) StopCoroutine(currentSwingingCoroutine);
-
-        animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
-
-        comboIndex = 0;
-
-        weapon.DisableTriggers();
-        CanMove = true;
-        IsAttacking = false;
     }
 
     private void Dash()
     {
         if (IsDashing) return;
 
-        if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
+        //if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
 
         if (dashCoroutine != null) StopDashing();
         dashCoroutine = StartCoroutine(DashCoroutine());
@@ -449,39 +345,6 @@ public class PlayerController : MonoBehaviour
 
         IsDashing = false;
         CanMove = true;
-    }
-
-    private void HandleWeaponCollisions()
-    {
-        if (!IsAttacking)
-        {
-            DisableWeaponTriggers();
-        }
-    }
-
-    public void EnableWeaponTriggers()
-    {
-        weapon.EnableTriggers();
-    }
-
-    public void DisableWeaponTriggers()
-    {
-        weapon.DisableTriggers();
-    }
-
-    private float GetAnimationDuration(string animationName)
-    {
-        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
-
-        if (clips == null) return 0f;
-        if (clips.Length == 0) return 0f;
-
-        foreach(AnimationClip clip in clips)
-        {
-            if (clip.name == animationName) return clip.length;
-        }
-
-        return 0f;
     }
 
     private void IgnoreMyOwnColliders()
