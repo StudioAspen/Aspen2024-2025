@@ -1,7 +1,9 @@
 using KBCore.Refs;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using Unity.VisualScripting;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
@@ -21,6 +23,8 @@ public class PlayerCombat : MonoBehaviour
     private float instantaneousAttackAngle;
     [SerializeField] private int comboIndex;
     private Coroutine currentSwingingCoroutine;
+
+    private string[] basicSwingAnimationClipNames = { "BasicSwing1", "BasicSwing2", "BasicSwing3" };
 
     private void OnValidate()
     {
@@ -61,7 +65,7 @@ public class PlayerCombat : MonoBehaviour
 
         if (input.Attack)
         {
-            SwingMeleeWeapon(weapon.Combo.PrimaryCombo[comboIndex].AnimationClipName);
+            SwingMeleeWeapon(basicSwingAnimationClipNames[comboIndex]);
         }
     }
 
@@ -76,11 +80,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void SwingMeleeWeapon(string animationName)
     {
-        if (input.Attack)
-        {
-            if (currentSwingingCoroutine != null) CancelCurrentSwing();
-            currentSwingingCoroutine = StartCoroutine(SwingCoroutine(animationName, maxComboDelay));
-        }
+        if (currentSwingingCoroutine != null) CancelCurrentSwing();
+        currentSwingingCoroutine = StartCoroutine(SwingCoroutine(basicSwingAnimationClipNames[comboIndex], maxComboDelay));
     }
 
     private IEnumerator SwingCoroutine(string animationName, float animationFadeSpeed)
@@ -95,7 +96,13 @@ public class PlayerCombat : MonoBehaviour
 
         animator.CrossFadeInFixedTime(animationName, 0.05f);
 
-        float animationDuration = GetAnimationDuration(animationName) / attackAnimationSpeedMultiplier;
+        // Wait until the attack starts playing
+        while (!animator.GetCurrentAnimatorStateInfo(0).IsName(animationName))
+        {
+            yield return null;
+        }
+
+        float animationDuration = animator.GetCurrentAnimatorStateInfo(0).length;
         yield return new WaitForSeconds(animationDuration);
 
         animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed);
@@ -116,9 +123,9 @@ public class PlayerCombat : MonoBehaviour
 
     private void CancelCurrentSwing()
     {
-        if (currentSwingingCoroutine != null) StopCoroutine(currentSwingingCoroutine);
+        StopCoroutine(currentSwingingCoroutine);
 
-        animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
+        animator.CrossFadeInFixedTime("FlatMovement", 0.1f, animator.GetLayerIndex("UpperBody"));
 
         weapon.DisableTriggers();
         player.IsAttacking = false;
@@ -140,20 +147,5 @@ public class PlayerCombat : MonoBehaviour
     public void DisableWeaponTriggers()
     {
         weapon.DisableTriggers();
-    }
-
-    private float GetAnimationDuration(string animationName)
-    {
-        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
-
-        if (clips == null) return 0f;
-        if (clips.Length == 0) return 0f;
-
-        foreach (AnimationClip clip in clips)
-        {
-            if (clip.name == animationName) return clip.length;
-        }
-
-        return 0f;
     }
 }

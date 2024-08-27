@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class InputReader : MonoBehaviour
 {
-    [HideInInspector] public Vector3 MoveDirection;
-    [HideInInspector] public bool Jump;
-    [HideInInspector] public bool SprintHold;
-    [HideInInspector] public bool SprintRelease;
-    [HideInInspector] public bool Attack;
+    public Vector3 MoveDirection { get; private set; }
+    public bool Jump { get; private set; }
+    public bool SprintHold { get; private set; }
+    public bool SprintRelease { get; private set; }
+    public bool Attack { get; private set; }
 
     private void OnDisable()
     {

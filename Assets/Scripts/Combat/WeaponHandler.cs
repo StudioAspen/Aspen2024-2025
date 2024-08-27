@@ -8,6 +8,10 @@ public class WeaponHandler : MonoBehaviour
 {
     [Header("References")]
     [SerializeField, Self] private CapsuleCollider capsuleCollider;
+    [SerializeField, Parent] private Animator animator;
+
+    [Header("Settings")]
+    [SerializeField] private AnimatorOverrideController overrideAnimator;
 
     [Header("Collisions")]
     [SerializeField] private LayerMask damageableCollidersLayerMask;
@@ -39,6 +43,8 @@ public class WeaponHandler : MonoBehaviour
     private void Awake()
     {
         AssignColliderStartEndPositions();
+
+        animator.runtimeAnimatorController = overrideAnimator;
     }
 
     private void Update()
