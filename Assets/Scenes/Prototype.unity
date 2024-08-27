@@ -216,6 +216,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1860326867}
+  - {fileID: 761884761}
   m_Father: {fileID: 1809467300}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &38475499
@@ -1175,6 +1176,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1124159825}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!1 &761884760
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 761884761}
+  m_Layer: 0
+  m_Name: BodyAimTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &761884761
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761884760}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 7.14}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 38475498}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &783333468
 GameObject:
   m_ObjectHideFlags: 0
@@ -2660,6 +2692,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 4500154652382107413, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_Data.m_SourceObjects.m_Item0.transform
+      value: 
+      objectReference: {fileID: 761884761}
     - target: {fileID: 7536978621657743438, guid: 19dae7578bc56674dae55670ec5dfbf5,
         type: 3}
       propertyPath: m_LocalPosition.x

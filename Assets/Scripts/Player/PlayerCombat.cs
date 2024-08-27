@@ -94,18 +94,19 @@ public class PlayerCombat : MonoBehaviour
 
         player.IsAttacking = true;
 
-        animator.CrossFadeInFixedTime(animationName, 0.05f);
+        animator.CrossFadeInFixedTime(animationName, 0.05f, animator.GetLayerIndex("UpperBody"));
 
         // Wait until the attack starts playing
-        while (!animator.GetCurrentAnimatorStateInfo(0).IsName(animationName))
+        while (!animator.GetCurrentAnimatorStateInfo(animator.GetLayerIndex("UpperBody")).IsName(animationName))
         {
             yield return null;
         }
 
-        float animationDuration = animator.GetCurrentAnimatorStateInfo(0).length;
+        float animationDuration = animator.GetCurrentAnimatorStateInfo(animator.GetLayerIndex("UpperBody")).length;
         yield return new WaitForSeconds(animationDuration);
 
-        animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed);
+        animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed, animator.GetLayerIndex("UpperBody"));
+        animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed, animator.GetLayerIndex("LowerBody"));
 
         if (comboIndex == weapon.Combo.PrimaryCombo.Count - 1)
         {
@@ -126,6 +127,7 @@ public class PlayerCombat : MonoBehaviour
         StopCoroutine(currentSwingingCoroutine);
 
         animator.CrossFadeInFixedTime("FlatMovement", 0.1f, animator.GetLayerIndex("UpperBody"));
+        animator.CrossFadeInFixedTime("FlatMovement", 0.1f, animator.GetLayerIndex("LowerBody"));
 
         weapon.DisableTriggers();
         player.IsAttacking = false;
