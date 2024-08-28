@@ -6,6 +6,8 @@ public class SqaureManager : MonoBehaviour
 {
 
     [Header("Square Stats")]
+    [SerializeField] private GameObject masterLevel;
+    [SerializeField] public Transform masterLevelparent;
     [SerializeField] private int sqaureLevel;
     public Vector3 islandRiseSpeed;
     public bool openSides = true;
@@ -23,6 +25,11 @@ public class SqaureManager : MonoBehaviour
     RaycastHit wallHit3;
     RaycastHit wallHit4;
 
+    public GameObject Border1;
+    public GameObject Border2;
+    public GameObject Border3;
+    public GameObject Border4;
+
     public GameObject islandToSpawn;
     public Vector3 islandSpawnOS;
 
@@ -30,7 +37,12 @@ public class SqaureManager : MonoBehaviour
 
     void Start()
     {
-   
+        StartCoroutine(SpawnDelay());
+        masterLevel = GameObject.Find("MasterLevel");
+        transform.SetParent(masterLevel.transform);
+        masterLevelparent = GameObject.Find("Borders").transform;
+
+       
     }
 
     
@@ -46,10 +58,7 @@ public class SqaureManager : MonoBehaviour
               GetComponent<Transform>().position += islandRiseSpeed;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SqaureCheck();
-        }
+        
                 
        
 
@@ -108,12 +117,17 @@ public class SqaureManager : MonoBehaviour
         Debug.Log(sqaureScore);
     }
 
-    public void SqaureCheck() 
+    private IEnumerator SpawnDelay() 
     {
-        if (openSides == true) 
-        {
-         
-        }
+
+        yield return new WaitForSeconds(5);
+        Border1.transform.SetParent(masterLevelparent);
+        Border2.transform.SetParent(masterLevelparent);
+        Border3.transform.SetParent(masterLevelparent);
+        Border4.transform.SetParent(masterLevelparent);
+
     }
+
+    
 }
     
