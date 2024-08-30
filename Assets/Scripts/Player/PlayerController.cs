@@ -2,6 +2,7 @@ using KBCore.Refs;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
@@ -41,7 +42,6 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool IsAttacking;
     [HideInInspector] public bool CanAttack = true;
     [HideInInspector] public bool IsJumping;
-    [HideInInspector] public bool IsUsingSkill;
     #endregion
 
     [Header("Dash")]
@@ -57,6 +57,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("Camera")]
     public bool CameraLocked = true;
+
+    [HideInInspector] public UnityEvent OnJump = new UnityEvent();
+    [HideInInspector] public UnityEvent OnDash = new UnityEvent();
 
     private void OnValidate()
     {
@@ -130,7 +133,7 @@ public class PlayerController : MonoBehaviour
 
         if (input.Jump)
         {
-            //StopCurrentSwingCoroutine();
+            OnJump?.Invoke();
 
             IsJumping = true;
             IsGrounded = false;
@@ -297,7 +300,7 @@ public class PlayerController : MonoBehaviour
     {
         if (IsDashing) return;
 
-        //if (currentSwingingCoroutine != null) StopCurrentSwingCoroutine();
+        OnDash?.Invoke();
 
         if (dashCoroutine != null) StopDashing();
         dashCoroutine = StartCoroutine(DashCoroutine());

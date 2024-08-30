@@ -1122,6 +1122,92 @@ Transform:
   - {fileID: 240074498007204336}
   m_Father: {fileID: 8375156652100065521}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3223547169141851552
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8777298788123658863}
+  - component: {fileID: 3411764277713293894}
+  m_Layer: 0
+  m_Name: HeadAim
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8777298788123658863
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3223547169141851552}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6409948338435817524}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3411764277713293894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3223547169141851552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c430f382484144e925c097c2d33cfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Weight: 0.75
+  m_Data:
+    m_ConstrainedObject: {fileID: 5038130510924903728}
+    m_SourceObjects:
+      m_Length: 1
+      m_Item0:
+        transform: {fileID: 0}
+        weight: 1
+      m_Item1:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item2:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item3:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item4:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item5:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item6:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item7:
+        transform: {fileID: 0}
+        weight: 0
+    m_Offset: {x: 0, y: 0, z: 0}
+    m_MinLimit: -100
+    m_MaxLimit: 100
+    m_AimAxis: 4
+    m_UpAxis: 4
+    m_WorldUpType: 0
+    m_WorldUpObject: {fileID: 0}
+    m_WorldUpAxis: 2
+    m_MaintainOffset: 0
+    m_ConstrainedAxes:
+      x: 1
+      y: 1
+      z: 0
 --- !u!1 &3236744367210162434
 GameObject:
   m_ObjectHideFlags: 0
@@ -1253,6 +1339,12 @@ MonoBehaviour:
   shiftKeyPressMaxDurationForDash: 0.25
   dashTrailObject: {fileID: 3883737560833677611}
   CameraLocked: 1
+  OnJump:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDash:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &5620550920081884860
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2094,6 +2186,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1114204646101153435}
+  - {fileID: 8777298788123658863}
   m_Father: {fileID: 7536978621657743438}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7365314524093071019
@@ -8299,41 +8392,10 @@ PrefabInstance:
       propertyPath: animator
       value: 
       objectReference: {fileID: 2171180168782530629}
-    - target: {fileID: 618815233110515994, guid: d172d41f775a35d4593cc6dec1b8eed0,
-        type: 3}
-      propertyPath: overrideAnimator
-      value: 
-      objectReference: {fileID: 22100000, guid: 8456c80902e48ac49b8cccfaec465bf0,
-        type: 2}
-    - target: {fileID: 643238577905173981, guid: d172d41f775a35d4593cc6dec1b8eed0,
-        type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 784140094486146350, guid: d172d41f775a35d4593cc6dec1b8eed0,
         type: 3}
       propertyPath: m_Name
       value: LongSword
-      objectReference: {fileID: 0}
-    - target: {fileID: 784140094486146350, guid: d172d41f775a35d4593cc6dec1b8eed0,
-        type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 3649179186203773579, guid: d172d41f775a35d4593cc6dec1b8eed0,
-        type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 6871507518177977818, guid: d172d41f775a35d4593cc6dec1b8eed0,
-        type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 6918874709248315491, guid: d172d41f775a35d4593cc6dec1b8eed0,
-        type: 3}
-      propertyPath: m_Layer
-      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

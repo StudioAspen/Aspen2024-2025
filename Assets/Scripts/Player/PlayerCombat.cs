@@ -31,6 +31,11 @@ public class PlayerCombat : MonoBehaviour
         this.ValidateRefs();
     }
 
+    private void Awake()
+    {
+
+    }
+
     private void Update()
     {
         HandleAnimations();
@@ -63,7 +68,7 @@ public class PlayerCombat : MonoBehaviour
         if (!player.CanAttack) return;
         if (player.IsAttacking) return;
 
-        if (input.Attack)
+        if (input.BasicAttack)
         {
             SwingMeleeWeapon(basicSwingAnimationClipNames[comboIndex]);
         }
@@ -106,7 +111,6 @@ public class PlayerCombat : MonoBehaviour
         yield return new WaitForSeconds(animationDuration);
 
         animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed, animator.GetLayerIndex("UpperBody"));
-        animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed, animator.GetLayerIndex("LowerBody"));
 
         if (comboIndex == weapon.Combo.PrimaryCombo.Count - 1)
         {
@@ -127,7 +131,6 @@ public class PlayerCombat : MonoBehaviour
         StopCoroutine(currentSwingingCoroutine);
 
         animator.CrossFadeInFixedTime("FlatMovement", 0.1f, animator.GetLayerIndex("UpperBody"));
-        animator.CrossFadeInFixedTime("FlatMovement", 0.1f, animator.GetLayerIndex("LowerBody"));
 
         weapon.DisableTriggers();
         player.IsAttacking = false;

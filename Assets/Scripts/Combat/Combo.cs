@@ -5,5 +5,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/Combo", order = 1)]
 public class Combo : ScriptableObject
 {
-    [field: SerializeField] public List<MeleeSwing> PrimaryCombo { get; private set; } = new List<MeleeSwing>();
+    [field: SerializeField] public List<PlayerActions> PrimaryCombo { get; private set; } = new List<PlayerActions>();
+}
+
+public enum PlayerActions
+{
+    Jump,
+    Dash,
+    BasicAttack
 }
