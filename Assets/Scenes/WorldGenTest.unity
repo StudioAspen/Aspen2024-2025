@@ -1124,6 +1124,7 @@ MonoBehaviour:
   - {fileID: 0}
   selected_Option: []
   spotSelect: {x: 0, y: 0, z: 0}
+  borderRemove: {fileID: 0}
 --- !u!1 &395553793
 GameObject:
   m_ObjectHideFlags: 0
@@ -5087,7 +5088,7 @@ PrefabInstance:
     - target: {fileID: 2902516037097042625, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
       propertyPath: m_IsTrigger
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3999374681703134211, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
@@ -5107,7 +5108,7 @@ PrefabInstance:
     - target: {fileID: 4426977838872443214, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
       propertyPath: m_IsTrigger
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5061941789919869376, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
@@ -5117,7 +5118,7 @@ PrefabInstance:
     - target: {fileID: 5522762396672082110, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
       propertyPath: m_IsTrigger
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5845768189703714335, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
@@ -5208,7 +5209,7 @@ PrefabInstance:
     - target: {fileID: 8820467898614780323, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
       propertyPath: m_IsTrigger
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -17,6 +17,8 @@ public class SelectionScript : MonoBehaviour
     public GameObject[] selected_Option;
     public Vector3 spotSelect;
 
+    public BorderRemover borderRemove;
+
 
     void Start()
     {
@@ -26,9 +28,12 @@ public class SelectionScript : MonoBehaviour
 
     void Update()
     {
-            selectOptions = GameObject.FindGameObjectsWithTag("UnSelected");
-            selected_Option= GameObject.FindGameObjectsWithTag("Selected");
-            if (selected_Option.Length == 1) 
+            
+        selectOptions = GameObject.FindGameObjectsWithTag("UnSelected");
+        selected_Option= GameObject.FindGameObjectsWithTag("Selected");
+
+       
+        if (selected_Option.Length == 1) 
             {
             spotSelect = selected_Option[0].transform.position;
 
@@ -80,9 +85,38 @@ public class SelectionScript : MonoBehaviour
     private IEnumerator IslandToSpawn() 
     {
 
+        yield return new WaitForSeconds(1/*make variable for spawn in buffer*/);
+
+        borderRemove = GameObject.FindObjectOfType<BorderRemover>();
+
+        if (borderRemove.bordersToRemove[1].gameObject.name == "Wall 1")
+        {
+            islandSpawnOffsetX.Set((float)-0.01, 0, 0);
+            islandSpawnOffsetZ.Set(0, 0, (float)15.07);
+        }
+
+        if (borderRemove.bordersToRemove[0].gameObject.name == "Wall 2")
+        {
+            islandSpawnOffsetX.Set((float)15.14, 0, 0);
+            islandSpawnOffsetZ.Set(0, 0, (float)0.04);
+        }
+
+        if (borderRemove.bordersToRemove[1].gameObject.name == "Wall 3")
+        {
+            islandSpawnOffsetX.Set((float)-0.01, 0, 0);
+            islandSpawnOffsetZ.Set(0, 0, (float)-15.07);
+        }
+
+        if (borderRemove.bordersToRemove[1].gameObject.name == "Wall 4")
+        {
+            islandSpawnOffsetX.Set((float)-15.14, 0, 0);
+            islandSpawnOffsetZ.Set(0, 0, (float)0.04);
+        }
+
+
         yield return new WaitForSeconds(2/*make variable for spawn in buffer*/);
 
-        Instantiate(islandToSpawn, spotSelect + islandSpawnOffsetY , Quaternion.identity);
+        Instantiate(islandToSpawn, spotSelect + islandSpawnOffsetX + islandSpawnOffsetY + islandSpawnOffsetZ, Quaternion.identity);
 
 
     }

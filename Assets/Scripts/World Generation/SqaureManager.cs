@@ -62,7 +62,7 @@ public class SqaureManager : MonoBehaviour
                 
        
 
-        
+        /*
             if (Physics.Raycast(rayFront, out wallHit, 100f))
             {
                 Debug.DrawRay(transform.position + raycastoffset, transform.TransformDirection(Vector3.forward) * wallHit.distance, Color.red);
@@ -101,7 +101,7 @@ public class SqaureManager : MonoBehaviour
                 wallHitScore4 = 1;
                 Debug.Log(wallHit4.point);
             }
-            else { wallHitScore4 = 0; }
+            else { wallHitScore4 = 0; }*/
         
         
 
@@ -120,7 +120,7 @@ public class SqaureManager : MonoBehaviour
     private IEnumerator SpawnDelay() 
     {
 
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(2);
         Border1.transform.SetParent(masterLevelparent);
         Border2.transform.SetParent(masterLevelparent);
         Border3.transform.SetParent(masterLevelparent);
