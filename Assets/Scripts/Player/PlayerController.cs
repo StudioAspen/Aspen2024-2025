@@ -133,16 +133,7 @@ public class PlayerController : MonoBehaviour
 
         if (input.Jump)
         {
-            OnJump?.Invoke();
-
-            IsJumping = true;
-            IsGrounded = false;
-
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * acceleration.y);
-
-            animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
-
-            currentJumpCount++;
+            Jump();
         }
     }
 
@@ -294,6 +285,20 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("IsGrounded", IsGrounded);
 
         dashTrailObject.SetActive(IsDashing);
+    }
+
+    private void Jump()
+    {
+        OnJump?.Invoke();
+
+        IsJumping = true;
+        IsGrounded = false;
+
+        velocity.y = Mathf.Sqrt(jumpHeight * -2f * acceleration.y);
+
+        animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
+
+        currentJumpCount++;
     }
 
     private void Dash()
