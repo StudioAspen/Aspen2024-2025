@@ -31,9 +31,14 @@ public class PlayerCombat : MonoBehaviour
         this.ValidateRefs();
     }
 
-    private void Awake()
+    private void OnEnable()
     {
+        input.BasicAttack.AddListener(HandleSwingInput);
+    }
 
+    private void OnDisable()
+    {
+        input.BasicAttack.RemoveListener(HandleSwingInput);
     }
 
     private void Update()
@@ -42,8 +47,6 @@ public class PlayerCombat : MonoBehaviour
         RotateTowardsAttackAngle();
 
         HandleComboTimer();
-
-        HandleSwingInput();
 
         HandleWeaponCollisions();
     }
@@ -68,10 +71,7 @@ public class PlayerCombat : MonoBehaviour
         if (!player.CanAttack) return;
         if (player.IsAttacking) return;
 
-        if (input.BasicAttack)
-        {
-            SwingMeleeWeapon(basicSwingAnimationClipNames[comboIndex]);
-        }
+        SwingMeleeWeapon(basicSwingAnimationClipNames[comboIndex]);
     }
 
     private void RotateTowardsAttackAngle()

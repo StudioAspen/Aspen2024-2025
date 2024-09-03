@@ -58,17 +58,23 @@ public class PlayerController : MonoBehaviour
     [Header("Camera")]
     public bool CameraLocked = true;
 
-    [HideInInspector] public UnityEvent OnJump = new UnityEvent();
-    [HideInInspector] public UnityEvent OnDash = new UnityEvent();
-
     private void OnValidate()
     {
         this.ValidateRefs();
     }
 
-    private void Awake()
+    private void OnEnable()
     {
-        
+        input.Jump.AddListener(HandleJumpInput);
+        input.SprintHold.AddListener(HandleSprintInput);
+        input.SprintRelease.AddListener(HandleDashInput);
+    }
+
+    private void OnDisable()
+    {
+        input.Jump.RemoveListener(HandleJumpInput);
+        input.SprintHold.RemoveListener(HandleSprintInput);
+        input.SprintRelease.RemoveListener(HandleDashInput);
     }
 
     void Start()
@@ -81,14 +87,12 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         CheckGrounded();
-        
+
         HandleGroundedMovementInput();
-        HandleJumpInput();
-        HandleSprintInput();
-        HandleDashInput();
 
         HandleGroundedMovement();
         HandleGravity();
+        HandleDash();
         HandleSlopeSliding();
         HandleSpeed();
 
@@ -131,42 +135,31 @@ public class PlayerController : MonoBehaviour
         if (!IsGrounded && currentJumpCount >= maxJumpCount) return;
         if (IsSliding) return;
 
-        if (input.Jump)
-        {
-            Jump();
-        }
+        Jump();
     }
 
     private void HandleSprintInput()
     {
         if (!CanMove) return;
 
-        if (input.SprintHold)
-        {
-            IsSprinting = true;
-            shiftKeyPressTimer += Time.unscaledDeltaTime;
-        }
+        IsSprinting = true;
+        shiftKeyPressTimer += Time.unscaledDeltaTime;
     }
 
     private void HandleDashInput()
     {
-        if(!IsDashing) dashDelayTimer += Time.deltaTime;
-
-        if (input.SprintRelease)
+        if (dashDelayTimer > dashDelayDuration)
         {
-            if (dashDelayTimer > dashDelayDuration)
+            if (shiftKeyPressTimer < shiftKeyPressMaxDurationForDash)
             {
-                if (shiftKeyPressTimer < shiftKeyPressMaxDurationForDash)
-                {
-                    Dash();
-                }
-                else
-                {
-                    IsSprinting = false;
-                }
+                Dash();
             }
-            shiftKeyPressTimer = 0f;
+            else
+            {
+                IsSprinting = false;
+            }
         }
+        shiftKeyPressTimer = 0f;
     }
 
     private void HandleGroundedMovement()
@@ -217,6 +210,11 @@ public class PlayerController : MonoBehaviour
         }
 
         controller.Move(Time.deltaTime * velocity.y * Vector3.up);
+    }
+
+    private void HandleDash()
+    {
+        if (!IsDashing) dashDelayTimer += Time.deltaTime;
     }
 
     private void HandleSlopeSliding()
@@ -289,12 +287,11 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        OnJump?.Invoke();
-
         IsJumping = true;
         IsGrounded = false;
 
         velocity.y = Mathf.Sqrt(jumpHeight * -2f * acceleration.y);
+        inAirTimer = 0.01f;
 
         animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
 
@@ -304,8 +301,6 @@ public class PlayerController : MonoBehaviour
     private void Dash()
     {
         if (IsDashing) return;
-
-        OnDash?.Invoke();
 
         if (dashCoroutine != null) StopDashing();
         dashCoroutine = StartCoroutine(DashCoroutine());
