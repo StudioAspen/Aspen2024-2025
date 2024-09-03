@@ -1,4 +1,5 @@
 using KBCore.Refs;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -26,6 +27,11 @@ public class PlayerCombat : MonoBehaviour
 
     private string[] basicSwingAnimationClipNames = { "BasicSwing1", "BasicSwing2", "BasicSwing3" };
 
+    [Header("Combo")]
+    [SerializeField] private float comboListenDuration = 1f;
+    private float comboListenTimer;
+    [SerializeField] private List<PlayerActions> currentComboList = new List<PlayerActions>();
+
     private void OnValidate()
     {
         this.ValidateRefs();
@@ -34,11 +40,15 @@ public class PlayerCombat : MonoBehaviour
     private void OnEnable()
     {
         input.BasicAttack.AddListener(HandleSwingInput);
+
+        input.OnPlayerActionInput.AddListener(AddActionToCombo);
     }
 
     private void OnDisable()
     {
         input.BasicAttack.RemoveListener(HandleSwingInput);
+
+        input.OnPlayerActionInput.RemoveListener(AddActionToCombo);
     }
 
     private void Update()
@@ -47,8 +57,37 @@ public class PlayerCombat : MonoBehaviour
         RotateTowardsAttackAngle();
 
         HandleComboTimer();
+        HandleComboList();
 
         HandleWeaponCollisions();
+    }
+
+    private void HandleComboList()
+    {
+        if (comboListenTimer < comboListenDuration * 2f) comboListenTimer += Time.deltaTime;
+
+        if (comboListenTimer > comboListenDuration) currentComboList.Clear();
+    }
+
+    private void AddActionToCombo(PlayerActions newAction)
+    {
+        comboListenTimer = 0;
+
+        currentComboList.Add(newAction);
+
+        AttemptToExecuteCombo(currentComboList);
+    }
+
+    private void AttemptToExecuteCombo(List<PlayerActions> currentCombo)
+    {
+        foreach(Combo combo in weapon.Combos)
+        {
+            if (combo.Equals(currentCombo))
+            {
+                Debug.Log("COMBO");
+                currentComboList.Clear();
+            }
+        }
     }
 
     private void HandleComboTimer()
@@ -112,7 +151,7 @@ public class PlayerCombat : MonoBehaviour
 
         animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed, animator.GetLayerIndex("UpperBody"));
 
-        if (comboIndex == weapon.Combo.PrimaryCombo.Count - 1)
+        if (comboIndex == 2)
         {
             comboIndex = 0;
 

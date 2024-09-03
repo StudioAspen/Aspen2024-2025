@@ -6,13 +6,20 @@ using UnityEngine.Events;
 
 public class InputReader : MonoBehaviour
 {
-    [HideInInspector] public UnityEvent<Vector2> Move;
+    [HideInInspector] public UnityEvent<Vector3> Move;
     [HideInInspector] public UnityEvent Jump;
     [HideInInspector] public UnityEvent SprintHold;
     [HideInInspector] public UnityEvent SprintRelease;
     [HideInInspector] public UnityEvent BasicAttack;
 
+    [HideInInspector] public UnityEvent<PlayerActions> OnPlayerActionInput;
+
     public Vector3 MoveDirection { get; private set; }
+
+    private void OnEnable()
+    {
+        
+    }
 
     private void OnDisable()
     {
@@ -21,18 +28,37 @@ public class InputReader : MonoBehaviour
 
     private void Update()
     {
-        InvokeInputs();
-
         UpdateInputs();
+
+        InvokeInputs(); 
     }
 
     private void InvokeInputs()
     {
-        Move?.Invoke(new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")));
-        if (Input.GetKeyDown(KeyCode.Space)) Jump?.Invoke();
-        if (Input.GetKey(KeyCode.LeftShift)) SprintHold?.Invoke();
-        if (Input.GetKeyUp(KeyCode.LeftShift)) SprintRelease?.Invoke();
-        if (Input.GetKeyDown(KeyCode.Mouse0)) BasicAttack?.Invoke();
+        if(MoveDirection.sqrMagnitude > 0) Move?.Invoke(MoveDirection);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Jump?.Invoke();
+            OnPlayerActionInput?.Invoke(PlayerActions.Jump);
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift)) 
+        {
+            SprintHold?.Invoke();
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftShift)) 
+        {
+            SprintRelease?.Invoke();
+            OnPlayerActionInput?.Invoke(PlayerActions.Dash);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Mouse0)) 
+        {
+            BasicAttack?.Invoke();
+            OnPlayerActionInput?.Invoke(PlayerActions.BasicAttack);
+        }
     }
 
     private void UpdateInputs()

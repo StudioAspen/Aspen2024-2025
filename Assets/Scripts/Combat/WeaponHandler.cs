@@ -8,7 +8,7 @@ public class WeaponHandler : MonoBehaviour
 {
     [Header("References")]
     [SerializeField, Self] private CapsuleCollider capsuleCollider;
-    [SerializeField, Parent] private Animator animator;
+    private Animator animator;
 
     [Header("Settings")]
     [SerializeField] private AnimatorOverrideController overrideAnimator;
@@ -22,7 +22,7 @@ public class WeaponHandler : MonoBehaviour
     private int currentHitFrame;
 
     [Header("Combo")]
-    public Combo Combo;
+    public List<Combo> Combos;
 
     [Header("Stats")]
     [SerializeField] private Vector2 attackDamageRange = new Vector2(100, 200);
@@ -42,6 +42,8 @@ public class WeaponHandler : MonoBehaviour
 
     private void Awake()
     {
+        animator = GetComponentInParent<Animator>();
+
         AssignColliderStartEndPositions();
 
         animator.runtimeAnimatorController = overrideAnimator;

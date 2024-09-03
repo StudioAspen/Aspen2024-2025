@@ -5104,14 +5104,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   capsuleCollider: {fileID: 1259378818332639156}
-  animator: {fileID: 0}
   overrideAnimator: {fileID: 22100000, guid: 8456c80902e48ac49b8cccfaec465bf0, type: 2}
   damageableCollidersLayerMask:
     serializedVersion: 2
     m_Bits: 64
   colliderStartTransform: {fileID: 2382167382557116116}
   colliderEndTransform: {fileID: 2628417811129990337}
-  Combo: {fileID: 11400000, guid: 5a881eca4a2645847936f07fe2899b01, type: 2}
+  Combos:
+  - {fileID: 11400000, guid: 5a881eca4a2645847936f07fe2899b01, type: 2}
+  - {fileID: 11400000, guid: ee20c7f981a16764ab141c07b0498542, type: 2}
   attackDamageRange: {x: 100, y: 200}
   impactFramesDuration: 0.1
   trailObject: {fileID: 6918874709248315491}
