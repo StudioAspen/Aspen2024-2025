@@ -82,7 +82,7 @@ public class PlayerCombat : MonoBehaviour
     {
         foreach(Combo combo in weapon.Combos)
         {
-            if (combo.Equals(currentCombo))
+            if (combo.IsIn(currentCombo))
             {
                 Debug.Log("COMBO");
                 currentComboList.Clear();
