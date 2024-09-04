@@ -2,9 +2,6 @@ using KBCore.Refs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using Unity.VisualScripting;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
@@ -29,6 +26,7 @@ public class PlayerCombat : MonoBehaviour
 
     [Header("Combo")]
     [SerializeField] private float comboListenDuration = 1f;
+    [SerializeField] private int maxComboListenCount = 10;
     private float comboListenTimer;
     [SerializeField] private List<PlayerActions> currentComboList = new List<PlayerActions>();
 
@@ -67,6 +65,8 @@ public class PlayerCombat : MonoBehaviour
         if (comboListenTimer < comboListenDuration * 2f) comboListenTimer += Time.deltaTime;
 
         if (comboListenTimer > comboListenDuration) currentComboList.Clear();
+
+        if(currentComboList.Count > maxComboListenCount) currentComboList.RemoveAt(0);
     }
 
     private void AddActionToCombo(PlayerActions newAction)
@@ -94,17 +94,17 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private void ReplaceAnimationClipInState(Animator anim, AnimationClip clip)
+    private void ReplaceAnimationClipInState(Animator anim, AnimationClip newClip)
     {
         AnimatorOverrideController aoc = new AnimatorOverrideController(anim.runtimeAnimatorController);
 
         var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
 
-        foreach(var a in aoc.animationClips)
+        foreach(AnimationClip currentClip in aoc.animationClips)
         {
-            if(a.name == "ComboPlaceholder")
+            if(currentClip.name == "ComboPlaceholder")
             {
-                anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(a, clip));
+                anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(currentClip, newClip));
             }
         }
 

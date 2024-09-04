@@ -21,10 +21,10 @@ public class Combo : ScriptableObject
             {
                 if (i + j >= other.Count) break;
 
-                PlayerActions otherIndex = other[i + j];
-                PlayerActions currIndex = Actions[j];
+                PlayerActions otherAction = other[i + j];
+                PlayerActions currAction = Actions[j];
 
-                if (otherIndex == currIndex) matches++;
+                if (otherAction == currAction) matches++;
             }
 
             if(matches == Actions.Count) return true;
