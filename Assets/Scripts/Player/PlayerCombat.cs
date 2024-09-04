@@ -84,10 +84,33 @@ public class PlayerCombat : MonoBehaviour
         {
             if (combo.IsIn(currentCombo))
             {
-                Debug.Log("COMBO");
+                CancelCurrentSwing();
+
+                ReplaceAnimationClipInState(animator, combo.AnimationClip);
+                animator.CrossFadeInFixedTime("Combo", 0.1f, animator.GetLayerIndex("UpperBody"));
+
                 currentComboList.Clear();
             }
         }
+    }
+
+    private void ReplaceAnimationClipInState(Animator anim, AnimationClip clip)
+    {
+        AnimatorOverrideController aoc = new AnimatorOverrideController(anim.runtimeAnimatorController);
+
+        var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
+
+        foreach(var a in aoc.animationClips)
+        {
+            if(a.name == "ComboPlaceholder")
+            {
+                anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(a, clip));
+            }
+        }
+
+        aoc.ApplyOverrides(anims);
+
+        animator.runtimeAnimatorController = aoc;
     }
 
     private void HandleComboTimer()

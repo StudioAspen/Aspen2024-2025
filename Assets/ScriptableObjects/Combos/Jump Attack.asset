@@ -12,4 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6930ec783baaa4d980dc4fde685503, type: 3}
   m_Name: Jump Attack
   m_EditorClassIdentifier: 
+  <Name>k__BackingField: Jump Attack
+  <AnimationClip>k__BackingField: {fileID: 7400000, guid: 9a289e37796509b4e8b35c5dba78199a,
+    type: 3}
   <Actions>k__BackingField: 0000000002000000
