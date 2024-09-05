@@ -287,6 +287,8 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
+        input.OnPlayerActionInput?.Invoke(PlayerActions.Jump);
+
         IsJumping = true;
         IsGrounded = false;
 
@@ -302,7 +304,9 @@ public class PlayerController : MonoBehaviour
     {
         if (IsDashing) return;
 
-        if (dashCoroutine != null) StopDashing();
+        input.OnPlayerActionInput?.Invoke(PlayerActions.Dash);
+
+        StopDashing();
         dashCoroutine = StartCoroutine(DashCoroutine());
         dashDelayTimer = 0f;
     }
@@ -344,7 +348,9 @@ public class PlayerController : MonoBehaviour
 
     private void StopDashing()
     {
-        if (dashCoroutine != null) StopCoroutine(dashCoroutine);
+        if (dashCoroutine == null) return;
+            
+        StopCoroutine(dashCoroutine);
 
         IsDashing = false;
         CanMove = true;

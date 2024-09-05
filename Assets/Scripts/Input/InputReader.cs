@@ -40,7 +40,6 @@ public class InputReader : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Jump?.Invoke();
-            OnPlayerActionInput?.Invoke(PlayerActions.Jump);
         }
 
         if (Input.GetKey(KeyCode.LeftShift)) 
@@ -51,13 +50,11 @@ public class InputReader : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.LeftShift)) 
         {
             SprintRelease?.Invoke();
-            OnPlayerActionInput?.Invoke(PlayerActions.Dash);
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse0)) 
         {
             BasicAttack?.Invoke();
-            OnPlayerActionInput?.Invoke(PlayerActions.BasicAttack);
         }
     }
 

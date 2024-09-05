@@ -74,11 +74,9 @@ public class PlayerCombat : MonoBehaviour
         comboListenTimer = 0;
 
         currentComboList.Add(newAction);
-
-        AttemptToExecuteCombo(currentComboList);
     }
 
-    private void AttemptToExecuteCombo(List<PlayerActions> currentCombo)
+    private bool AttemptToExecuteCombo(List<PlayerActions> currentCombo)
     {
         foreach(Combo combo in weapon.Combos)
         {
@@ -87,11 +85,18 @@ public class PlayerCombat : MonoBehaviour
                 CancelCurrentSwing();
 
                 ReplaceAnimationClipInState(animator, combo.AnimationClip);
-                animator.CrossFadeInFixedTime("Combo", 0.1f, animator.GetLayerIndex("UpperBody"));
+
+                SwingMeleeWeapon("Combo");
 
                 currentComboList.Clear();
+
+                comboIndex = 0;
+
+                return true;
             }
         }
+
+        return false;
     }
 
     private void ReplaceAnimationClipInState(Animator anim, AnimationClip newClip)
@@ -133,7 +138,13 @@ public class PlayerCombat : MonoBehaviour
         if (!player.CanAttack) return;
         if (player.IsAttacking) return;
 
+        input.OnPlayerActionInput?.Invoke(PlayerActions.BasicAttack);
+
+        if (AttemptToExecuteCombo(currentComboList)) return;
+
+        Debug.Log("basic");
         SwingMeleeWeapon(basicSwingAnimationClipNames[comboIndex]);
+        Debug.Log(comboIndex);
     }
 
     private void RotateTowardsAttackAngle()
@@ -147,8 +158,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void SwingMeleeWeapon(string animationName)
     {
-        if (currentSwingingCoroutine != null) CancelCurrentSwing();
-        currentSwingingCoroutine = StartCoroutine(SwingCoroutine(basicSwingAnimationClipNames[comboIndex], maxComboDelay));
+        CancelCurrentSwing();
+        currentSwingingCoroutine = StartCoroutine(SwingCoroutine(animationName, maxComboDelay));
     }
 
     private IEnumerator SwingCoroutine(string animationName, float animationFadeSpeed)
@@ -190,6 +201,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void CancelCurrentSwing()
     {
+        if (currentSwingingCoroutine == null) return;
+
         StopCoroutine(currentSwingingCoroutine);
 
         animator.CrossFadeInFixedTime("FlatMovement", 0.1f, animator.GetLayerIndex("UpperBody"));
