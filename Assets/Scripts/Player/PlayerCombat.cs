@@ -84,7 +84,7 @@ public class PlayerCombat : MonoBehaviour
             {
                 CancelCurrentSwing();
 
-                ReplaceAnimationClipInState(animator, combo.AnimationClip);
+                ReplaceComboAnimationClip(animator, combo.AnimationClip);
 
                 SwingMeleeWeapon("Combo");
 
@@ -99,7 +99,7 @@ public class PlayerCombat : MonoBehaviour
         return false;
     }
 
-    private void ReplaceAnimationClipInState(Animator anim, AnimationClip newClip)
+    private void ReplaceComboAnimationClip(Animator anim, AnimationClip newClip)
     {
         AnimatorOverrideController aoc = new AnimatorOverrideController(anim.runtimeAnimatorController);
 
@@ -149,6 +149,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void RotateTowardsAttackAngle()
     {
+        if (player.IsMoving) return;
+
         if (player.IsAttacking)
         {
             Quaternion targetRotation = Quaternion.Euler(0, instantaneousAttackAngle, 0);

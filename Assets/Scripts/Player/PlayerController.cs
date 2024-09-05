@@ -169,7 +169,7 @@ public class PlayerController : MonoBehaviour
 
         if (IsMoving)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
 
             velocity.x = Mathf.Lerp(velocity.x, currentMovementSpeed * targetForwardDirection.x, acceleration.x * Time.deltaTime);
             velocity.z = Mathf.Lerp(velocity.z, currentMovementSpeed * targetForwardDirection.z, acceleration.z * Time.deltaTime);
