@@ -77,4 +77,33 @@ public class Combo : ScriptableObject
 
         return null;
     }
+
+    /// <summary>
+    /// Returns the combo with the most number of actions given a list of combos
+    /// </summary>
+    /// <param name="combos"></param>
+    /// <returns></returns>
+    public static Combo GetLongestCombo(List<Combo> combos)
+    {
+        if (combos.Count == 0) return null;
+        if (combos.Count == 1) return combos[0];
+
+        Combo result = null;
+
+        foreach (Combo combo in combos)
+        {
+            if (result == null)
+            {
+                result = combo;
+                continue;
+            }
+
+            if (combo.Actions.Count > result.Actions.Count)
+            {
+                result = combo;
+            }
+        }
+
+        return result;
+    }
 }

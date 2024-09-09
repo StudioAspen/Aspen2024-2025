@@ -5117,6 +5117,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7dd133f57443d2e40ac8fa57e618de5f, type: 2}
   - {fileID: 11400000, guid: 5a881eca4a2645847936f07fe2899b01, type: 2}
   - {fileID: 11400000, guid: ee20c7f981a16764ab141c07b0498542, type: 2}
+  - {fileID: 11400000, guid: f8212da7b983a6a429a415d45f7d0386, type: 2}
   attackDamageRange: {x: 100, y: 200}
   impactFramesDuration: 0.1
   trailObject: {fileID: 6918874709248315491}
