@@ -15,5 +15,5 @@ MonoBehaviour:
   <Name>k__BackingField: Single Attack 1
   <AnimationClip>k__BackingField: {fileID: -1115183702260151492, guid: 3d21b82dff41d12438297e2cbeefb519,
     type: 3}
-  <AnimationSpeed>k__BackingField: 2
+  <AnimationSpeed>k__BackingField: 1.75
   <Actions>k__BackingField: 02000000

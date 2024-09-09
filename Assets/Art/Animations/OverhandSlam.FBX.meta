@@ -595,8 +595,15 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.76694596
+      - time: 1
         functionName: DisableWeaponTriggers
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 1
+        functionName: FinishAnimation
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

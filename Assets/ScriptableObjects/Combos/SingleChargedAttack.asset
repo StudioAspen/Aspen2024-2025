@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6930ec783baaa4d980dc4fde685503, type: 3}
   m_Name: SingleChargedAttack
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Triple Attack 1 Hold
-  <AnimationClip>k__BackingField: {fileID: -203655887218126122, guid: 9c6181840751ac9479a8f7cefc3b8ec4,
+  <Name>k__BackingField: Single Charged Attack
+  <AnimationClip>k__BackingField: {fileID: 7400000, guid: 5354b4f390c868842b96d7c4c201bdf8,
     type: 3}
   <AnimationSpeed>k__BackingField: 1
-  <Actions>k__BackingField: 02000000020000000200000003000000
+  <Actions>k__BackingField: 03000000
