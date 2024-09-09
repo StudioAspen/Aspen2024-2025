@@ -40,8 +40,10 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool IsSprinting;
     [HideInInspector] public bool IsDashing;
     [HideInInspector] public bool IsAttacking;
+    [HideInInspector] public bool IsChargingAttack;
     [HideInInspector] public bool CanAttack = true;
     [HideInInspector] public bool IsJumping;
+    [HideInInspector] public bool IsExecutingSkill;
     #endregion
 
     [Header("Dash")]

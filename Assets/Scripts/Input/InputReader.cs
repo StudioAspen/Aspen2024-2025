@@ -10,7 +10,10 @@ public class InputReader : MonoBehaviour
     [HideInInspector] public UnityEvent Jump;
     [HideInInspector] public UnityEvent SprintHold;
     [HideInInspector] public UnityEvent SprintRelease;
-    [HideInInspector] public UnityEvent BasicAttack;
+    [HideInInspector] public UnityEvent Attack1Hold;
+    [HideInInspector] public UnityEvent Attack1Release;
+    [HideInInspector] public UnityEvent Attack2Hold;
+    [HideInInspector] public UnityEvent Attack2Release;
 
     [HideInInspector] public UnityEvent<PlayerActions> OnPlayerActionInput;
 
@@ -52,9 +55,24 @@ public class InputReader : MonoBehaviour
             SprintRelease?.Invoke();
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse0)) 
+        if (Input.GetKey(KeyCode.Mouse0))
         {
-            BasicAttack?.Invoke();
+            Attack1Hold?.Invoke();
+        }
+
+        if (Input.GetKeyUp(KeyCode.Mouse0))
+        {
+            Attack1Release?.Invoke();
+        }
+
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            Attack2Hold?.Invoke();
+        }
+
+        if (Input.GetKeyUp(KeyCode.Mouse1))
+        {
+            Attack2Release?.Invoke();
         }
     }
 
@@ -62,4 +80,14 @@ public class InputReader : MonoBehaviour
     {
         MoveDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")).normalized;
     }
+}
+
+public enum PlayerActions
+{
+    Jump,
+    Dash,
+    Attack1,
+    ChargeAttack1,
+    Attack2,
+    ChargeAttack2
 }

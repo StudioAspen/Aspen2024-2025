@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a6930ec783baaa4d980dc4fde685503, type: 3}
-  m_Name: Dash Attack
+  m_Name: TripleAttack1Hold
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Dash Attack
+  <Name>k__BackingField: Triple Attack 1 Hold
   <AnimationClip>k__BackingField: {fileID: 7400000, guid: ce17781955d25c647922801319f24e9e,
     type: 3}
-  <Actions>k__BackingField: 0100000002000000
+  <Actions>k__BackingField: 02000000020000000200000003000000
