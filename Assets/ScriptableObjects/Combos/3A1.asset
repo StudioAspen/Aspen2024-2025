@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a6930ec783baaa4d980dc4fde685503, type: 3}
-  m_Name: TripleAttack1
+  m_Name: 3A1
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Single Attack 1
   <AnimationClip>k__BackingField: {fileID: -3891449819406770849, guid: 11c317ca660f7a740b666b9a9e0835e4,

@@ -108,9 +108,11 @@ public class PlayerCombat : MonoBehaviour
 
         attack2HoldTimer += Time.unscaledDeltaTime;
 
-        if(attack2HoldTimer > attackReleaseThreshold)
+        if (attack2HoldTimer > attackReleaseThreshold)
         {
-            // charge swing 2
+            player.IsChargingAttack = true;
+
+            // play the animation matching the predicted potential combo
         }
     }
 
@@ -119,11 +121,16 @@ public class PlayerCombat : MonoBehaviour
         if (!player.CanAttack) return;
         if (player.IsAttacking) return;
 
-        if (attack2HoldTimer < attackReleaseThreshold)
+        if (attack2HoldTimer < attackReleaseThreshold) // regular swing 2
         {
-            // swing 2
+            input.OnPlayerActionInput?.Invoke(PlayerActions.Attack2);
+        }
+        else // charged swing 2
+        {
+            input.OnPlayerActionInput?.Invoke(PlayerActions.ChargeAttack2);
         }
 
+        player.IsChargingAttack = false;
         attack2HoldTimer = 0;
     }
 
@@ -137,8 +144,6 @@ public class PlayerCombat : MonoBehaviour
             potentialCombos.Clear();
             predictedCombos.Clear();
         }
-
-        if(currentComboList.Count > maxComboListenCount) currentComboList.RemoveAt(0);
     }
 
     private void HandleOnPlayerActionInput(PlayerActions incomingAction)
@@ -160,6 +165,8 @@ public class PlayerCombat : MonoBehaviour
         {
             currentComboList.Clear();
             currentComboList.Add(incomingAction);
+
+            GenerateComboLists();
 
             comboToExecute = Combo.GetSingleActionCombo(weapon.Combos, incomingAction);
             if (comboToExecute != null)

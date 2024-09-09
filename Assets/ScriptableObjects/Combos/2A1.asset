@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a6930ec783baaa4d980dc4fde685503, type: 3}
-  m_Name: Jump Attack
+  m_Name: 2A1
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Jump Attack
-  <AnimationClip>k__BackingField: {fileID: 7400000, guid: 9a289e37796509b4e8b35c5dba78199a,
+  <Name>k__BackingField: 2A1
+  <AnimationClip>k__BackingField: {fileID: 6799651534840860903, guid: b8075c9babebc1a4a877c916f1b2fb05,
     type: 3}
-  <Actions>k__BackingField: 0000000002000000
+  <AnimationSpeed>k__BackingField: 1.75
+  <Actions>k__BackingField: 0200000002000000

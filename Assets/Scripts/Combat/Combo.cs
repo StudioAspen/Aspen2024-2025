@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/Combo", order = 1)]
@@ -11,6 +13,13 @@ public class Combo : ScriptableObject
     [field: SerializeField] public float AnimationSpeed { get; private set; } = 1f;
     [field: SerializeField] public List<PlayerActions> Actions { get; private set; } = new List<PlayerActions>();
 
+    private void OnValidate()
+    {
+#if UNITY_EDITOR
+        Name = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(this));
+#endif
+    }
+
     /// <summary>
     /// Checks to see if the given combo (starting from the front) is potentially in the other combo
     /// </summary>
@@ -19,12 +28,6 @@ public class Combo : ScriptableObject
     /// <returns></returns>
     public static bool IsPotentiallyIn(List<PlayerActions> givenComboList, List<PlayerActions> otherComboList) 
     {
-        // comboList = {a}
-        // Actions = {a, a, a, b}
-
-        // comboList = {a, a}
-        // Actions = {a, a, a, b}
-
         if(otherComboList.Count > givenComboList.Count) return false;
 
         List<PlayerActions> subList = givenComboList.GetRange(0, Mathf.Min(givenComboList.Count, otherComboList.Count));
