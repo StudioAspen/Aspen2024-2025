@@ -21,7 +21,6 @@ public class PlayerCombat : MonoBehaviour
 
     [Header("Combo")]
     [SerializeField] private float comboListenDuration = 1f;
-    [SerializeField] private int maxComboListenCount = 10;
     private float comboListenTimer;
     private List<PlayerActions> currentComboList = new List<PlayerActions>();
     private List<Combo> potentialCombos = new List<Combo>();
@@ -65,8 +64,6 @@ public class PlayerCombat : MonoBehaviour
 
         HandleWeaponCollisions();
     }
-
-
 
     private void HandleAttack1HoldInput()
     {
@@ -173,6 +170,7 @@ public class PlayerCombat : MonoBehaviour
             {
                 animator.SetFloat("ComboAnimationSpeed", comboToExecute.AnimationSpeed);
                 ReplaceComboAnimationClip(animator, comboToExecute.AnimationClip);
+                weapon.SetDamageRange(comboToExecute.BaseDamageRange);
                 SwingMeleeWeapon("Combo");
             }
         }
@@ -184,6 +182,7 @@ public class PlayerCombat : MonoBehaviour
             {
                 animator.SetFloat("ComboAnimationSpeed", comboToExecute.AnimationSpeed);
                 ReplaceComboAnimationClip(animator, comboToExecute.AnimationClip);
+                weapon.SetDamageRange(comboToExecute.BaseDamageRange);
                 SwingMeleeWeapon("Combo");
             }
         }

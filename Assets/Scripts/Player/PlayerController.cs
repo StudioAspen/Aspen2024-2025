@@ -94,6 +94,8 @@ public class PlayerController : MonoBehaviour
 
         HandleGroundedMovement();
         HandleGravity();
+        HandleGrounded();
+        HandleRotation();
         HandleDash();
         HandleSlopeSliding();
         HandleSpeed();
@@ -171,8 +173,6 @@ public class PlayerController : MonoBehaviour
 
         if (IsMoving)
         {
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
-
             velocity.x = Mathf.Lerp(velocity.x, currentMovementSpeed * targetForwardDirection.x, acceleration.x * Time.deltaTime);
             velocity.z = Mathf.Lerp(velocity.z, currentMovementSpeed * targetForwardDirection.z, acceleration.z * Time.deltaTime);
         }
@@ -188,7 +188,7 @@ public class PlayerController : MonoBehaviour
         controller.Move(groundedVelocity * Time.deltaTime);
     }
 
-    private void HandleGravity()
+    private void HandleGrounded()
     {
         if (IsGrounded)
         {
@@ -210,8 +210,19 @@ public class PlayerController : MonoBehaviour
             inAirTimer += Time.deltaTime;
             velocity.y += acceleration.y * Time.deltaTime;
         }
+    }
 
+    private void HandleGravity()
+    {
         controller.Move(Time.deltaTime * velocity.y * Vector3.up);
+    }
+
+    private void HandleRotation()
+    {
+        if (IsMoving)
+        {
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
+        }
     }
 
     private void HandleDash()

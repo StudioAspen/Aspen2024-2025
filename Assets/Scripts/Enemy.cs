@@ -1,19 +1,46 @@
+using KBCore.Refs;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    private Animator animator;
-    private Coroutine takeDamageCoroutine;
-
+    [Header("References")]
+    [SerializeField, Self] private Animator animator;
+    [SerializeField, Self] private Rigidbody rigidBody;
+    [SerializeField, Self] private CapsuleCollider capsuleCollider;
     [SerializeField] private HitNumbers hitNumberPrefab;
+
+    [SerializeField] private LayerMask groundLayer;
+    [HideInInspector] public bool IsGrounded = true;
+
+    private void OnValidate()
+    {
+        this.ValidateRefs();
+    }
 
     private void Awake()
     {
-        animator = GetComponent<Animator>();
-
         IgnoreCollisionsWithSelf();
+    }
+
+    private void Update()
+    {
+        CheckGrounded();
+
+        HandleAnimations();
+
+        if (Input.GetKeyDown(KeyCode.F)) LaunchUpwards(10f);
+    }
+
+    private void CheckGrounded()
+    {
+        IsGrounded = Physics.CheckSphere(transform.position, capsuleCollider.radius, groundLayer);
+    }
+
+    private void HandleAnimations()
+    {
+        animator.SetBool("IsGrounded", IsGrounded);
     }
 
     private void IgnoreCollisionsWithSelf()
@@ -31,35 +58,14 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(int damage, Vector3 hitPoint)
     {
-        if(takeDamageCoroutine != null) StopCoroutine(takeDamageCoroutine);
-        takeDamageCoroutine = StartCoroutine(TakeDamageCoroutine(0.1f));
+        animator.CrossFadeInFixedTime("Hit", 0.1f);
 
         HitNumbers hitNumber = Instantiate(hitNumberPrefab, hitPoint, Quaternion.identity);
         hitNumber.ActivateHitNumberText(damage);
     }
 
-    private IEnumerator TakeDamageCoroutine(float fadeDuration)
+    public void LaunchUpwards(float magnitude)
     {
-        animator.CrossFadeInFixedTime("Hit_F_1_InPlace", fadeDuration);
-
-        float hitDuration = GetAnimationDuration("Hit_F_1_InPlace");
-        yield return new WaitForSeconds(hitDuration);
-
-        animator.CrossFadeInFixedTime("FlatMovement", fadeDuration);
-    }
-
-    private float GetAnimationDuration(string animationName)
-    {
-        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
-
-        if (clips == null) return 0f;
-        if (clips.Length == 0) return 0f;
-
-        foreach (AnimationClip clip in clips)
-        {
-            if (clip.name == animationName) return clip.length;
-        }
-
-        return 0f;
+        rigidBody.AddForce(magnitude * Vector3.up, ForceMode.Impulse);
     }
 }

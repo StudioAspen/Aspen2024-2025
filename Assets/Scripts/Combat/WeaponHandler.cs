@@ -23,9 +23,7 @@ public class WeaponHandler : MonoBehaviour
 
     [Header("Combo")]
     public List<Combo> Combos;
-
-    [Header("Stats")]
-    [SerializeField] private Vector2 attackDamageRange = new Vector2(100, 200);
+    private Vector2Int damageRange;
 
     [Header("Impact Frames")]
     [SerializeField] private float impactFramesDuration = 0.3f;
@@ -74,7 +72,7 @@ public class WeaponHandler : MonoBehaviour
 
         CreateTempHitVisual(hitPoint, Color.green, 1.5f);
 
-        enemy.TakeDamage((int)Random.Range(attackDamageRange.x, attackDamageRange.y), hitPoint);
+        enemy.TakeDamage(GetRandomDamage(), hitPoint);
     }
 
     private void HandleHitDetectionBetweenFrames()
@@ -131,7 +129,7 @@ public class WeaponHandler : MonoBehaviour
 
             CreateTempHitVisual(hitPoint, Color.red, 1.5f);
 
-            enemy.TakeDamage((int)Random.Range(attackDamageRange.x, attackDamageRange.y), hitPoint);
+            enemy.TakeDamage(GetRandomDamage(), hitPoint);
         }
     }
 
@@ -188,5 +186,15 @@ public class WeaponHandler : MonoBehaviour
     public void DisableTriggers()
     {
         capsuleCollider.enabled = false;
+    }
+
+    public void SetDamageRange(Vector2Int newRange)
+    {
+        damageRange = newRange;
+    }
+
+    private int GetRandomDamage()
+    {
+        return Random.Range(damageRange.x, damageRange.y);
     }
 }

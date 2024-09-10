@@ -278,7 +278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ShowDebugText: 0
   m_ShowCameraFrustum: 1
-  m_IgnoreTimeScale: 0
+  m_IgnoreTimeScale: 1
   m_WorldUpOverride: {fileID: 0}
   m_UpdateMethod: 2
   m_BlendUpdateMethod: 1
@@ -791,6 +791,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3915645929625153338, guid: 1c4cceb02088d7b4191be4632feb66b6,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 112
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2702,16 +2707,6 @@ PrefabInstance:
       propertyPath: m_Data.m_SourceObjects.m_Item0.transform
       value: 
       objectReference: {fileID: 761884761}
-    - target: {fileID: 5620550920081884860, guid: 19dae7578bc56674dae55670ec5dfbf5,
-        type: 3}
-      propertyPath: attackReleaseThreshold
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 6714409095086020908, guid: 19dae7578bc56674dae55670ec5dfbf5,
-        type: 3}
-      propertyPath: comboListenDuration
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7536978621657743438, guid: 19dae7578bc56674dae55670ec5dfbf5,
         type: 3}
       propertyPath: m_LocalPosition.x

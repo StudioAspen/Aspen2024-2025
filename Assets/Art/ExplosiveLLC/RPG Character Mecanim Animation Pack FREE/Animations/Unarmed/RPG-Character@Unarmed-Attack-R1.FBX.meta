@@ -390,7 +390,7 @@ ModelImporter:
       name: Unarmed-Attack-R1
       takeName: Take 001
       internalID: 7400000
-      firstFrame: 0
+      firstFrame: 5
       lastFrame: 24
       wrapMode: 0
       orientationOffsetY: 0
@@ -411,7 +411,7 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.35363826
+      - time: 0.17998557
         functionName: EnableWeaponTriggers
         data: 
         objectReferenceParameter: {instanceID: 0}
