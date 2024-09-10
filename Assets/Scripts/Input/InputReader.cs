@@ -1,11 +1,16 @@
+using KBCore.Refs;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 public class InputReader : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField, Self] private PlayerInput playerInput;
+
     [HideInInspector] public UnityEvent<Vector3> Move;
     [HideInInspector] public UnityEvent Jump;
     [HideInInspector] public UnityEvent SprintHold;
@@ -19,9 +24,9 @@ public class InputReader : MonoBehaviour
 
     public Vector3 MoveDirection { get; private set; }
 
-    private void OnEnable()
+    private void OnValidate()
     {
-        
+        this.ValidateRefs();
     }
 
     private void OnDisable()
@@ -33,44 +38,44 @@ public class InputReader : MonoBehaviour
     {
         UpdateInputs();
 
-        InvokeInputs(); 
+        InvokeInputs();
     }
 
     private void InvokeInputs()
     {
         if(MoveDirection.sqrMagnitude > 0) Move?.Invoke(MoveDirection);
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (playerInput.actions["Jump"].WasPressedThisFrame())
         {
             Jump?.Invoke();
         }
 
-        if (Input.GetKey(KeyCode.LeftShift)) 
+        if (playerInput.actions["Sprint"].IsPressed())
         {
             SprintHold?.Invoke();
         }
 
-        if (Input.GetKeyUp(KeyCode.LeftShift)) 
+        if (playerInput.actions["Sprint"].WasReleasedThisFrame())
         {
             SprintRelease?.Invoke();
         }
 
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (playerInput.actions["Attack1"].IsPressed())
         {
             Attack1Hold?.Invoke();
         }
 
-        if (Input.GetKeyUp(KeyCode.Mouse0))
+        if (playerInput.actions["Attack1"].WasReleasedThisFrame())
         {
             Attack1Release?.Invoke();
         }
 
-        if (Input.GetKey(KeyCode.Mouse1))
+        if (playerInput.actions["Attack2"].IsPressed())
         {
             Attack2Hold?.Invoke();
         }
 
-        if (Input.GetKeyUp(KeyCode.Mouse1))
+        if (playerInput.actions["Attack2"].WasReleasedThisFrame())
         {
             Attack2Release?.Invoke();
         }
@@ -78,7 +83,9 @@ public class InputReader : MonoBehaviour
 
     private void UpdateInputs()
     {
-        MoveDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical")).normalized;
+        Vector2 movementInput = playerInput.actions["Movement"].ReadValue<Vector2>();
+
+        MoveDirection = new Vector3(movementInput.x, 0, movementInput.y);
     }
 }
 

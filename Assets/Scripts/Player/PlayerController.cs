@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
         input.SprintHold.RemoveListener(HandleSprintInput);
         input.SprintRelease.RemoveListener(HandleDashInput);
     }
-
+        
     void Start()
     {
         IgnoreMyOwnColliders();
