@@ -185,7 +185,7 @@
                 {
                     "name": "",
                     "id": "5f4b1c16-199f-4bcc-8b27-daee154f5da1",
-                    "path": "<Gamepad>/buttonWest",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -207,7 +207,7 @@
                 {
                     "name": "",
                     "id": "2fad84a3-e76e-42df-9903-43f2fc0ac7e5",
-                    "path": "<Gamepad>/buttonNorth",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -220,7 +220,7 @@
                     "id": "9d1f4fa9-7f7b-41bc-bac0-b4c7477b1126",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=3,y=3)",
                     "groups": "Gamepad",
                     "action": "CameraLook",
                     "isComposite": false,
