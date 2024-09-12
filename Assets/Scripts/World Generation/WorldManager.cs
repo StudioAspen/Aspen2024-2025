@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class NewBehaviourScript : MonoBehaviour
+public class WorldManager : MonoBehaviour
 {
     [Header("Infromation Needed to start")]
     [SerializeField] public GameObject spawnSqaure;

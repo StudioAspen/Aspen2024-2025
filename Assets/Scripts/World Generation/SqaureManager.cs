@@ -101,7 +101,7 @@ public class SqaureManager : MonoBehaviour
                 wallHitScore4 = 1;
                 Debug.Log(wallHit4.point);
             }
-            else { wallHitScore4 = 0; }*/
+            else { wallHitScore4 = 0; }
         
         
 
@@ -115,6 +115,8 @@ public class SqaureManager : MonoBehaviour
         sqaureScore = wallHitScore + wallHitScore2 + wallHitScore3 + wallHitScore4;
 
         Debug.Log(sqaureScore);
+
+        */
     }
 
     private IEnumerator SpawnDelay() 
