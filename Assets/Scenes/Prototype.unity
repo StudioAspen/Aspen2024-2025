@@ -431,6 +431,12 @@ MonoBehaviour:
   AutoEnableInputs: 1
   XYAxis: {fileID: -5988149930925547794, guid: c295c894e6e34544a94ebeed5421e59f, type: 3}
   ZAxis: {fileID: 0}
+--- !u!1 &329192687 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3883737560833677611, guid: 19dae7578bc56674dae55670ec5dfbf5,
+    type: 3}
+  m_PrefabInstance: {fileID: 8032175990790418737}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &457876499
 GameObject:
   m_ObjectHideFlags: 0
@@ -1439,6 +1445,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1652011999}
   m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+--- !u!1 &874862551 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3617256968821117999, guid: 19dae7578bc56674dae55670ec5dfbf5,
+    type: 3}
+  m_PrefabInstance: {fileID: 8032175990790418737}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &920361878
 GameObject:
   m_ObjectHideFlags: 0
@@ -2701,6 +2713,75 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 8032175990790418737}
   m_PrefabAsset: {fileID: 0}
+--- !u!143 &6034470951183592511 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 7237775664649881152, guid: 19dae7578bc56674dae55670ec5dfbf5,
+    type: 3}
+  m_PrefabInstance: {fileID: 8032175990790418737}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &6034470951183592512 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2171180168782530629, guid: 19dae7578bc56674dae55670ec5dfbf5,
+    type: 3}
+  m_PrefabInstance: {fileID: 8032175990790418737}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6034470951183592515 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6714409095086020908, guid: 19dae7578bc56674dae55670ec5dfbf5,
+    type: 3}
+  m_PrefabInstance: {fileID: 8032175990790418737}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 874862551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1985448995bc84eb7e5f317c32b1eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6034470951183592517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 874862551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e5e643d4e063db48bc180c997910eee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 6034470951183592512}
+  physicsSettings: {fileID: 11400000, guid: 67b2e76ec1d37584e9d1e97a4e9ab48b, type: 2}
+  <CurrentHealth>k__BackingField: 0
+  <MaxHealth>k__BackingField: 0
+  <Level>k__BackingField: 0
+  IsGrounded: 0
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  controller: {fileID: 6034470951183592511}
+  input: {fileID: 6034470951183592515}
+  walkSpeed: 3
+  maxSpeed: 5
+  rotationSpeed: 10
+  jumpHeight: 2
+  maxJumpCount: 1
+  groundedAcceleration: 4
+  IsSliding: 0
+  CanMove: 1
+  IsSprinting: 0
+  IsDashing: 0
+  IsAttacking: 0
+  IsChargingAttack: 0
+  CanAttack: 1
+  IsJumping: 0
+  IsExecutingSkill: 0
+  dashDuration: 0.5
+  initialDashVelocity: 25
+  dashDelayDuration: 0.5
+  sprintDurationAfterDash: 2
+  shiftKeyPressMaxDurationForDash: 0.25
+  dashTrailObject: {fileID: 329192687}
+  CameraLocked: 1
 --- !u!1001 &8032175990790418737
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2724,6 +2805,26 @@ PrefabInstance:
       propertyPath: m_Data.m_SourceObjects.m_Item0.transform
       value: 
       objectReference: {fileID: 761884761}
+    - target: {fileID: 5620550920081884860, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 6034470951183592517}
+    - target: {fileID: 7404623276546726143, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7404623276546726143, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[5].m_ActionId
+      value: dd863170-060b-4c82-b313-30b4ce93d62a
+      objectReference: {fileID: 0}
+    - target: {fileID: 7404623276546726143, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[5].m_ActionName
+      value: Gameplay/CameraLook[/XInputControllerWindows/rightStick,/Mouse/delta]
+      objectReference: {fileID: 0}
     - target: {fileID: 7404623276546726143, guid: 19dae7578bc56674dae55670ec5dfbf5,
         type: 3}
       propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.size
@@ -2799,10 +2900,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 9018130139546683757, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: walkSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 9018130139546683757, guid: 19dae7578bc56674dae55670ec5dfbf5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3617256968821117999, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      insertIndex: 3
+      addedObject: {fileID: 6034470951183592517}
   m_SourcePrefab: {fileID: 100100000, guid: 19dae7578bc56674dae55670ec5dfbf5, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

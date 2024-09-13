@@ -2,14 +2,13 @@ using KBCore.Refs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Burst.Intrinsics;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
     [Header("References")]
     [SerializeField, Self] private InputReader input;
-    [SerializeField, Self] private PlayerController player;
+    [SerializeField, Self] private Player player;
     [SerializeField, Self] private Animator animator;
 
     [Header("Settings")]
@@ -151,10 +150,10 @@ public class PlayerCombat : MonoBehaviour
 
         GenerateComboLists();
 
-        AttemptToExecuteCombo(incomingAction);
+        AttemptToExecuteACombo(incomingAction);
     }
 
-    private void AttemptToExecuteCombo(PlayerActions incomingAction)
+    private void AttemptToExecuteACombo(PlayerActions incomingAction)
     {
         Combo comboToExecute = null;
 
@@ -168,10 +167,7 @@ public class PlayerCombat : MonoBehaviour
             comboToExecute = Combo.GetSingleActionCombo(weapon.Combos, incomingAction);
             if (comboToExecute != null)
             {
-                animator.SetFloat("ComboAnimationSpeed", comboToExecute.AnimationSpeed);
-                ReplaceComboAnimationClip(animator, comboToExecute.AnimationClip);
-                weapon.SetDamageRange(comboToExecute.BaseDamageRange);
-                SwingMeleeWeapon("Combo");
+                ExecuteCombo(comboToExecute);
             }
         }
         else
@@ -180,14 +176,19 @@ public class PlayerCombat : MonoBehaviour
 
             if (comboToExecute != null)
             {
-                animator.SetFloat("ComboAnimationSpeed", comboToExecute.AnimationSpeed);
-                ReplaceComboAnimationClip(animator, comboToExecute.AnimationClip);
-                weapon.SetDamageRange(comboToExecute.BaseDamageRange);
-                SwingMeleeWeapon("Combo");
+                ExecuteCombo(comboToExecute);
             }
         }
 
-        PrintComboLists();
+        //PrintComboLists();
+    }
+
+    private void ExecuteCombo(Combo combo)
+    {
+        animator.SetFloat("ComboAnimationSpeed", combo.AnimationSpeed);
+        ReplaceComboAnimationClip(animator, combo.AnimationClip);
+        weapon.SetDamageRange(combo.BaseDamageRange);
+        SwingMeleeWeapon("Combo");
     }
 
     private void GenerateComboLists()

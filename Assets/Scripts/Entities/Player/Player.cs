@@ -4,66 +4,57 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class PlayerController : MonoBehaviour
+public class Player : Entity
 {
-    [Header("References")]
+    [Header("Player: References")]
     [SerializeField, Self] private CharacterController controller;
     [SerializeField, Self] private InputReader input;
-    [SerializeField, Self] private Animator animator;
 
-    [Header("Player Grounded Movement")]
+    [Header("Player: Grounded Movement")]
     [SerializeField] private float walkSpeed = 3f;
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float rotationSpeed = 5f;
-    private float currentMovementSpeed;
+    public Vector3 MoveDirection => input.MoveDirection;
     private float forwardAngleBasedOnCamera;
     private Quaternion targetForwardRotation = Quaternion.identity;
     private Vector3 targetForwardDirection = Vector3.forward;
+    private RaycastHit hitBelow;
+    private float hitBelowSlopeAngle;
 
-    [Header("Player Gravity")]
-    [SerializeField] private LayerMask groundLayer;
+    [Header("Player: Gravity")]
     [SerializeField] private float jumpHeight = 2f;
-    [SerializeField] private int maxJumpCount = 2;
-    [SerializeField] private Vector3 acceleration = new Vector3(4f, -20f, 4f);
-    [SerializeField] private Vector3 velocity;
-    [SerializeField] private float groundedYVelocity = -5f;
-    [SerializeField] private float fallingStartingYVelocity = 0f;
-    private float inAirTimer = 0;
+    [SerializeField] private int maxJumpCount = 1;
+    [SerializeField] private float groundedAcceleration = 4f;
     private int currentJumpCount;
-    private bool fallVelocityApplied;
-
+    
     #region Flags
-    [HideInInspector] public bool IsGrounded;
-    [HideInInspector] public bool IsSliding;
-    [HideInInspector] public bool CanMove = true;
-    [HideInInspector] public bool IsMoving;
+    [HideInInspector] public bool IsMoving => input.MoveDirection.sqrMagnitude > 0;
     [HideInInspector] public bool IsSprinting;
-    [HideInInspector] public bool IsDashing;
     [HideInInspector] public bool IsAttacking;
     [HideInInspector] public bool IsChargingAttack;
     [HideInInspector] public bool CanAttack = true;
     [HideInInspector] public bool IsJumping;
-    [HideInInspector] public bool IsExecutingSkill;
     #endregion
 
-    [Header("Dash")]
+    [Header("Player: Dash")]
     [SerializeField] private float dashDuration = 0.5f;
     [SerializeField] private float initialDashVelocity = 25f;
     [SerializeField] private float dashDelayDuration = 0.5f;
     [SerializeField] private float sprintDurationAfterDash = 2f;
-    [SerializeField] private float shiftKeyPressMaxDurationForDash = 0.1f;
+    [SerializeField] private float shiftKeyPressMaxDurationForDash = 0.25f;
     [SerializeField] private GameObject dashTrailObject;
     private float shiftKeyPressTimer;
     private float dashDelayTimer = Mathf.Infinity;
     private Coroutine dashCoroutine;
 
-    [Header("Camera")]
+    [Header("Player: Camera")]
     public bool CameraLocked = true;
 
-    private void OnValidate()
-    {
-        this.ValidateRefs();
-    }
+    public PlayerIdleState PlayerIdleState { get; private set; }
+    public PlayerMoveState PlayerMoveState { get; private set; }
+    public PlayerJumpState PlayerJumpState { get; private set; }
+    public PlayerDashState PlayerDashState { get; private set; }
+    public PlayerSlideState PlayerSlideState { get; private set; }
 
     private void OnEnable()
     {
@@ -78,27 +69,35 @@ public class PlayerController : MonoBehaviour
         input.SprintHold.RemoveListener(HandleSprintInput);
         input.SprintRelease.RemoveListener(HandleDashInput);
     }
-        
-    void Start()
-    {
-        IgnoreMyOwnColliders();
 
-        dashTrailObject.SetActive(false);
+    protected override void OnAwake()
+    {
+        base.OnAwake();
     }
 
-    void Update()
+    protected override void OnStart()
     {
+        base.OnStart();
+
+        IgnoreMyOwnColliders();
+
+        ChangeTeam(0);
+
+        SetStartState(PlayerIdleState);
+        SetDefaultState(PlayerIdleState);
+    }
+
+    protected override void OnUpdate()
+    {
+        base.OnUpdate();
+
         CheckGrounded();
+        CheckSlopeSliding();
 
-        HandleGroundedMovementInput();
-
-        HandleGroundedMovement();
         HandleGravity();
         HandleGrounded();
-        HandleRotation();
-        HandleDash();
-        HandleSlopeSliding();
-        HandleSpeed();
+        HandleDashDelay();
+        HandleDashTrail();
 
         HandleAnimations();
 
@@ -109,6 +108,17 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.DrawLine(transform.position, transform.position + currentMovementSpeed * targetForwardDirection);
         Gizmos.DrawWireSphere(transform.position + 9f * controller.radius / 10f * Vector3.up, controller.radius);
+    }
+
+    protected override void InitializeStates()
+    {
+        base.InitializeStates();
+
+        PlayerIdleState = new PlayerIdleState(this);
+        PlayerMoveState = new PlayerMoveState(this);
+        PlayerJumpState = new PlayerJumpState(this);
+        PlayerDashState = new PlayerDashState(this);
+        PlayerSlideState = new PlayerSlideState(this);
     }
 
     private void CheckGrounded()
@@ -122,30 +132,16 @@ public class PlayerController : MonoBehaviour
         IsGrounded = Physics.CheckSphere(transform.position + 9f * controller.radius / 10f * Vector3.up, controller.radius, groundLayer);
     }
 
-    private void HandleGroundedMovementInput()
-    {
-        IsMoving = input.MoveDirection.magnitude > 0;
-
-        if (!IsMoving) return;
-
-        forwardAngleBasedOnCamera = Mathf.Atan2(input.MoveDirection.x, input.MoveDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
-        targetForwardRotation = Quaternion.Euler(0, forwardAngleBasedOnCamera, 0);
-        targetForwardDirection = targetForwardRotation * Vector3.forward;
-    }
-
     private void HandleJumpInput()
     {
-        if (!CanMove) return;
         if (!IsGrounded && currentJumpCount >= maxJumpCount) return;
-        if (IsSliding) return;
+        if (currentState == PlayerSlideState) return;
 
-        Jump();
+        ChangeState(PlayerJumpState);
     }
 
     private void HandleSprintInput()
     {
-        if (!CanMove) return;
-
         IsSprinting = true;
         shiftKeyPressTimer += Time.unscaledDeltaTime;
     }
@@ -156,7 +152,7 @@ public class PlayerController : MonoBehaviour
         {
             if (shiftKeyPressTimer < shiftKeyPressMaxDurationForDash)
             {
-                Dash();
+                ChangeState(PlayerDashState);
             }
             else
             {
@@ -166,33 +162,31 @@ public class PlayerController : MonoBehaviour
         shiftKeyPressTimer = 0f;
     }
 
-    private void HandleGroundedMovement()
+    public void HandleGroundedMovement()
     {
-        if (!CanMove) return;
-        if (IsDashing) return;
-
-        if (IsMoving)
-        {
-            velocity.x = Mathf.Lerp(velocity.x, currentMovementSpeed * targetForwardDirection.x, acceleration.x * Time.deltaTime);
-            velocity.z = Mathf.Lerp(velocity.z, currentMovementSpeed * targetForwardDirection.z, acceleration.z * Time.deltaTime);
-        }
-        else
-        {
-            velocity.x = Mathf.Lerp(velocity.x, 0f, acceleration.x * Time.deltaTime);
-            velocity.z = Mathf.Lerp(velocity.z, 0f, acceleration.z * Time.deltaTime);
-        }
-
         Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
         groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, currentMovementSpeed);
 
         controller.Move(groundedVelocity * Time.deltaTime);
     }
 
+    public void HandleMovingVelocity()
+    {
+        velocity.x = Mathf.Lerp(velocity.x, currentMovementSpeed * targetForwardDirection.x, groundedAcceleration * Time.deltaTime);
+        velocity.z = Mathf.Lerp(velocity.z, currentMovementSpeed * targetForwardDirection.z, groundedAcceleration * Time.deltaTime);     
+    }
+
+    public void HandleIdleVelocity()
+    {
+        velocity.x = Mathf.Lerp(velocity.x, 0f, groundedAcceleration * Time.deltaTime);
+        velocity.z = Mathf.Lerp(velocity.z, 0f, groundedAcceleration * Time.deltaTime);
+    }
+
     private void HandleGrounded()
     {
         if (IsGrounded)
         {
-            if (!IsSliding)
+            if (currentState != PlayerSlideState)
             {
                 currentJumpCount = 0;
             }
@@ -205,10 +199,10 @@ public class PlayerController : MonoBehaviour
             if (!IsJumping && !fallVelocityApplied) // falling without jumping
             {
                 fallVelocityApplied = true;
-                velocity.y = fallingStartingYVelocity;
+                velocity.y = physicsSettings.FallingStartingYVelocity;
             }
             inAirTimer += Time.deltaTime;
-            velocity.y += acceleration.y * Time.deltaTime;
+            velocity.y += physicsSettings.Gravity * Time.deltaTime;
         }
     }
 
@@ -217,76 +211,71 @@ public class PlayerController : MonoBehaviour
         controller.Move(Time.deltaTime * velocity.y * Vector3.up);
     }
 
-    private void HandleRotation()
+    public void HandleRotation()
     {
-        if (IsMoving)
-        {
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
-        }
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
     }
 
-    private void HandleDash()
+    private void HandleDashDelay()
     {
-        if (!IsDashing) dashDelayTimer += Time.deltaTime;
+        dashDelayTimer += Time.deltaTime;
     }
 
-    private void HandleSlopeSliding()
+    public void ResetDashDelay()
     {
-        if (IsSliding) IsGrounded = true;
+        dashDelayTimer = 0f;
+    }
 
-        if (!IsGrounded)
-        {
-            IsSliding = false;
-            return;
-        }
+    private void CheckSlopeSliding()
+    {
+        if (!IsGrounded) return;
 
-        RaycastHit hitBelow;
         Physics.SphereCast(transform.position + controller.height/2 * Vector3.up, controller.radius, Vector3.down, out hitBelow, controller.height, groundLayer);
 
-        if (hitBelow.collider == null)
-        {
-            IsSliding = false;
-            return;
-        }
+        if (hitBelow.collider == null) return;
 
         Vector3 normal = hitBelow.normal;
 
-        float slopeAngle = Vector3.Angle(normal, Vector3.up);
+        hitBelowSlopeAngle = Vector3.Angle(normal, Vector3.up);
 
-        if (slopeAngle > controller.slopeLimit)
+        if (IsAbleToSlide())
         {
-            IsSliding = true;
-
             Vector3 slideDirection = Vector3.ProjectOnPlane(Vector3.down, normal);
 
-            velocity.y = groundedYVelocity;
-            controller.Move(slideDirection * -velocity.y * Time.deltaTime);
-        }
-        else
-        {
-            IsSliding = false;
+            PlayerSlideState.SetSlideDirection(slideDirection);
+            ChangeState(PlayerSlideState);
         }
     }
 
-    private void HandleSpeed()
+    public bool IsAbleToSlide()
     {
-        if (!IsMoving)
-        {
-            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, 0f, 10f * Time.deltaTime);
-            return;
-        }
+        if (!IsGrounded) return false;
+        if (hitBelow.collider == null) return false;
 
-        if (IsSprinting)
-        {
-            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, maxSpeed, 10f * Time.deltaTime);
-        }
+        return hitBelowSlopeAngle > controller.slopeLimit;
+    }
 
-        if (!IsSprinting)
-        {
-            currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, walkSpeed, 10f * Time.deltaTime);
-        }
+    public void ApplySlide(Vector3 slideDirection)
+    {
+        velocity.y = physicsSettings.GroundedYVelocity;
+        controller.Move(slideDirection * -velocity.y * Time.deltaTime);
+    }
 
+    public void ApplyRotationToNextMovement()
+    {
+        forwardAngleBasedOnCamera = Mathf.Atan2(input.MoveDirection.x, input.MoveDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+        targetForwardRotation = Quaternion.Euler(0, forwardAngleBasedOnCamera, 0);
+        targetForwardDirection = targetForwardRotation * Vector3.forward;
+    }
 
+    public void SetIdleSpeed()
+    {
+        currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, 0f, 10f * Time.deltaTime);
+    }
+
+    public void SetMovingSpeed()
+    {
+        currentMovementSpeed = IsSprinting ? Mathf.Lerp(currentMovementSpeed, maxSpeed, 10f * Time.deltaTime) : Mathf.Lerp(currentMovementSpeed, walkSpeed, 10f * Time.deltaTime);
     }
 
     private void HandleAnimations()
@@ -294,18 +283,16 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("MovementSpeed", currentMovementSpeed/maxSpeed);
         animator.SetFloat("InAirTimer", inAirTimer);
         animator.SetBool("IsGrounded", IsGrounded);
-
-        dashTrailObject.SetActive(IsDashing);
     }
 
-    private void Jump()
+    public void Jump()
     {
         input.OnPlayerActionInput?.Invoke(PlayerActions.Jump);
 
         IsJumping = true;
         IsGrounded = false;
 
-        velocity.y = Mathf.Sqrt(jumpHeight * -2f * acceleration.y);
+        velocity.y = Mathf.Sqrt(jumpHeight * -2f * physicsSettings.Gravity);
         inAirTimer = 0.01f;
 
         animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
@@ -313,10 +300,8 @@ public class PlayerController : MonoBehaviour
         currentJumpCount++;
     }
 
-    private void Dash()
+    public void Dash()
     {
-        if (IsDashing) return;
-
         input.OnPlayerActionInput?.Invoke(PlayerActions.Dash);
 
         StopDashing();
@@ -324,10 +309,8 @@ public class PlayerController : MonoBehaviour
         dashDelayTimer = 0f;
     }
 
-    private IEnumerator DashCoroutine()
+    public IEnumerator DashCoroutine()
     {
-        IsDashing = true;
-
         if (IsGrounded) animator.CrossFadeInFixedTime("Dash", 0.1f);
 
         float currDashVelocity = initialDashVelocity;
@@ -338,19 +321,28 @@ public class PlayerController : MonoBehaviour
             velocity.x = currDashVelocity * targetForwardDirection.x;
             velocity.z = currDashVelocity * targetForwardDirection.z;
 
+            Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
+            groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, currDashVelocity);
+
             transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
-            controller.Move(new Vector3(velocity.x, 0f, velocity.z) * Time.deltaTime);
+            controller.Move(groundedVelocity * Time.deltaTime);
             yield return null;
         }
 
-        IsDashing = false;
+        ChangeState(PlayerMoveState);
+
+        StartCoroutine(SprintAfterDashCoroutine());
+    }
+
+    private IEnumerator SprintAfterDashCoroutine()
+    {
         IsSprinting = true;
 
         dashDelayTimer = 0f;
 
         if (IsGrounded) animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
 
-        for(float t = 0; t < sprintDurationAfterDash; t += Time.deltaTime)
+        for (float t = 0; t < sprintDurationAfterDash; t += Time.deltaTime)
         {
             if (!IsMoving) break;
             yield return null;
@@ -359,14 +351,17 @@ public class PlayerController : MonoBehaviour
         IsSprinting = false;
     }
 
-    private void StopDashing()
+    public void StopDashing()
     {
         if (dashCoroutine == null) return;
             
         StopCoroutine(dashCoroutine);
+    }
 
-        IsDashing = false;
-        CanMove = true;
+    public void HandleDashTrail()
+    {
+        Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
+        dashTrailObject.SetActive(groundedVelocity.magnitude > maxSpeed);
     }
 
     private void IgnoreMyOwnColliders()
