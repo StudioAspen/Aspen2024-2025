@@ -4,6 +4,8 @@ using UnityEngine;
 public class Entity : MonoBehaviour
 {
     [Header("Entity: References")]
+    [SerializeField, Self] private protected CharacterController controller;
+    [SerializeField, Self] private protected Rigidbody rigidBody;
     [SerializeField, Self] private protected Animator animator;
     [SerializeField] private protected GlobalPhysicsSettings physicsSettings;
 
@@ -15,8 +17,9 @@ public class Entity : MonoBehaviour
     [HideInInspector] public bool IsGrounded;
 
     [SerializeField] protected private LayerMask groundLayer;
-    protected private float currentMovementSpeed;
-    protected private Vector3 velocity;
+    public float CurrentMovementSpeed { get; protected set; }
+    [SerializeField] protected private Vector3 velocity;
+    protected private Vector3 groundedVelocity => new Vector3(velocity.x, 0f, velocity.z);
     protected private float inAirTimer;
     protected private bool fallVelocityApplied;
 
@@ -58,6 +61,10 @@ public class Entity : MonoBehaviour
     protected virtual void OnUpdate()
     {
         currentState?.Update();
+
+        CheckGrounded();
+
+        HandleGravity();
     }
 
     protected virtual void InitializeStates()
@@ -76,12 +83,13 @@ public class Entity : MonoBehaviour
         DefaultState = state;
     }
 
-    public void ChangeState(BaseState state)
+    public void ChangeState(BaseState newState, bool overridePrio)
     {
-        if (currentState == state) return;
+        if (currentState == newState) return;
+        if (currentState.Priority > newState.Priority && !overridePrio) return;
 
         currentState.OnExit();
-        currentState = state;
+        currentState = newState;
         currentState.OnEnter();
     }
 
@@ -123,5 +131,19 @@ public class Entity : MonoBehaviour
     public void ChangeTeam(int newTeam)
     {
         Team = newTeam;
+    }
+
+    protected virtual void CheckGrounded()
+    {
+        if (inAirTimer > 0f && inAirTimer < 0.1f)
+        {
+            IsGrounded = false;
+            return;
+        }
+    }
+
+    protected virtual void HandleGravity()
+    {
+        controller.Move(Time.deltaTime * velocity.y * Vector3.up);
     }
 }

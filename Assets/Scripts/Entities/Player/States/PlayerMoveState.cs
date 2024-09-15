@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerMoveState : PlayerBaseState
 {
-    public PlayerMoveState(Player player) : base(player)
+    public PlayerMoveState(Player player, int prio) : base(player, prio)
     {
     }
 
@@ -20,14 +20,14 @@ public class PlayerMoveState : PlayerBaseState
     public override void Update()
     {
         player.ApplyRotationToNextMovement();
+        player.HandleVelocity();
         player.HandleRotation();
-        player.HandleMovingVelocity();
         player.HandleGroundedMovement();
         player.SetMovingSpeed();
 
         if (player.MoveDirection.sqrMagnitude == 0)
         {
-            player.ChangeState(player.PlayerIdleState);
+            player.ChangeState(player.PlayerIdleState, false);
         }
     }
 }

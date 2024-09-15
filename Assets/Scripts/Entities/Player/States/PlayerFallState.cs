@@ -1,22 +1,15 @@
 ﻿using UnityEngine;
 
-public class PlayerJumpState : PlayerBaseState
+public class PlayerFallState : PlayerBaseState
 {
-    private float jumpStateDuration;
-    private float timer;
-
-    public PlayerJumpState(Player player, float jumpStateDuration, int prio) : base(player, prio)
+    public PlayerFallState(Player player, int prio) : base(player, prio)
     {
-        this.jumpStateDuration = jumpStateDuration;
+
     }
 
     public override void OnEnter()
     {
-        Debug.Log("Entering Jump State");
-
-        player.Jump();
-
-        timer = 0f;
+        Debug.Log("Entering Fall State");
     }
 
     public override void OnExit()
@@ -42,18 +35,6 @@ public class PlayerJumpState : PlayerBaseState
         if (player.IsGrounded)
         {
             player.ChangeState(player.PlayerIdleState, false);
-        }
-
-        HandleJumpToFallTransition();
-    }
-
-    private void HandleJumpToFallTransition()
-    {
-        timer += Time.deltaTime;
-
-        if (timer > jumpStateDuration)
-        {
-            player.ChangeState(player.PlayerFallState, false);
         }
     }
 }

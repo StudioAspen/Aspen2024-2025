@@ -2713,12 +2713,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 8032175990790418737}
   m_PrefabAsset: {fileID: 0}
---- !u!143 &6034470951183592511 stripped
-CharacterController:
-  m_CorrespondingSourceObject: {fileID: 7237775664649881152, guid: 19dae7578bc56674dae55670ec5dfbf5,
-    type: 3}
-  m_PrefabInstance: {fileID: 8032175990790418737}
-  m_PrefabAsset: {fileID: 0}
 --- !u!95 &6034470951183592512 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 2171180168782530629, guid: 19dae7578bc56674dae55670ec5dfbf5,
@@ -2749,6 +2743,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e5e643d4e063db48bc180c997910eee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: {fileID: 8032175990790418742}
+  rigidBody: {fileID: 8032175990790418738}
   animator: {fileID: 6034470951183592512}
   physicsSettings: {fileID: 11400000, guid: 67b2e76ec1d37584e9d1e97a4e9ab48b, type: 2}
   <CurrentHealth>k__BackingField: 0
@@ -2758,23 +2754,25 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  controller: {fileID: 6034470951183592511}
+  velocity: {x: 0, y: 0, z: 0}
   input: {fileID: 6034470951183592515}
+  capsuleColliderCenter: {x: 0, y: 0.9, z: 0}
+  capsuleColliderHeight: 1.8
+  capsuleColliderRadius: 0.25
+  stepHeightPercentage: 0.25
   walkSpeed: 3
   maxSpeed: 5
   rotationSpeed: 10
   jumpHeight: 2
   maxJumpCount: 1
   groundedAcceleration: 4
-  IsSliding: 0
-  CanMove: 1
+  jumpToFallDuration: 0.3
+  inAirDurationToFall: 0.25
   IsSprinting: 0
-  IsDashing: 0
   IsAttacking: 0
   IsChargingAttack: 0
   CanAttack: 1
   IsJumping: 0
-  IsExecutingSkill: 0
   dashDuration: 0.5
   initialDashVelocity: 25
   dashDelayDuration: 0.5
@@ -2810,6 +2808,11 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 6034470951183592517}
+    - target: {fileID: 7237775664649881152, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7404623276546726143, guid: 19dae7578bc56674dae55670ec5dfbf5,
         type: 3}
       propertyPath: m_ActionEvents.Array.size
@@ -2906,6 +2909,8 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents:
+    - {fileID: 0}
+    - {fileID: 5620550920081884860, guid: 19dae7578bc56674dae55670ec5dfbf5, type: 3}
     - {fileID: 9018130139546683757, guid: 19dae7578bc56674dae55670ec5dfbf5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2914,7 +2919,46 @@ PrefabInstance:
         type: 3}
       insertIndex: 3
       addedObject: {fileID: 6034470951183592517}
+    - targetCorrespondingSourceObject: {fileID: 3617256968821117999, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 8032175990790418739}
   m_SourcePrefab: {fileID: 100100000, guid: 19dae7578bc56674dae55670ec5dfbf5, type: 3}
+--- !u!54 &8032175990790418738 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 5104155415629920173, guid: 19dae7578bc56674dae55670ec5dfbf5,
+    type: 3}
+  m_PrefabInstance: {fileID: 8032175990790418737}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &8032175990790418739
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 874862551}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.25
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!143 &8032175990790418742 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 7237775664649881152, guid: 19dae7578bc56674dae55670ec5dfbf5,
+    type: 3}
+  m_PrefabInstance: {fileID: 8032175990790418737}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
