@@ -18,11 +18,12 @@ public class SelectionScript : MonoBehaviour
     public Vector3 spotSelect;
 
     public BorderRemover borderRemove;
+    public WorldManager worldManage;
 
 
     void Start()
     {
-
+        worldManage = GameObject.FindObjectOfType<WorldManager>();
     }
 
 
@@ -82,8 +83,9 @@ public class SelectionScript : MonoBehaviour
         }
     }
 
-    private IEnumerator IslandToSpawn() 
+    public IEnumerator IslandToSpawn() 
     {
+        worldManage.selecting = false;
 
         yield return new WaitForSeconds(1/*make variable for spawn in buffer*/);
 

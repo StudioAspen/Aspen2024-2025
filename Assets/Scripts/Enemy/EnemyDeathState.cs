@@ -5,11 +5,12 @@ using UnityEngine;
 public class EnemyDeathState : EnemyState
 {
     public BaseEnemy enemyStats;
-    public GameObject parentObject:
+   
 
     public void Enter(EnemyAgent agent)
     {
         enemyStats = GameObject.FindObjectOfType<BaseEnemy>();
+       
     }
 
     public void Exit(EnemyAgent agent)
@@ -24,9 +25,6 @@ public class EnemyDeathState : EnemyState
 
     public void Update(EnemyAgent agent)
     {
-        if (enemyStats.enemyCurrentHP <= 0) 
-        {
-            Destroy(parentObject);  
-        }
+   
     }
 }

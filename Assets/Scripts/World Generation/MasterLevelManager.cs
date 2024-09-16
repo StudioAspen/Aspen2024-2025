@@ -23,24 +23,6 @@ public class MasterLevelManager : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.Q)) 
-        {
-            StartCoroutine(IslandSelectCheck());
-        }
-
-
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            Debug.Log("Spawning Options");
-            for (int i = 0; i < borders.Length; i++)
-           {
-                Debug.Log("here");
-                Instantiate(openSlotPlaceHolder, borders[i].transform.position + selectorOF, Quaternion.identity);
-           }
-
-
-        }
-  
         borders = allBorders.ToArray();
 
     }
@@ -59,11 +41,11 @@ public class MasterLevelManager : MonoBehaviour
 
     }
 
-    private IEnumerator IslandSelectCheck()
+    public IEnumerator IslandSelectCheck()
     {
         Debug.Log("Checking");
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
 
 
         allBorders = CheckLevel(masterBorders);
@@ -76,6 +58,17 @@ public class MasterLevelManager : MonoBehaviour
         }
 
 
+
+    }
+
+    public void SpawnPlaceHolder() 
+    {
+        Debug.Log("Spawning Options");
+        for (int i = 0; i < borders.Length; i++)
+        {
+            Debug.Log("here");
+            Instantiate(openSlotPlaceHolder, borders[i].transform.position + selectorOF, Quaternion.identity);
+        }
 
     }
 
