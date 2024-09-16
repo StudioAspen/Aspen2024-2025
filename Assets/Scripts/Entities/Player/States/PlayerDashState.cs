@@ -2,7 +2,7 @@
 
 public class PlayerDashState : PlayerBaseState
 {
-    public PlayerDashState(Player player, int prio) : base(player, prio)
+    public PlayerDashState(Player player) : base(player)
     {
     }
 

@@ -2,12 +2,8 @@
 
 public class PlayerJumpState : PlayerBaseState
 {
-    private float jumpStateDuration;
-    private float timer;
-
-    public PlayerJumpState(Player player, float jumpStateDuration, int prio) : base(player, prio)
+    public PlayerJumpState(Player player) : base(player)
     {
-        this.jumpStateDuration = jumpStateDuration;
     }
 
     public override void OnEnter()
@@ -15,8 +11,6 @@ public class PlayerJumpState : PlayerBaseState
         Debug.Log("Entering Jump State");
 
         player.Jump();
-
-        timer = 0f;
     }
 
     public override void OnExit()
@@ -26,34 +20,14 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void Update()
     {
-        if (player.MoveDirection.sqrMagnitude > 0f)
-        {
-            player.ApplyRotationToNextMovement();
-            player.HandleRotation();
-            player.HandleGroundedMovement();
-            player.SetMovingSpeed();
-        }
-        else
-        {
-            player.HandleGroundedMovement();
-            player.SetIdleSpeed();
-        }
+        player.ApplyRotationToNextMovement();
+        player.HandleRotation();
+        player.HandleMovingVelocity();
+        player.HandleGroundedMovement();
 
         if (player.IsGrounded)
         {
-            player.ChangeState(player.PlayerIdleState, false);
-        }
-
-        HandleJumpToFallTransition();
-    }
-
-    private void HandleJumpToFallTransition()
-    {
-        timer += Time.deltaTime;
-
-        if (timer > jumpStateDuration)
-        {
-            player.ChangeState(player.PlayerFallState, false);
+            player.ChangeState(player.PlayerIdleState);
         }
     }
 }

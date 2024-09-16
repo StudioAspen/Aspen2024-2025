@@ -2,12 +2,7 @@
 
 public abstract class BaseState
 {
-    public int Priority {  get; private set; }
-
-    public BaseState(Entity entity, int prio)
-    {
-        Priority = prio;
-    }
+    public BaseState(Entity entity) { }
 
     public abstract void OnEnter();
     public abstract void OnExit();

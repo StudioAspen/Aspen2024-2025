@@ -4,7 +4,7 @@ public class PlayerSlideState : PlayerBaseState
 {
     private Vector3 slideDirection;
 
-    public PlayerSlideState(Player player, int prio) : base(player, prio)
+    public PlayerSlideState(Player player) : base(player)
     {
     }
 
@@ -27,10 +27,11 @@ public class PlayerSlideState : PlayerBaseState
         // moving stuff
         player.ApplyRotationToNextMovement();
         player.HandleRotation();
+        player.HandleMovingVelocity();
         player.HandleGroundedMovement();
         player.SetMovingSpeed();
 
-        if (!player.IsAbleToSlide()) player.ChangeState(player.DefaultState, false);
+        if (!player.IsAbleToSlide()) player.ChangeState(player.DefaultState);
     }
 
     public void SetSlideDirection(Vector3 dir)

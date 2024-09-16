@@ -2,7 +2,7 @@
 
 public class PlayerIdleState : PlayerBaseState
 {
-    public PlayerIdleState(Player player, int prio) : base(player, prio)
+    public PlayerIdleState(Player player) : base(player)
     {
         
     }
@@ -19,13 +19,13 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void Update()
     {
+        player.HandleIdleVelocity();
         player.HandleGroundedMovement();
-        player.HandleVelocity();
         player.SetIdleSpeed();
 
         if(player.MoveDirection.sqrMagnitude > 0)
         {
-            player.ChangeState(player.PlayerMoveState, false);
+            player.ChangeState(player.PlayerMoveState);
         }
     }
 }
