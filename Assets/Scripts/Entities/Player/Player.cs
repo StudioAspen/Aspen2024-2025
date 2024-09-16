@@ -28,6 +28,7 @@ public class Player : Entity
     [SerializeField] private float jumpHeight = 2f;
     [SerializeField] private int maxJumpCount = 1;
     [SerializeField] private float groundedAcceleration = 4f;
+    [field: SerializeField] public float JumpTimeToFall { get; private set; } = 0.3f;
     private int currentJumpCount;
     
     #region Flags
@@ -57,6 +58,7 @@ public class Player : Entity
     public PlayerWalkingState PlayerWalkingState { get; private set; }
     public PlayerSprintingState PlayerSprintingState { get; private set; }
     public PlayerJumpState PlayerJumpState { get; private set; }
+    public PlayerFallState PlayerFallState { get; private set; }
     public PlayerDashState PlayerDashState { get; private set; }
     public PlayerSlideState PlayerSlideState { get; private set; }
 
@@ -101,6 +103,7 @@ public class Player : Entity
         HandleGravity();
         HandleGrounded();
         HandleDashDelay();
+        HandleDashTrail();
 
         HandleAnimations();
 
@@ -115,6 +118,7 @@ public class Player : Entity
         PlayerWalkingState = new PlayerWalkingState(this);
         PlayerSprintingState = new PlayerSprintingState(this);
         PlayerJumpState = new PlayerJumpState(this);
+        PlayerFallState = new PlayerFallState(this);
         PlayerDashState = new PlayerDashState(this);
         PlayerSlideState = new PlayerSlideState(this);
     }
@@ -213,6 +217,8 @@ public class Player : Entity
             {
                 fallVelocityApplied = true;
                 velocity.y = physicsSettings.FallingStartingYVelocity;
+
+                ChangeState(PlayerFallState);
             }
             inAirTimer += Time.deltaTime;
             velocity.y += physicsSettings.Gravity * Time.deltaTime;
@@ -348,16 +354,16 @@ public class Player : Entity
 
     private float GetAndSetSlopeSpeedModifierOnAngle(float groundAngle)
     {
-        float slopeSpeedModifier = 1f - (0.25f) * groundAngle / controller.slopeLimit;
+        float slopeSpeedModifier = 1f - (0.15f) * groundAngle / controller.slopeLimit;
 
-        if (groundAngle > controller.slopeLimit) slopeSpeedModifier = 0.75f;
+        if (groundAngle > controller.slopeLimit) slopeSpeedModifier = 0.85f;
 
         movementOnSlopeSpeedModifier = slopeSpeedModifier;
 
         return slopeSpeedModifier;
     }
 
-    private Vector3 GetGroundedVelocity()
+    public Vector3 GetGroundedVelocity()
     {
         return new Vector3(velocity.x, 0f, velocity.z);
     }
@@ -367,8 +373,20 @@ public class Player : Entity
         return SprintSpeedModifier * baseSpeed;
     }
 
-    public void TransitionToAnimation(string animation)
+    public void DefaultTransitionToAnimation(string animation)
     {
         animator.CrossFadeInFixedTime(animation, 0.1f);
+    }
+
+    public void TransitionToAnimation(string animation, float transitionDuration)
+    {
+        animator.CrossFadeInFixedTime(animation, transitionDuration);
+    }
+
+    private void HandleDashTrail()
+    {
+        float maxSpeed = SprintSpeedModifier * baseSpeed;
+
+        DashTrailSetActive(GetGroundedVelocity().magnitude > maxSpeed);
     }
 }

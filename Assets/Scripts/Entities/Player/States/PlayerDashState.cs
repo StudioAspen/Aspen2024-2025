@@ -5,9 +5,6 @@ public class PlayerDashState : PlayerBaseState
 {
     private float timer;
 
-    private float currDashSpeed;
-    private float maxSpeed;
-
     private bool isDashAnimationPlaying = false;
 
     public PlayerDashState(Player player) : base(player)
@@ -24,26 +21,20 @@ public class PlayerDashState : PlayerBaseState
         isDashAnimationPlaying = false;
         if (player.IsGrounded)
         {
-            player.TransitionToAnimation("Dash");
+            player.DefaultTransitionToAnimation("Dash");
             isDashAnimationPlaying = true;
         }
-           
 
         timer = 0f;
 
-        currDashSpeed = player.InitialDashVelocity;
-
-        maxSpeed = player.GetMaxSpeed();
-
         player.ApplyRotationToNextMovement();
 
-        player.DashTrailSetActive(true);
+        player.SetGroundedSpeed(player.InitialDashVelocity);
     }
 
     public override void OnExit()
     {
         player.PlayerSprintingState.SetSprintDuration(player.SprintDurationAfterDash);
-        player.DashTrailSetActive(false);
     }
 
     public override void Update()
@@ -52,7 +43,7 @@ public class PlayerDashState : PlayerBaseState
 
         if(!isDashAnimationPlaying && player.IsGrounded)
         {
-            player.TransitionToAnimation("FlatMovement");
+            player.DefaultTransitionToAnimation("FlatMovement");
             isDashAnimationPlaying = true;
         }
 
@@ -77,9 +68,8 @@ public class PlayerDashState : PlayerBaseState
         
         player.RotateToTargetRotation();
 
-        currDashSpeed = (player.InitialDashVelocity - maxSpeed) * (1 - Mathf.Sqrt(1 - Mathf.Pow(timer / player.DashDuration - 1, 2))) + maxSpeed;
-
-        player.SetGroundedSpeed(currDashSpeed);
+        player.HandleMovingVelocity();
+        player.SetGroundedSpeed(player.GetGroundedVelocity().magnitude);
         player.GroundedMove();
     }
 }

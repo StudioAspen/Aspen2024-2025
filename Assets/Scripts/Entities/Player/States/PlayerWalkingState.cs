@@ -11,7 +11,7 @@ public class PlayerWalkingState : PlayerBaseState
     {
         Debug.Log("Entering Walk State");
 
-        player.TransitionToAnimation("FlatMovement");
+        player.DefaultTransitionToAnimation("FlatMovement");
 
         player.SetSpeedModifier(1f);
     }

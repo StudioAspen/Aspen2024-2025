@@ -2755,30 +2755,28 @@ MonoBehaviour:
   <MaxHealth>k__BackingField: 0
   <Level>k__BackingField: 0
   IsGrounded: 0
+  baseSpeed: 3
+  velocity: {x: 0, y: 0, z: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
   controller: {fileID: 6034470951183592511}
   input: {fileID: 6034470951183592515}
-  walkSpeed: 3
-  maxSpeed: 5
   rotationSpeed: 10
+  <SprintSpeedModifier>k__BackingField: 1.66
   jumpHeight: 2
   maxJumpCount: 1
   groundedAcceleration: 4
-  IsSliding: 0
-  CanMove: 1
+  <JumpTimeToFall>k__BackingField: 0.3
   IsSprinting: 0
-  IsDashing: 0
   IsAttacking: 0
   IsChargingAttack: 0
   CanAttack: 1
   IsJumping: 0
-  IsExecutingSkill: 0
-  dashDuration: 0.5
-  initialDashVelocity: 25
+  <DashDuration>k__BackingField: 0.5
+  <InitialDashVelocity>k__BackingField: 20
   dashDelayDuration: 0.5
-  sprintDurationAfterDash: 2
+  <SprintDurationAfterDash>k__BackingField: 2
   shiftKeyPressMaxDurationForDash: 0.25
   dashTrailObject: {fileID: 329192687}
   CameraLocked: 1

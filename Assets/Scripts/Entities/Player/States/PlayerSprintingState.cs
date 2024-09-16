@@ -14,7 +14,7 @@ public class PlayerSprintingState : PlayerBaseState
     {
         Debug.Log("Entering Sprint State");
 
-        player.TransitionToAnimation("FlatMovement");
+        player.DefaultTransitionToAnimation("FlatMovement");
 
         player.SetSpeedModifier(player.SprintSpeedModifier);
     }

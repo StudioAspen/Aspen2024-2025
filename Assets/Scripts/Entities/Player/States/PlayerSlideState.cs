@@ -12,7 +12,7 @@ public class PlayerSlideState : PlayerBaseState
     {
         Debug.Log("Entering Slide State");
 
-        player.TransitionToAnimation("Falling");
+        player.DefaultTransitionToAnimation("Falling");
     }
 
     public override void OnExit()

@@ -16,7 +16,7 @@ public class Entity : MonoBehaviour
 
     [SerializeField] protected float baseSpeed = 3f;
     protected float speedModifier = 1f;
-    protected private Vector3 velocity;
+    [SerializeField] protected private Vector3 velocity;
     [SerializeField] protected private LayerMask groundLayer;
     protected private float inAirTimer;
     protected private bool fallVelocityApplied;

@@ -11,7 +11,7 @@ public class PlayerIdleState : PlayerBaseState
     {
         Debug.Log("Entering Idle State");
 
-        player.TransitionToAnimation("FlatMovement");
+        player.DefaultTransitionToAnimation("FlatMovement");
 
         player.SetSpeedModifier(0f);
     }
