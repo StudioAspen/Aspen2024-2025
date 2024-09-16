@@ -2756,8 +2756,9 @@ MonoBehaviour:
     m_Bits: 256
   velocity: {x: 0, y: 0, z: 0}
   input: {fileID: 6034470951183592515}
-  capsuleCollider: {fileID: 8032175990790418739}
+  capsuleColliderCenter: {x: 0, y: 0.9, z: 0}
   capsuleColliderHeight: 1.8
+  capsuleColliderRadius: 0.25
   stepHeightPercentage: 0.25
   walkSpeed: 3
   maxSpeed: 5
