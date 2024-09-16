@@ -10,6 +10,8 @@ public class PlayerJumpState : PlayerBaseState
     {
         Debug.Log("Entering Jump State");
 
+        player.TransitionToAnimation("JumpingUp");
+
         player.Jump();
     }
 
@@ -20,14 +22,20 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void Update()
     {
-        player.ApplyRotationToNextMovement();
-        player.HandleRotation();
+        if(player.MoveDirection != Vector3.zero) player.ApplyRotationToNextMovement();
+
+        player.RotateToTargetRotation();
         player.HandleMovingVelocity();
-        player.HandleGroundedMovement();
+        player.GroundedMove();
 
         if (player.IsGrounded)
         {
             player.ChangeState(player.PlayerIdleState);
         }
+    }
+
+    public override void FixedUpdate()
+    {
+
     }
 }

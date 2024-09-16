@@ -280,7 +280,7 @@ public class PlayerCombat : MonoBehaviour
 
         player.IsAttacking = true;
 
-        animator.CrossFadeInFixedTime(animationName, 0.05f, animator.GetLayerIndex("UpperBody"));
+        animator.CrossFadeInFixedTime(animationName, 0.05f);
 
         isAnimationPlaying = true;
         while (isAnimationPlaying)
@@ -288,7 +288,7 @@ public class PlayerCombat : MonoBehaviour
             yield return null;
         }
 
-        animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed, animator.GetLayerIndex("UpperBody"));
+        animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed);
 
         player.IsAttacking = false;
     }
@@ -301,7 +301,7 @@ public class PlayerCombat : MonoBehaviour
 
         FinishAnimation();
 
-        animator.CrossFadeInFixedTime("FlatMovement", 0.1f, animator.GetLayerIndex("UpperBody"));
+        animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
 
         weapon.DisableTriggers();
         player.IsAttacking = false;

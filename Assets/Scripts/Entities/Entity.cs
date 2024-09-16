@@ -14,9 +14,10 @@ public class Entity : MonoBehaviour
 
     [HideInInspector] public bool IsGrounded;
 
-    [SerializeField] protected private LayerMask groundLayer;
-    protected private float currentMovementSpeed;
+    [SerializeField] protected float baseSpeed = 3f;
+    protected float speedModifier = 1f;
     protected private Vector3 velocity;
+    [SerializeField] protected private LayerMask groundLayer;
     protected private float inAirTimer;
     protected private bool fallVelocityApplied;
 
@@ -58,6 +59,16 @@ public class Entity : MonoBehaviour
     protected virtual void OnUpdate()
     {
         currentState?.Update();
+    }
+
+    private void FixedUpdate()
+    {
+        OnFixedUpdate();
+    }
+
+    protected virtual void OnFixedUpdate()
+    {
+        currentState?.FixedUpdate();
     }
 
     protected virtual void InitializeStates()
@@ -123,5 +134,10 @@ public class Entity : MonoBehaviour
     public void ChangeTeam(int newTeam)
     {
         Team = newTeam;
+    }
+
+    public void SetSpeedModifier(float speed)
+    {
+        speedModifier = speed;
     }
 }

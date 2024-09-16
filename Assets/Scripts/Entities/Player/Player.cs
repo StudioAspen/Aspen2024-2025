@@ -2,6 +2,7 @@ using KBCore.Refs;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Events;
 
 public class Player : Entity
@@ -11,9 +12,11 @@ public class Player : Entity
     [SerializeField, Self] private InputReader input;
 
     [Header("Player: Grounded Movement")]
-    [SerializeField] private float walkSpeed = 3f;
-    [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float rotationSpeed = 5f;
+    [field: SerializeField] public float SprintSpeedModifier { get; private set; } = 1.66f;
+    private float movementSpeed => movementOnSlopeSpeedModifier * speedModifier * baseSpeed;
+    private float movementOnSlopeSpeedModifier = 1f;
+    private float totalSpeedModifierForAnimation;
     public Vector3 MoveDirection => input.MoveDirection;
     private float forwardAngleBasedOnCamera;
     private Quaternion targetForwardRotation = Quaternion.identity;
@@ -36,11 +39,11 @@ public class Player : Entity
     [HideInInspector] public bool IsJumping;
     #endregion
 
-    [Header("Player: Dash")]
-    [SerializeField] private float dashDuration = 0.5f;
-    [SerializeField] private float initialDashVelocity = 25f;
+    [field : Header("Player: Dash")]
+    [field: SerializeField] public float DashDuration { get; private set; } = 0.5f;
+    [field : SerializeField] public float InitialDashVelocity { get; private set; } = 25f;
     [SerializeField] private float dashDelayDuration = 0.5f;
-    [SerializeField] private float sprintDurationAfterDash = 2f;
+    [field: SerializeField] public float SprintDurationAfterDash { get; private set; } = 2f;
     [SerializeField] private float shiftKeyPressMaxDurationForDash = 0.25f;
     [SerializeField] private GameObject dashTrailObject;
     private float shiftKeyPressTimer;
@@ -51,7 +54,8 @@ public class Player : Entity
     public bool CameraLocked = true;
 
     public PlayerIdleState PlayerIdleState { get; private set; }
-    public PlayerMoveState PlayerMoveState { get; private set; }
+    public PlayerWalkingState PlayerWalkingState { get; private set; }
+    public PlayerSprintingState PlayerSprintingState { get; private set; }
     public PlayerJumpState PlayerJumpState { get; private set; }
     public PlayerDashState PlayerDashState { get; private set; }
     public PlayerSlideState PlayerSlideState { get; private set; }
@@ -97,17 +101,10 @@ public class Player : Entity
         HandleGravity();
         HandleGrounded();
         HandleDashDelay();
-        HandleDashTrail();
 
         HandleAnimations();
 
         Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawLine(transform.position, transform.position + currentMovementSpeed * targetForwardDirection);
-        Gizmos.DrawWireSphere(transform.position + 9f * controller.radius / 10f * Vector3.up, controller.radius);
     }
 
     protected override void InitializeStates()
@@ -115,7 +112,8 @@ public class Player : Entity
         base.InitializeStates();
 
         PlayerIdleState = new PlayerIdleState(this);
-        PlayerMoveState = new PlayerMoveState(this);
+        PlayerWalkingState = new PlayerWalkingState(this);
+        PlayerSprintingState = new PlayerSprintingState(this);
         PlayerJumpState = new PlayerJumpState(this);
         PlayerDashState = new PlayerDashState(this);
         PlayerSlideState = new PlayerSlideState(this);
@@ -162,24 +160,39 @@ public class Player : Entity
         shiftKeyPressTimer = 0f;
     }
 
-    public void HandleGroundedMovement()
+    public void GroundedMove()
     {
-        Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
-        groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, currentMovementSpeed);
-
-        controller.Move(groundedVelocity * Time.deltaTime);
+        controller.Move(GetGroundedVelocity() * Time.deltaTime);
     }
 
     public void HandleMovingVelocity()
     {
-        velocity.x = Mathf.Lerp(velocity.x, currentMovementSpeed * targetForwardDirection.x, groundedAcceleration * Time.deltaTime);
-        velocity.z = Mathf.Lerp(velocity.z, currentMovementSpeed * targetForwardDirection.z, groundedAcceleration * Time.deltaTime);     
+        Vector3 groundedVelocity = GetGroundedVelocity();
+
+        groundedVelocity = Vector3.Lerp(groundedVelocity, movementSpeed * targetForwardDirection, groundedAcceleration * Time.deltaTime);
+
+        velocity.x = groundedVelocity.x;
+        velocity.z = groundedVelocity.z;
     }
 
     public void HandleIdleVelocity()
     {
-        velocity.x = Mathf.Lerp(velocity.x, 0f, groundedAcceleration * Time.deltaTime);
-        velocity.z = Mathf.Lerp(velocity.z, 0f, groundedAcceleration * Time.deltaTime);
+        Vector3 groundedVelocity = GetGroundedVelocity();
+
+        groundedVelocity = Vector3.Lerp(groundedVelocity, Vector3.zero, groundedAcceleration * Time.deltaTime);
+
+        velocity.x = groundedVelocity.x;
+        velocity.z = groundedVelocity.z;
+    }
+
+    public void SetGroundedSpeed(float speed)
+    {
+        Vector3 groundedVelocity = GetGroundedVelocity();
+
+        groundedVelocity = speed * targetForwardDirection;
+
+        velocity.x = groundedVelocity.x;
+        velocity.z = groundedVelocity.z;
     }
 
     private void HandleGrounded()
@@ -211,9 +224,9 @@ public class Player : Entity
         controller.Move(Time.deltaTime * velocity.y * Vector3.up);
     }
 
-    public void HandleRotation()
+    public void RotateToTargetRotation()
     {
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
     }
 
     private void HandleDashDelay()
@@ -228,11 +241,21 @@ public class Player : Entity
 
     private void CheckSlopeSliding()
     {
-        if (!IsGrounded) return;
+        GetAndSetSlopeSpeedModifierOnAngle(hitBelowSlopeAngle);
 
-        Physics.SphereCast(transform.position + controller.height/2 * Vector3.up, controller.radius, Vector3.down, out hitBelow, controller.height, groundLayer);
+        if (!IsGrounded)
+        {
+            hitBelowSlopeAngle = 0f;
+            return;
+        }
 
-        if (hitBelow.collider == null) return;
+        Physics.Raycast(transform.position, Vector3.down, out hitBelow, controller.height / 2, groundLayer, QueryTriggerInteraction.Ignore);
+
+        if (hitBelow.collider == null)
+        {
+            hitBelowSlopeAngle = 0f;
+            return;
+        }
 
         Vector3 normal = hitBelow.normal;
 
@@ -268,19 +291,11 @@ public class Player : Entity
         targetForwardDirection = targetForwardRotation * Vector3.forward;
     }
 
-    public void SetIdleSpeed()
-    {
-        currentMovementSpeed = Mathf.Lerp(currentMovementSpeed, 0f, 10f * Time.deltaTime);
-    }
-
-    public void SetMovingSpeed()
-    {
-        currentMovementSpeed = IsSprinting ? Mathf.Lerp(currentMovementSpeed, maxSpeed, 10f * Time.deltaTime) : Mathf.Lerp(currentMovementSpeed, walkSpeed, 10f * Time.deltaTime);
-    }
-
     private void HandleAnimations()
     {
-        animator.SetFloat("MovementSpeed", currentMovementSpeed/maxSpeed);
+        totalSpeedModifierForAnimation = Mathf.Lerp(totalSpeedModifierForAnimation, movementOnSlopeSpeedModifier * speedModifier, groundedAcceleration * Time.deltaTime); 
+
+        animator.SetFloat("MovementSpeed", totalSpeedModifierForAnimation);
         animator.SetFloat("InAirTimer", inAirTimer);
         animator.SetBool("IsGrounded", IsGrounded);
     }
@@ -295,73 +310,18 @@ public class Player : Entity
         velocity.y = Mathf.Sqrt(jumpHeight * -2f * physicsSettings.Gravity);
         inAirTimer = 0.01f;
 
-        animator.CrossFadeInFixedTime("JumpingUp", 0.1f);
-
         currentJumpCount++;
     }
 
     public void Dash()
     {
         input.OnPlayerActionInput?.Invoke(PlayerActions.Dash);
-
-        StopDashing();
-        dashCoroutine = StartCoroutine(DashCoroutine());
         dashDelayTimer = 0f;
     }
 
-    public IEnumerator DashCoroutine()
+    public void DashTrailSetActive(bool b)
     {
-        if (IsGrounded) animator.CrossFadeInFixedTime("Dash", 0.1f);
-
-        float currDashVelocity = initialDashVelocity;
-        for (float t = 0; t < dashDuration; t += Time.deltaTime)
-        {
-            currDashVelocity = (initialDashVelocity - maxSpeed) * (1 - Mathf.Sqrt(1 - Mathf.Pow(t / dashDuration - 1, 2))) + maxSpeed;
-
-            velocity.x = currDashVelocity * targetForwardDirection.x;
-            velocity.z = currDashVelocity * targetForwardDirection.z;
-
-            Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
-            groundedVelocity = Vector3.ClampMagnitude(groundedVelocity, currDashVelocity);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
-            controller.Move(groundedVelocity * Time.deltaTime);
-            yield return null;
-        }
-
-        ChangeState(PlayerMoveState);
-
-        StartCoroutine(SprintAfterDashCoroutine());
-    }
-
-    private IEnumerator SprintAfterDashCoroutine()
-    {
-        IsSprinting = true;
-
-        dashDelayTimer = 0f;
-
-        if (IsGrounded) animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
-
-        for (float t = 0; t < sprintDurationAfterDash; t += Time.deltaTime)
-        {
-            if (!IsMoving) break;
-            yield return null;
-        }
-
-        IsSprinting = false;
-    }
-
-    public void StopDashing()
-    {
-        if (dashCoroutine == null) return;
-            
-        StopCoroutine(dashCoroutine);
-    }
-
-    public void HandleDashTrail()
-    {
-        Vector3 groundedVelocity = new Vector3(velocity.x, 0f, velocity.z);
-        dashTrailObject.SetActive(groundedVelocity.magnitude > maxSpeed);
+        dashTrailObject.SetActive(b);
     }
 
     private void IgnoreMyOwnColliders()
@@ -384,5 +344,31 @@ public class Player : Entity
                 Physics.IgnoreCollision(c1, c2, true);
             }
         }
+    }
+
+    private float GetAndSetSlopeSpeedModifierOnAngle(float groundAngle)
+    {
+        float slopeSpeedModifier = 1f - (0.25f) * groundAngle / controller.slopeLimit;
+
+        if (groundAngle > controller.slopeLimit) slopeSpeedModifier = 0.75f;
+
+        movementOnSlopeSpeedModifier = slopeSpeedModifier;
+
+        return slopeSpeedModifier;
+    }
+
+    private Vector3 GetGroundedVelocity()
+    {
+        return new Vector3(velocity.x, 0f, velocity.z);
+    }
+
+    public float GetMaxSpeed()
+    {
+        return SprintSpeedModifier * baseSpeed;
+    }
+
+    public void TransitionToAnimation(string animation)
+    {
+        animator.CrossFadeInFixedTime(animation, 0.1f);
     }
 }

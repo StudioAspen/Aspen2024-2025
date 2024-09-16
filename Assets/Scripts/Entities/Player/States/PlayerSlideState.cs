@@ -11,6 +11,8 @@ public class PlayerSlideState : PlayerBaseState
     public override void OnEnter()
     {
         Debug.Log("Entering Slide State");
+
+        player.TransitionToAnimation("Falling");
     }
 
     public override void OnExit()
@@ -26,12 +28,16 @@ public class PlayerSlideState : PlayerBaseState
 
         // moving stuff
         player.ApplyRotationToNextMovement();
-        player.HandleRotation();
+        player.RotateToTargetRotation();
         player.HandleMovingVelocity();
-        player.HandleGroundedMovement();
-        player.SetMovingSpeed();
+        player.GroundedMove();
 
         if (!player.IsAbleToSlide()) player.ChangeState(player.DefaultState);
+    }
+
+    public override void FixedUpdate()
+    {
+
     }
 
     public void SetSlideDirection(Vector3 dir)
