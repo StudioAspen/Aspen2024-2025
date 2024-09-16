@@ -1,7 +1,4 @@
-﻿
-using UnityEngine;
-
-public abstract class PlayerBaseState : BaseState
+﻿public abstract class PlayerBaseState : BaseState
 {
     private protected Player player;
 

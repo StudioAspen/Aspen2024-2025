@@ -257,7 +257,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void RotateTowardsAttackAngle()
     {
-        //if (player.IsMoving) return;
+        if (player.IsMoving) return;
 
         if (player.IsAttacking)
         {

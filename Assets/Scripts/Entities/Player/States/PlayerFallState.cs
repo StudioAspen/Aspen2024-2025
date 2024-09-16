@@ -21,14 +21,14 @@ public class PlayerFallState : PlayerBaseState
     {
         if (player.MoveDirection.sqrMagnitude > 0f)
         {
-            player.CalculateTargetRotation();
-            player.RotateTowardsTargetRotation();
-            player.GroundedMove();
+            player.ApplyRotationToNextMovement();
+            player.HandleRotation();
+            player.HandleGroundedMovement();
             player.SetMovingSpeed();
         }
         else
         {
-            player.GroundedMove();
+            player.HandleGroundedMovement();
             player.SetIdleSpeed();
         }
 
@@ -36,10 +36,5 @@ public class PlayerFallState : PlayerBaseState
         {
             player.ChangeState(player.PlayerIdleState, false);
         }
-    }
-
-    public override void FixedUpdate()
-    {
-
     }
 }

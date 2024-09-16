@@ -28,14 +28,14 @@ public class PlayerJumpState : PlayerBaseState
     {
         if (player.MoveDirection.sqrMagnitude > 0f)
         {
-            player.CalculateTargetRotation();
-            player.RotateTowardsTargetRotation();
-            player.GroundedMove();
+            player.ApplyRotationToNextMovement();
+            player.HandleRotation();
+            player.HandleGroundedMovement();
             player.SetMovingSpeed();
         }
         else
         {
-            player.GroundedMove();
+            player.HandleGroundedMovement();
             player.SetIdleSpeed();
         }
 
@@ -45,11 +45,6 @@ public class PlayerJumpState : PlayerBaseState
         }
 
         HandleJumpToFallTransition();
-    }
-
-    public override void FixedUpdate()
-    {
-
     }
 
     private void HandleJumpToFallTransition()

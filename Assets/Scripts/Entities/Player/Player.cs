@@ -1,5 +1,4 @@
 using KBCore.Refs;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,12 +11,9 @@ public class Player : Entity
     [SerializeField, Self] private CapsuleCollider capsuleCollider;
 
     [Header("Player: Capsule Collider Settings")]
-    
-    [SerializeField] [Range(0, 0.75f)] private float stepHeightPercentage = 0.25f;
-    [SerializeField] [Range(0, 5f)] private float floatRayDistance = 2f;
-    [SerializeField] [Range(0, 50f)] private float stepReachForce = 25f;
-    [SerializeField] private float movementOnSlopeSpeedModifier = 1f;
-    [SerializeField] private AnimationCurve slopeSpeedAngles;
+    [SerializeField] private float capsuleColliderHeight = 1.8f;
+    [Range(0, 1f)]
+    [SerializeField] private float stepHeightPercentage = 0.25f;
     private Vector3 startingCapsuleColliderCenter;
     private float startingCapsuleColliderHeight;
     private float startingCapsuleColliderRadius;
@@ -25,13 +21,7 @@ public class Player : Entity
     [Header("Player: Grounded Movement")]
     [SerializeField] private float walkSpeed = 3f;
     [SerializeField] private float maxSpeed = 5f;
-    [SerializeField] private float baseSpeed = 3f;
-    [field:SerializeField] public float SprintSpeedModifier { get; private set; } = 1.5f;
     [SerializeField] private float rotationSpeed = 5f;
-    private float speedModifier = 1f;
-    private float movementSpeed =>  baseSpeed * speedModifier * movementOnSlopeSpeedModifier;
-    private Vector3 horizontalVelocity => new Vector3(rigidBody.velocity.x, 0f, rigidBody.velocity.z);
-    private float speedModifierAnimationParameter;
     public Vector3 MoveDirection => input.MoveDirection;
     private float forwardAngleBasedOnCamera;
     private Quaternion targetForwardRotation = Quaternion.identity;
@@ -48,6 +38,7 @@ public class Player : Entity
     private int currentJumpCount;
     
     #region Flags
+    [HideInInspector] public bool IsMoving => input.MoveDirection.sqrMagnitude > 0;
     [HideInInspector] public bool IsSprinting;
     [HideInInspector] public bool IsAttacking;
     [HideInInspector] public bool IsChargingAttack;
@@ -71,8 +62,7 @@ public class Player : Entity
     public bool CameraLocked = true;
 
     public PlayerIdleState PlayerIdleState { get; private set; }
-    public PlayerWalkingState PlayerWalkingState { get; private set; }
-    public PlayerRunningState PlayerRunningState { get; private set; }
+    public PlayerMoveState PlayerMoveState { get; private set; }
     public PlayerJumpState PlayerJumpState { get; private set; }
     public PlayerDashState PlayerDashState { get; private set; }
     public PlayerSlideState PlayerSlideState { get; private set; }
@@ -106,17 +96,18 @@ public class Player : Entity
 
         ChangeTeam(0);
 
-        SetStartState(PlayerWalkingState);
-        SetDefaultState(PlayerWalkingState);
+        SetStartState(PlayerMoveState);
+        SetDefaultState(PlayerMoveState);
     }
 
     protected override void OnUpdate()
     {
         base.OnUpdate();
 
-        //CheckSlopeSliding();
+        CheckSlopeSliding();
 
-        //HandleGrounded();
+        HandleGrounded();
+        HandleFriction();
         HandleFalling();
         HandleDashDelay();
         HandleDashTrail();
@@ -127,16 +118,10 @@ public class Player : Entity
         Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
     }
 
-    protected override void OnFixedUpdate()
-    {
-        base.OnFixedUpdate();
-
-        Float();
-    }
-
     private void OnDrawGizmos()
     {
         Gizmos.DrawLine(transform.position, transform.position + CurrentMovementSpeed * targetForwardDirection);
+        Gizmos.DrawWireSphere(transform.position + 9f * controller.radius / 10f * Vector3.up, controller.radius);
     }
 
     protected override void InitializeStates()
@@ -144,8 +129,7 @@ public class Player : Entity
         base.InitializeStates();
 
         PlayerIdleState = new PlayerIdleState(this, 0);
-        PlayerWalkingState = new PlayerWalkingState(this, 0);
-        PlayerRunningState = new PlayerRunningState(this, 0);
+        PlayerMoveState = new PlayerMoveState(this, 0);
         PlayerJumpState = new PlayerJumpState(this, jumpToFallDuration, 0);
         PlayerDashState = new PlayerDashState(this, 0);
         PlayerSlideState = new PlayerSlideState(this, 0);
@@ -182,11 +166,23 @@ public class Player : Entity
         shiftKeyPressTimer = 0f;
     }
 
-    public void GroundedMove()
+    public void HandleGroundedMovement()
     {
-        if (MoveDirection == Vector3.zero || speedModifier == 0) return;
+        controller.Move(Time.deltaTime * groundedVelocity);
+    }
 
-        rigidBody.AddForce(movementSpeed * targetForwardDirection - horizontalVelocity, ForceMode.VelocityChange);
+    public void HandleVelocity()
+    {
+        if (groundedVelocity.sqrMagnitude < Mathf.Pow(CurrentMovementSpeed, 2))
+        {
+            velocity += groundedAcceleration * Time.deltaTime * targetForwardDirection;
+        }
+    }
+
+    public void HandleFriction()
+    {
+        velocity.x = Mathf.Lerp(velocity.x, 0f, groundedAcceleration * Time.deltaTime);
+        velocity.z = Mathf.Lerp(velocity.z, 0f, groundedAcceleration * Time.deltaTime);
     }
 
     private void HandleGrounded()
@@ -221,18 +217,9 @@ public class Player : Entity
         }
     }
 
-    public void CalculateTargetRotation()
+    public void HandleRotation()
     {
-        if (MoveDirection == Vector3.zero) return;
-
-        forwardAngleBasedOnCamera = Mathf.Atan2(input.MoveDirection.x, input.MoveDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
-        targetForwardRotation = Quaternion.Euler(0, forwardAngleBasedOnCamera, 0);
-        targetForwardDirection = targetForwardRotation * Vector3.forward;
-    }
-
-    public void RotateTowardsTargetRotation()
-    {
-        rigidBody.MoveRotation(Quaternion.Lerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime));
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
     }
 
     private void HandleDashDelay()
@@ -253,7 +240,7 @@ public class Player : Entity
             return;
         }
 
-        //Physics.Raycast(transform.position, Vector3.down, out hitBelow, controller.height / 2f, groundLayer);
+        Physics.Raycast(transform.position, Vector3.down, out hitBelow, controller.height / 2f, groundLayer);
 
         if (hitBelow.collider == null)
         {
@@ -283,14 +270,20 @@ public class Player : Entity
         if (!IsGrounded) return false;
         if (hitBelow.collider == null) return false;
 
-        return false;
-        //return hitBelowSlopeAngle > controller.slopeLimit;
+        return hitBelowSlopeAngle > controller.slopeLimit;
     }
 
     public void ApplySlide(Vector3 slideDirection)
     {
         velocity.y = physicsSettings.GroundedYVelocity;
-        //controller.Move(slideDirection * -velocity.y * Time.deltaTime);
+        controller.Move(slideDirection * -velocity.y * Time.deltaTime);
+    }
+
+    public void ApplyRotationToNextMovement()
+    {
+        forwardAngleBasedOnCamera = Mathf.Atan2(input.MoveDirection.x, input.MoveDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
+        targetForwardRotation = Quaternion.Euler(0, forwardAngleBasedOnCamera, 0);
+        targetForwardDirection = targetForwardRotation * Vector3.forward;
     }
 
     public void SetIdleSpeed()
@@ -305,9 +298,7 @@ public class Player : Entity
 
     private void HandleAnimations()
     {
-        speedModifierAnimationParameter = Mathf.Lerp(speedModifierAnimationParameter, speedModifier, 10f * Time.deltaTime);
-
-        animator.SetFloat("MovementSpeed", speedModifierAnimationParameter);
+        animator.SetFloat("MovementSpeed", CurrentMovementSpeed/maxSpeed);
         animator.SetFloat("InAirTimer", inAirTimer);
         animator.SetBool("IsGrounded", IsGrounded);
     }
@@ -331,9 +322,8 @@ public class Player : Entity
     {
         input.OnPlayerActionInput?.Invoke(PlayerActions.Dash);
 
-        //StopDashing();
-        //dashCoroutine = StartCoroutine(DashCoroutine());
-        rigidBody.AddForce(initialDashVelocity * targetForwardDirection, ForceMode.Impulse);
+        StopDashing();
+        dashCoroutine = StartCoroutine(DashCoroutine());
         dashDelayTimer = 0f;
     }
 
@@ -347,12 +337,12 @@ public class Player : Entity
             CurrentMovementSpeed = (initialDashVelocity - maxSpeed) * (1 - Mathf.Sqrt(1 - Mathf.Pow(t / dashDuration - 1, 2))) + maxSpeed;
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetForwardRotation, rotationSpeed * Time.deltaTime);
-            //controller.Move(CurrentMovementSpeed * Time.deltaTime * targetForwardDirection);
+            controller.Move(CurrentMovementSpeed * Time.deltaTime * targetForwardDirection);
             yield return null;
         }
         CurrentMovementSpeed = maxSpeed;
 
-        ChangeState(PlayerWalkingState, false);
+        ChangeState(PlayerMoveState, false);
 
         StartCoroutine(SprintAfterDashCoroutine());
     }
@@ -367,7 +357,7 @@ public class Player : Entity
 
         for (float t = 0; t < sprintDurationAfterDash; t += Time.deltaTime)
         {
-            if (MoveDirection == Vector3.zero) break;
+            if (!IsMoving) break;
             yield return null;
         }
 
@@ -413,77 +403,20 @@ public class Player : Entity
         startingCapsuleColliderCenter = capsuleCollider.center;
         startingCapsuleColliderHeight = capsuleCollider.height;
         startingCapsuleColliderRadius = capsuleCollider.radius;
-
-        capsuleCollider.height = startingCapsuleColliderHeight * (1f - stepHeightPercentage);
     }
 
     private void HandleCapsuleCollider()
     {
-        capsuleCollider.height = startingCapsuleColliderHeight * (1f - stepHeightPercentage);
+        capsuleColliderHeight = Mathf.Clamp(capsuleColliderHeight, 0f, Mathf.Infinity);
 
-        float colliderHeightDiff = startingCapsuleColliderHeight - capsuleCollider.height;
+        float colliderHeightDiff = startingCapsuleColliderHeight - capsuleColliderHeight;
 
         Vector3 newColliderCenter = new Vector3(0f, startingCapsuleColliderCenter.y + (colliderHeightDiff / 2f), 0f);
 
         capsuleCollider.center = newColliderCenter;
+        capsuleCollider.height = capsuleColliderHeight;
 
-        float halfColliderHeight = capsuleCollider.height / 2f;
+        float halfColliderHeight = capsuleColliderHeight / 2f;
         capsuleCollider.radius = halfColliderHeight < startingCapsuleColliderRadius ? halfColliderHeight : startingCapsuleColliderRadius;
-    }
-
-    public void Float()
-    {
-        Vector3 capsuleColliderCenterInWorldSpace = capsuleCollider.bounds.center;
-
-        Ray downwardsRayFromCapsuleCenter = new Ray(capsuleColliderCenterInWorldSpace, Vector3.down);
-
-        if (Physics.Raycast(downwardsRayFromCapsuleCenter, out RaycastHit hit, floatRayDistance, groundLayer, QueryTriggerInteraction.Ignore))
-        {
-            float groundAngle = Vector3.Angle(hit.normal, -downwardsRayFromCapsuleCenter.direction);
-
-            float slopeSpeedModifier = GetAndSetSlopeSpeedModifierOnAngle(groundAngle);
-
-            if (slopeSpeedModifier == 0f) return;
-
-            float distanceToFloatingPoint = capsuleCollider.center.y * transform.localScale.y - hit.distance;
-
-            if (distanceToFloatingPoint == 0f) return;
-
-            float amtToLift = distanceToFloatingPoint * stepReachForce - rigidBody.velocity.y;
-
-            Vector3 liftForce = new Vector3(0f, amtToLift, 0f);
-
-            rigidBody.AddForce(liftForce, ForceMode.VelocityChange);
-        }
-    }
-
-    private float GetAndSetSlopeSpeedModifierOnAngle(float groundAngle)
-    {
-/*        float slopeSpeedModifier = slopeSpeedAngles.Evaluate(groundAngle);
-
-        movementOnSlopeSpeedModifier = slopeSpeedModifier;
-
-        return slopeSpeedModifier;*/
-
-        float slopeSpeedModifier = 0f;
-
-        if (groundAngle >= 0f && groundAngle < 15f) slopeSpeedModifier = 1f;
-        if (groundAngle >= 15f && groundAngle < 55f) slopeSpeedModifier = 0.75f;
-        if (groundAngle >= 55f && groundAngle < 65f) slopeSpeedModifier = 0.4f;
-        if (groundAngle >= 65f && groundAngle <= 100f) slopeSpeedModifier = 0f;
-
-        movementOnSlopeSpeedModifier = slopeSpeedModifier;
-
-        return slopeSpeedModifier;
-    }
-
-    public void SetSpeedModifier(float speed)
-    {
-        speedModifier = speed;
-    }
-
-    public void ResetVelocity()
-    {
-        rigidBody.velocity = Vector3.zero;
     }
 }

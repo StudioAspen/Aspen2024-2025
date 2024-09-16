@@ -10,8 +10,6 @@ public class PlayerIdleState : PlayerBaseState
     public override void OnEnter()
     {
         Debug.Log("Entering Idle State");
-
-        player.SetSpeedModifier(0f);
     }
 
     public override void OnExit()
@@ -21,19 +19,13 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void Update()
     {
-        if (player.MoveDirection != Vector3.zero)
-        {
-            player.ChangeState(player.PlayerWalkingState, false);
-        }
+        player.HandleGroundedMovement();
+        player.HandleVelocity();
+        player.SetIdleSpeed();
 
-        if (player.IsSprinting)
+        if(player.MoveDirection.sqrMagnitude > 0)
         {
-            player.ChangeState(player.PlayerRunningState, false);
+            player.ChangeState(player.PlayerMoveState, false);
         }
-    }
-
-    public override void FixedUpdate()
-    {
-        
     }
 }
