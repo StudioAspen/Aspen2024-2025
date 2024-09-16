@@ -4,7 +4,6 @@ using UnityEngine;
 public class Entity : MonoBehaviour
 {
     [Header("Entity: References")]
-    [SerializeField, Self] private protected CharacterController controller;
     [SerializeField, Self] private protected Rigidbody rigidBody;
     [SerializeField, Self] private protected Animator animator;
     [SerializeField] private protected GlobalPhysicsSettings physicsSettings;
@@ -63,8 +62,16 @@ public class Entity : MonoBehaviour
         currentState?.Update();
 
         CheckGrounded();
+    }
 
-        HandleGravity();
+    private void FixedUpdate()
+    {
+        OnFixedUpdate();
+    }
+
+    protected virtual void OnFixedUpdate()
+    {
+        currentState?.FixedUpdate();
     }
 
     protected virtual void InitializeStates()
@@ -140,10 +147,5 @@ public class Entity : MonoBehaviour
             IsGrounded = false;
             return;
         }
-    }
-
-    protected virtual void HandleGravity()
-    {
-        controller.Move(Time.deltaTime * velocity.y * Vector3.up);
     }
 }

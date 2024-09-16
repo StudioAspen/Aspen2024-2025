@@ -25,12 +25,17 @@ public class PlayerSlideState : PlayerBaseState
         player.ApplySlide(slideDirection);
 
         // moving stuff
-        player.ApplyRotationToNextMovement();
-        player.HandleRotation();
-        player.HandleGroundedMovement();
+        player.CalculateTargetRotation();
+        player.RotateTowardsTargetRotation();
+        player.GroundedMove();
         player.SetMovingSpeed();
 
         if (!player.IsAbleToSlide()) player.ChangeState(player.DefaultState, false);
+    }
+
+    public override void FixedUpdate()
+    {
+
     }
 
     public void SetSlideDirection(Vector3 dir)

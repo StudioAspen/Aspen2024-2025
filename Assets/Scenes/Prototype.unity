@@ -2743,7 +2743,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e5e643d4e063db48bc180c997910eee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 8032175990790418742}
   rigidBody: {fileID: 8032175990790418738}
   animator: {fileID: 6034470951183592512}
   physicsSettings: {fileID: 11400000, guid: 67b2e76ec1d37584e9d1e97a4e9ab48b, type: 2}
@@ -2757,11 +2756,66 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   input: {fileID: 6034470951183592515}
   capsuleCollider: {fileID: 8032175990790418739}
-  capsuleColliderHeight: 1.8
   stepHeightPercentage: 0.25
+  floatRayDistance: 2
+  stepReachForce: 25
+  movementOnSlopeSpeedModifier: 1
+  slopeSpeedAngles:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -1.6520497
+      outSlope: -1.6520497
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.14960717
+      value: 0.75284153
+      inSlope: -3.2926898
+      outSlope: -3.2926898
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.15018314
+      value: 0.75000006
+      inSlope: -2.4666262
+      outSlope: -2.4666262
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.55066794
+      value: 0.75003123
+      inSlope: 0.27819487
+      outSlope: 0.27819487
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.5563119
+      outSlope: 0.5563119
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   walkSpeed: 3
   maxSpeed: 5
-  rotationSpeed: 10
+  baseSpeed: 3
+  speedModifier: 1
+  rotationSpeed: 15
   jumpHeight: 2
   maxJumpCount: 1
   groundedAcceleration: 4
@@ -2802,6 +2856,31 @@ PrefabInstance:
       propertyPath: m_Data.m_SourceObjects.m_Item0.transform
       value: 
       objectReference: {fileID: 761884761}
+    - target: {fileID: 5104155415629920173, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_UseGravity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5104155415629920173, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: 5104155415629920173, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5104155415629920173, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5104155415629920173, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5620550920081884860, guid: 19dae7578bc56674dae55670ec5dfbf5,
         type: 3}
       propertyPath: player
@@ -2911,6 +2990,7 @@ PrefabInstance:
     - {fileID: 0}
     - {fileID: 5620550920081884860, guid: 19dae7578bc56674dae55670ec5dfbf5, type: 3}
     - {fileID: 9018130139546683757, guid: 19dae7578bc56674dae55670ec5dfbf5, type: 3}
+    - {fileID: 7237775664649881152, guid: 19dae7578bc56674dae55670ec5dfbf5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -2952,12 +3032,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!143 &8032175990790418742 stripped
-CharacterController:
-  m_CorrespondingSourceObject: {fileID: 7237775664649881152, guid: 19dae7578bc56674dae55670ec5dfbf5,
-    type: 3}
-  m_PrefabInstance: {fileID: 8032175990790418737}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
