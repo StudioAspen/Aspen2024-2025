@@ -8,6 +8,7 @@ using UnityEngine;
 public class Combo : ScriptableObject
 {
     [field: SerializeField] public string Name { get; private set; } = "";
+    [field: SerializeReference] public PlayerBaseComboActionState ComboActionState { get; private set; }
     [field: SerializeField] public AnimationClip AnimationClip { get; private set; }
     [field: Range(0.25f, 5f)]
     [field: SerializeField] public float AnimationSpeed { get; private set; } = 1f;
@@ -72,9 +73,9 @@ public class Combo : ScriptableObject
     /// <param name="combos"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static Combo GetSingleActionCombo(List<Combo> combos, PlayerActions action)
+    public static PlayerBaseComboActionState GetSingleActionCombo(List<PlayerBaseComboActionState> combos, PlayerActions action)
     {
-        foreach(Combo combo in combos)
+        foreach(PlayerBaseComboActionState combo in combos)
         {
             if (combo.Actions.Count == 1 && combo.Actions.Contains(action)) return combo;
         }
@@ -87,14 +88,14 @@ public class Combo : ScriptableObject
     /// </summary>
     /// <param name="combos"></param>
     /// <returns></returns>
-    public static Combo GetLongestCombo(List<Combo> combos)
+    public static PlayerBaseComboActionState GetLongestCombo(List<PlayerBaseComboActionState> combos)
     {
         if (combos.Count == 0) return null;
         if (combos.Count == 1) return combos[0];
 
-        Combo result = null;
+        PlayerBaseComboActionState result = null;
 
-        foreach (Combo combo in combos)
+        foreach (PlayerBaseComboActionState combo in combos)
         {
             if (result == null)
             {

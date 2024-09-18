@@ -7,8 +7,9 @@ public class PlayerDashState : PlayerBaseState
 
     private bool isDashAnimationPlaying = false;
 
-    public PlayerDashState(Player player) : base(player)
+    public override void Init(Entity entity)
     {
+        base.Init(entity);
         player.DashTrailSetActive(false);
     }
 

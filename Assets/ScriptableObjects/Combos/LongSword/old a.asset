@@ -9,13 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23c8777a7ed4ed54c936b00da7e0bb93, type: 3}
-  m_Name: a
+  m_Script: {fileID: 11500000, guid: 3a6930ec783baaa4d980dc4fde685503, type: 3}
+  m_Name: old a
   m_EditorClassIdentifier: 
-  animationClip: {fileID: -1115183702260151492, guid: 3d21b82dff41d12438297e2cbeefb519,
+  <Name>k__BackingField: a
+  <AnimationClip>k__BackingField: {fileID: -1115183702260151492, guid: 3d21b82dff41d12438297e2cbeefb519,
     type: 3}
-  animationSpeed: 1.5
-  baseDamageRange: {x: 10, y: 15}
+  <AnimationSpeed>k__BackingField: 1.5
+  <BaseDamageRange>k__BackingField: {x: 10, y: 15}
   <Actions>k__BackingField: 02000000
-  stepForwardDistance: 1.5
-  stepForwardSpeed: 10

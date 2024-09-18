@@ -1,6 +1,7 @@
 using KBCore.Refs;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Events;
@@ -114,13 +115,13 @@ public class Player : Entity
     {
         base.InitializeStates();
 
-        PlayerIdleState = new PlayerIdleState(this);
-        PlayerWalkingState = new PlayerWalkingState(this);
-        PlayerSprintingState = new PlayerSprintingState(this);
-        PlayerJumpState = new PlayerJumpState(this);
-        PlayerFallState = new PlayerFallState(this);
-        PlayerDashState = new PlayerDashState(this);
-        PlayerSlideState = new PlayerSlideState(this);
+        PlayerIdleState = BaseState.CreateState<PlayerIdleState>(this);
+        PlayerWalkingState = BaseState.CreateState<PlayerWalkingState>(this);
+        PlayerSprintingState = BaseState.CreateState<PlayerSprintingState>(this);
+        PlayerJumpState = BaseState.CreateState<PlayerJumpState>(this);
+        PlayerFallState = BaseState.CreateState<PlayerFallState>(this);
+        PlayerDashState = BaseState.CreateState<PlayerDashState>(this);
+        PlayerSlideState = BaseState.CreateState<PlayerSlideState>(this);
     }
 
     private void CheckGrounded()
@@ -388,5 +389,34 @@ public class Player : Entity
         float maxSpeed = SprintSpeedModifier * baseSpeed;
 
         DashTrailSetActive(GetGroundedVelocity().magnitude > maxSpeed);
+    }
+
+    public float Distance(Vector3 pos)
+    {
+        return Vector3.Distance(transform.position, pos);
+    }
+
+    public void ReplaceComboAnimationClip(AnimationClip newClip)
+    {
+        AnimatorOverrideController aoc = new AnimatorOverrideController(animator.runtimeAnimatorController);
+
+        var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
+
+        foreach (AnimationClip currentClip in aoc.animationClips)
+        {
+            if (currentClip.name == "ComboPlaceholder")
+            {
+                anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(currentClip, newClip));
+            }
+        }
+
+        aoc.ApplyOverrides(anims);
+
+        animator.runtimeAnimatorController = aoc;
+    }
+
+    public void SetComboAnimationSpeed(float speed)
+    {
+        animator.SetFloat("ComboAnimationSpeed", speed);
     }
 }

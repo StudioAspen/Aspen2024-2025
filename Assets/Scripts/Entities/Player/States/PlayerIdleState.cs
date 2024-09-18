@@ -2,9 +2,9 @@
 
 public class PlayerIdleState : PlayerBaseState
 {
-    public PlayerIdleState(Player player) : base(player)
+    public override void Init(Entity entity)
     {
-        
+        base.Init(entity);
     }
 
     public override void OnEnter()

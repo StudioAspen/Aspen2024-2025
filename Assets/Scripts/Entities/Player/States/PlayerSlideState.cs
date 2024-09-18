@@ -4,8 +4,9 @@ public class PlayerSlideState : PlayerBaseState
 {
     private Vector3 slideDirection;
 
-    public PlayerSlideState(Player player) : base(player)
+    public override void Init(Entity entity)
     {
+        base.Init(entity);
     }
 
     public override void OnEnter()

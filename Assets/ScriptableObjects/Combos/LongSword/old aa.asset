@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6930ec783baaa4d980dc4fde685503, type: 3}
+  m_Name: old aa
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: aa
+  <AnimationClip>k__BackingField: {fileID: 6799651534840860903, guid: b8075c9babebc1a4a877c916f1b2fb05,
+    type: 3}
+  <AnimationSpeed>k__BackingField: 1.5
+  <BaseDamageRange>k__BackingField: {x: 15, y: 20}
+  <Actions>k__BackingField: 0200000002000000
