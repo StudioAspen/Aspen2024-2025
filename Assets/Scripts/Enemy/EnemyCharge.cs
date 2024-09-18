@@ -33,8 +33,8 @@ public class EnemyCharge : MonoBehaviour
         if (collision.gameObject.tag == "Enemy") 
         {
             Debug.Log("THROW");
-         
-            collision.rigidbody.AddForce(playerTransform.position - transform.position + height  * 3000);       
+         /*
+            collision.rigidbody.AddForce(playerTransform.position - transform.position + height  * 3000);       */
         }
     }
 }

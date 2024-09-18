@@ -33,7 +33,10 @@ public class SqaureManager : MonoBehaviour
     public GameObject islandToSpawn;
     public Vector3 islandSpawnOS;
 
-
+    public GameObject enemySpawnPoint1;
+    public GameObject enemySpawnPoint2;
+    public GameObject enemySpawnPoint3;
+    public GameObject enemySpawnPoint4;
 
     void Start()
     {
