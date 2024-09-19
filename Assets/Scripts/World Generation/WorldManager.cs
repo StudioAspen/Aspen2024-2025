@@ -17,11 +17,13 @@ public class WorldManager : MonoBehaviour
     [SerializeField] public bool mapClear;
 
     [SerializeField] public MasterLevelManager masterLevel;
+    public HashSet<SqaureManager> islandManagers = new HashSet<SqaureManager>();
 
-    [Header("Misc Controls")]
+   [Header("Misc Controls")]
     [SerializeField] public bool skyView;
     [SerializeField] public float waveBuffer;
     [SerializeField] public float waveBufferTimer;
+    [SerializeField] public bool LevelIsands;
 
     [Header("Island Selection")]
     [SerializeField] public GameObject playerCamera;
@@ -36,8 +38,10 @@ public class WorldManager : MonoBehaviour
 
 
 
+
     void Start()
     {
+        islandManagers.Add(GameObject.FindObjectOfType<SqaureManager>());
         masterIsland = GameObject.Find("MasterLevel");
         masterLevel = GameObject.FindObjectOfType<MasterLevelManager>();
         waveBuffer = 5f;
@@ -47,9 +51,10 @@ public class WorldManager : MonoBehaviour
    
     void Update()
     {
-        if (waveBufferTimer <= 0) 
+        if (waveBufferTimer <= -3) 
         {
-          
+
+            masterLevel.UpdateNavMesh();           
 
           if (mapClear == true && selecting == false) 
           {
@@ -88,8 +93,6 @@ public class WorldManager : MonoBehaviour
             skyView = false;
         }
 
-        /*islandSelectTimertext.text = "Time Left: " + islandSelectTimer.ToString("0.00");*/
-
         if (selecting == false) 
         {
             waveBufferTimer -= Time.deltaTime;
@@ -98,7 +101,7 @@ public class WorldManager : MonoBehaviour
 
     private IEnumerator selectNextIsland() 
     {
-
+       
         Debug.Log("Make Selection");
         islandSelectTimer = islandSelectTimerSet;
         selecting = true;
@@ -108,7 +111,22 @@ public class WorldManager : MonoBehaviour
         yield return new WaitForSeconds(0.75f);
 
         masterLevel.SpawnPlaceHolder();
-       
+        PrepareNextWaves();
+
     }
 
+    public void PrepareNextWaves() 
+    {
+        foreach (var SqaureManager in islandManagers) 
+        {
+            SqaureManager.LevelUp();
+            AddIslandManager(SqaureManager);
+        }
+    
+    }
+
+    public void AddIslandManager(SqaureManager spawner) 
+    {
+        islandManagers.Add(spawner);
+    }
 }

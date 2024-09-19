@@ -122,7 +122,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 23800000, guid: 8c0ea295e6127b043a56b67880546f4d, type: 2}
+  m_NavMeshData: {fileID: 0}
 --- !u!1 &30605109
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,6 +967,7 @@ GameObject:
   - component: {fileID: 386819590}
   - component: {fileID: 386819589}
   - component: {fileID: 386819588}
+  - component: {fileID: 386819593}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1126,6 +1127,25 @@ MonoBehaviour:
   spotSelect: {x: 0, y: 0, z: 0}
   borderRemove: {fileID: 0}
   worldManage: {fileID: 0}
+--- !u!114 &386819593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 386819586}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &395553793
 GameObject:
   m_ObjectHideFlags: 0
@@ -1982,6 +2002,7 @@ MonoBehaviour:
   skyView: 0
   waveBuffer: 0
   waveBufferTimer: 0
+  LevelIsands: 0
   playerCamera: {fileID: 2010055592}
   islandSelectCamera: {fileID: 152754436}
   islandSelectTimer: 0
@@ -4571,6 +4592,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1675041087}
   - component: {fileID: 1675041088}
+  - component: {fileID: 1675041089}
   m_Layer: 0
   m_Name: MasterLevel
   m_TagString: Untagged
@@ -4614,6 +4636,38 @@ MonoBehaviour:
   openSlotPlaceHolder: {fileID: 1481753692062898772, guid: 1c513cc1d267f7940a7ec5a82e5e8c40,
     type: 3}
   selectorOF: {x: 0, y: 10, z: 0}
+  navsurface: {fileID: 1675041089}
+--- !u!114 &1675041089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1675041086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 1
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 0}
+  m_BuildHeightMesh: 0
 --- !u!1 &1690039312
 GameObject:
   m_ObjectHideFlags: 0
@@ -5555,6 +5609,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
+      propertyPath: RateScale
+      value: 2.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: leaperCost
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: chargerCost
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
       propertyPath: leaperValue
       value: 2
       objectReference: {fileID: 0}
@@ -5562,6 +5631,11 @@ PrefabInstance:
         type: 3}
       propertyPath: chargerValue
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: followerCost
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
@@ -5678,6 +5752,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BaseCube
+      objectReference: {fileID: 0}
+    - target: {fileID: 8171416551064500414, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: m_TileSize
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 8171416551064500414, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: m_NavMeshData
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8171416551064500414, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: m_UseGeometry
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8171416551064500414, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: m_OverrideTileSize
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8171416551064500414, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: m_OverrideVoxelSize
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8417531159018293085, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class MasterLevelManager : MonoBehaviour
@@ -12,11 +13,15 @@ public class MasterLevelManager : MonoBehaviour
 
     public GameObject openSlotPlaceHolder;
     public Vector3 selectorOF;
+    public NavMeshSurface navsurface;
+    
+
+
 
     void Start()
     {
         masterBorders = GameObject.Find("Borders");
- 
+        UpdateNavMesh();
     }
 
 
@@ -24,6 +29,10 @@ public class MasterLevelManager : MonoBehaviour
     {
 
         borders = allBorders.ToArray();
+        if (Input.GetKeyDown(KeyCode.P)) 
+        {
+            navsurface.BuildNavMesh();
+        }
 
     }
 
@@ -72,4 +81,10 @@ public class MasterLevelManager : MonoBehaviour
 
     }
 
+    public void UpdateNavMesh()
+    {
+
+        navsurface.BuildNavMesh();
+
+    }
 }

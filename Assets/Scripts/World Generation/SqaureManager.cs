@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class SqaureManager : MonoBehaviour
 {
 
     [Header("Square Stats")]
-    [SerializeField] private GameObject masterLevel;
+    [SerializeField] public GameObject masterLevel;
     [SerializeField] public Transform masterLevelparent;
-    [SerializeField] private int sqaureLevel;
+    [SerializeField] public int sqaureLevel;
+    public WorldManager WorldManager;
+
     public Vector3 islandRiseSpeed;
     public bool openSides = true;
     public int sqaureScore;
@@ -37,6 +40,7 @@ public class SqaureManager : MonoBehaviour
     public GameObject enemySpawnPoint2;
     public GameObject enemySpawnPoint3;
     public GameObject enemySpawnPoint4;
+    public NavMeshSurface navsurface;
 
     void Start()
     {
@@ -44,7 +48,8 @@ public class SqaureManager : MonoBehaviour
         masterLevel = GameObject.Find("MasterLevel");
         transform.SetParent(masterLevel.transform);
         masterLevelparent = GameObject.Find("Borders").transform;
-
+        WorldManager = GameObject.FindObjectOfType<WorldManager>();
+        sqaureLevel = 1;
        
     }
 
@@ -60,10 +65,6 @@ public class SqaureManager : MonoBehaviour
         {
               GetComponent<Transform>().position += islandRiseSpeed;
         }
-
-        
-                
-       
 
         /*
             if (Physics.Raycast(rayFront, out wallHit, 100f))
@@ -126,13 +127,35 @@ public class SqaureManager : MonoBehaviour
     {
 
         yield return new WaitForSeconds(2);
+   
         Border1.transform.SetParent(masterLevelparent);
         Border2.transform.SetParent(masterLevelparent);
         Border3.transform.SetParent(masterLevelparent);
         Border4.transform.SetParent(masterLevelparent);
 
+
+        yield return new WaitForSeconds(2);
+
+        StartCoroutine(UpdateNavMesh());
+
     }
 
-    
+    public IEnumerator UpdateNavMesh() 
+    {
+       
+        navsurface.BuildNavMesh();
+
+        yield return new WaitForSeconds(3);
+
+        navsurface.enabled = false;
+    }
+
+    public void LevelUp()
+    {
+
+        sqaureLevel += 1;
+
+    }
+
 }
     

@@ -251,6 +251,7 @@ GameObject:
   - component: {fileID: 489798267540595580}
   - component: {fileID: 6052383663745716427}
   - component: {fileID: 3642624367869852063}
+  - component: {fileID: 8171416551064500414}
   m_Layer: 0
   m_Name: BaseCube
   m_TagString: Untagged
@@ -385,6 +386,7 @@ MonoBehaviour:
   enemySpawnPoint2: {fileID: 5911963136775035400}
   enemySpawnPoint3: {fileID: 7497599066430522912}
   enemySpawnPoint4: {fileID: 1069167050198721364}
+  navsurface: {fileID: 8171416551064500414}
 --- !u!114 &3642624367869852063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -402,17 +404,51 @@ MonoBehaviour:
   finishedWave: 0
   spawnTimerMax: 0
   spawnTimer: 0
+  spawnRdy: 0
   spawnLocation: 0
+  SqaureManager: {fileID: 0}
   followerSpawnThreshhold: 0
   leaperSpawnThreshhold: 0
   chargerSpawnThreshhold: 0
-  followerValue: 0
-  leaperValue: 0
-  chargerValue: 0
+  followerValue: 1
+  leaperValue: 2
+  chargerValue: 3
   follower: {fileID: 7557220100173712488, guid: a75dd20bd1ea5fa41abb2daa4ff94572,
     type: 3}
   leaper: {fileID: 8000643584764449782, guid: ab708fbc5a72d01499dfd0b1bba237be, type: 3}
   charger: {fileID: 3527622954214605426, guid: 52a509049aef3744898d4e0af0cf6329, type: 3}
+  WorldManager: {fileID: 0}
+--- !u!114 &8171416551064500414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2939626751093247222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 1
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: 8123f71a143c1254bad31d338f09df3e, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!1 &3581863233144176676
 GameObject:
   m_ObjectHideFlags: 0
