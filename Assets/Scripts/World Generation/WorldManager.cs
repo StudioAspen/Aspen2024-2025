@@ -18,8 +18,9 @@ public class WorldManager : MonoBehaviour
 
     [SerializeField] public MasterLevelManager masterLevel;
     public HashSet<SqaureManager> islandManagers = new HashSet<SqaureManager>();
+    public HashSet<EnemyManager> enemyManagers = new HashSet<EnemyManager>();
 
-   [Header("Misc Controls")]
+    [Header("Misc Controls")]
     [SerializeField] public bool skyView;
     [SerializeField] public float waveBuffer;
     [SerializeField] public float waveBufferTimer;
@@ -42,6 +43,7 @@ public class WorldManager : MonoBehaviour
     void Start()
     {
         islandManagers.Add(GameObject.FindObjectOfType<SqaureManager>());
+        enemyManagers.Add(GameObject.FindObjectOfType<EnemyManager>());
         masterIsland = GameObject.Find("MasterLevel");
         masterLevel = GameObject.FindObjectOfType<MasterLevelManager>();
         waveBuffer = 5f;
@@ -122,11 +124,21 @@ public class WorldManager : MonoBehaviour
             SqaureManager.LevelUp();
             AddIslandManager(SqaureManager);
         }
-    
+        
+        foreach (var enemyManager in enemyManagers)
+        {
+            enemyManager.WaveReset();
+            AddEnemyManager(enemyManager);
+        }
+
     }
 
     public void AddIslandManager(SqaureManager spawner) 
     {
         islandManagers.Add(spawner);
+    }
+    public void AddEnemyManager(EnemyManager director)
+    {
+        enemyManagers.Add(director);
     }
 }

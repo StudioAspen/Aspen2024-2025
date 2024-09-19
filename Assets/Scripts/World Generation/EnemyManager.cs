@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-    public int maxShopCurrency;
-    public int currentShopCurrency;
+    public float maxShopCurrency;
+    public float currentShopCurrency;
 
     public bool finishedWave;
 
@@ -32,14 +32,16 @@ public class EnemyManager : MonoBehaviour
     public WorldManager WorldManager;
 
     [Header("Enemy Weight Process")]
-  
-    
     [SerializeField] public float totalWeight;
-
     [SerializeField] public float randomValue;
     [SerializeField] public float cumalativeWeight;
     public float RateScale;
-    
+
+    [Header("Currency calculation")]
+    [SerializeField] public float baseCurrency;
+    [SerializeField] public float growthFactor;
+    [SerializeField] public int polynomialDegree;
+
     [System.Serializable]
     public class Enemy 
     {
@@ -53,12 +55,14 @@ public class EnemyManager : MonoBehaviour
     void Start()
     {
         ////temp
-        maxShopCurrency = 10;
         spawnTimerMax = 3;
-        SqaureManager = GameObject.FindObjectOfType<SqaureManager>();
-        currentShopCurrency = maxShopCurrency;
-        WorldManager = GameObject.FindObjectOfType<WorldManager>();
 
+        ///not temp 
+        WorldManager = GameObject.FindObjectOfType<WorldManager>();
+        SqaureManager = GameObject.FindObjectOfType<SqaureManager>();
+        maxShopCurrency = baseCurrency + (growthFactor * Mathf.Pow(SqaureManager.sqaureLevel,polynomialDegree));
+        currentShopCurrency = maxShopCurrency;
+       
         ///not temp
         enemies.Add(new Enemy { prefab = follower, enemyCost = followerCost });
         enemies.Add(new Enemy { prefab = leaper, enemyCost = leaperCost });
@@ -146,7 +150,7 @@ public class EnemyManager : MonoBehaviour
 
     public void WaveReset() 
     {
-
+        maxShopCurrency = baseCurrency + (growthFactor * Mathf.Pow(SqaureManager.sqaureLevel,polynomialDegree));
         currentShopCurrency = maxShopCurrency;
     }
 

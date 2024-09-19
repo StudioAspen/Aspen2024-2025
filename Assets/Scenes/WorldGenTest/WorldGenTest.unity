@@ -5629,6 +5629,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
+      propertyPath: baseCurrency
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
       propertyPath: chargerValue
       value: 3
       objectReference: {fileID: 0}
@@ -5639,8 +5644,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
+      propertyPath: growthFactor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
       propertyPath: followerValue
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: polynomialDegree
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3999374681703134211, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}

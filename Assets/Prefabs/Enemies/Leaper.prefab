@@ -267,5 +267,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
+  rb: {fileID: 0}
   enemyStats: {fileID: 0}
   enemyDistance: 0
+  lungeDetection: 3
+  lungeDisatance: 3
+  lungeSpeed: 1
+  isLunging: 0
+  pastedTime: 0
+  lungeDuration: 0.5
+  lungeHeight: 2
+  hopCount: 2
+  hopDistance: 1
+  hopDuration: 1
+  hopHeight: 1
+  lungeCooldown: 2
+  canLunge: 0
+  enemyRenderer: {fileID: 0}
+  lungeChanceColorIndicator: {r: 0.9150943, g: 0.6311099, b: 0.10791205, a: 0}
+  lungeColorIndicator: {r: 1, g: 0, b: 0.02207613, a: 0}
+  followingColorIndicator: {r: 0.54521745, g: 0.8584906, b: 0.19842473, a: 0}
+  originalColor: {r: 0, g: 0, b: 0, a: 0}
