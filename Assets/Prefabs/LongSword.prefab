@@ -5111,7 +5111,10 @@ MonoBehaviour:
   colliderStartTransform: {fileID: 2382167382557116116}
   colliderEndTransform: {fileID: 2628417811129990337}
   Combos:
-  - {fileID: 11400000, guid: fd393b0b5b89e3b4b9da4f623c2c2f28, type: 2}
+  - {fileID: 11400000, guid: b5f502c534660bc468acb4882368174e, type: 2}
+  - {fileID: 11400000, guid: a157dde0449f3ca4ba927068a3a2d65d, type: 2}
+  - {fileID: 11400000, guid: 0c06260fec317c04885af3231d3e035c, type: 2}
+  - {fileID: 11400000, guid: de3c699b086c95a4696397c7f0ba2f5a, type: 2}
   impactFramesDuration: 0.1
   trailObject: {fileID: 6918874709248315491}
 --- !u!136 &1259378818332639156

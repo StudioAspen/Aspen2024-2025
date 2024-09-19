@@ -1847,6 +1847,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1030289959 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 196489911609782724, guid: 19dae7578bc56674dae55670ec5dfbf5,
+    type: 3}
+  m_PrefabInstance: {fileID: 8032175990790418737}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b15be1641a6715409d644911d004bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1080087773
 GameObject:
   m_ObjectHideFlags: 0
@@ -2788,6 +2800,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2171180168782530629, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3411764277713293894, guid: 19dae7578bc56674dae55670ec5dfbf5,
         type: 3}
       propertyPath: m_Data.m_SourceObjects.m_Item0.transform
@@ -2808,6 +2825,11 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 6034470951183592517}
+    - target: {fileID: 5620550920081884860, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: <Weapon>k__BackingField
+      value: 
+      objectReference: {fileID: 1030289959}
     - target: {fileID: 7404623276546726143, guid: 19dae7578bc56674dae55670ec5dfbf5,
         type: 3}
       propertyPath: m_ActionEvents.Array.size

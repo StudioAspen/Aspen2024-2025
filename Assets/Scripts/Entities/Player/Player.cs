@@ -111,6 +111,14 @@ public class Player : Entity
         Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
     }
 
+    private void OnAnimatorMove()
+    {
+        Vector3 desiredAnimationMovement = animator.deltaPosition;
+        desiredAnimationMovement.y = 0f;
+
+        controller.Move(desiredAnimationMovement);
+    }
+
     protected override void InitializeStates()
     {
         base.InitializeStates();
@@ -138,7 +146,7 @@ public class Player : Entity
     private void HandleJumpInput()
     {
         if (!IsGrounded && currentJumpCount >= maxJumpCount) return;
-        if (currentState == PlayerSlideState) return;
+        if (CurrentState == PlayerSlideState) return;
 
         ChangeState(PlayerJumpState);
     }
@@ -204,7 +212,7 @@ public class Player : Entity
     {
         if (IsGrounded)
         {
-            if (currentState != PlayerSlideState)
+            if (CurrentState != PlayerSlideState)
             {
                 currentJumpCount = 0;
             }

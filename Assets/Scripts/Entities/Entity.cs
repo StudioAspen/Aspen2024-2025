@@ -23,7 +23,7 @@ public class Entity : MonoBehaviour
 
     public int Team { get; private set; }
 
-    protected private BaseState currentState;
+    public BaseState CurrentState { get; private set; }
     public BaseState DefaultState { get; private set; }
 
     private void OnValidate()
@@ -58,7 +58,7 @@ public class Entity : MonoBehaviour
 
     protected virtual void OnUpdate()
     {
-        currentState?.Update();
+        CurrentState?.Update();
     }
 
     private void FixedUpdate()
@@ -68,7 +68,7 @@ public class Entity : MonoBehaviour
 
     protected virtual void OnFixedUpdate()
     {
-        currentState?.FixedUpdate();
+        CurrentState?.FixedUpdate();
     }
 
     protected virtual void InitializeStates()
@@ -78,8 +78,8 @@ public class Entity : MonoBehaviour
 
     protected void SetStartState(BaseState state)
     {
-        currentState = state;
-        currentState.OnEnter();
+        CurrentState = state;
+        CurrentState.OnEnter();
     }
 
     protected void SetDefaultState(BaseState state)
@@ -89,11 +89,11 @@ public class Entity : MonoBehaviour
 
     public void ChangeState(BaseState state)
     {
-        if (currentState == state) return;
+        if (CurrentState == state) return;
 
-        currentState.OnExit();
-        currentState = state;
-        currentState.OnEnter();
+        CurrentState.OnExit();
+        CurrentState = state;
+        CurrentState.OnEnter();
     }
 
     protected virtual void Die()

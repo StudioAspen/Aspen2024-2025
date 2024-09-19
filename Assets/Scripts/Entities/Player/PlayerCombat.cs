@@ -11,19 +11,16 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField, Self] private Player player;
     [SerializeField, Self] private Animator animator;
 
-    [Header("Settings")]
-    [SerializeField] private WeaponHandler weapon;
-    [SerializeField] private float rotationSpeed = 5f;
-    private float instantaneousAttackAngle;
-    private Coroutine currentSwingingCoroutine;
-    private bool isAnimationPlaying;
+    [field: Header("Settings")]
+    [field: SerializeField] public WeaponHandler Weapon { get; private set; }
+    [HideInInspector] public bool IsAnimationPlaying;
 
     [Header("Combo")]
     [SerializeField] private float comboListenDuration = 1f;
     private float comboListenTimer;
     private List<PlayerActions> currentComboList = new List<PlayerActions>();
-    private List<PlayerBaseComboActionState> potentialCombos = new List<PlayerBaseComboActionState>();
-    private List<PlayerBaseComboActionState> predictedCombos = new List<PlayerBaseComboActionState>();
+    private List<PlayerComboActionStateSO> potentialCombos = new List<PlayerComboActionStateSO>();
+    private List<PlayerComboActionStateSO> predictedCombos = new List<PlayerComboActionStateSO>();
 
     [Header("Input")]
     [SerializeField] private float attackReleaseThreshold = 0.25f;
@@ -57,11 +54,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        //RotateTowardsAttackAngle();
-
         HandleComboList();
-
-        HandleWeaponCollisions();
+        HandleWeaponTriggers();
     }
 
     private void HandleAttack1HoldInput()
@@ -155,7 +149,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void AttemptToExecuteACombo(PlayerActions incomingAction)
     {
-        PlayerBaseComboActionState comboToExecute = null;
+        PlayerComboActionStateSO comboToExecute = null;
 
         if (predictedCombos.Count == 0) // if new action doesn't create any valid combos
         {
@@ -164,7 +158,7 @@ public class PlayerCombat : MonoBehaviour
 
             GenerateComboLists();
 
-            comboToExecute = Combo.GetSingleActionCombo(weapon.Combos, incomingAction);
+            comboToExecute = ComboData.GetSingleActionCombo(Weapon.Combos, incomingAction);
             if (comboToExecute != null)
             {
                 ExecuteCombo(comboToExecute);
@@ -172,7 +166,7 @@ public class PlayerCombat : MonoBehaviour
         }
         else
         {
-            comboToExecute = Combo.GetLongestCombo(potentialCombos);
+            comboToExecute = ComboData.GetLongestCombo(potentialCombos);
 
             if (comboToExecute != null)
             {
@@ -183,22 +177,20 @@ public class PlayerCombat : MonoBehaviour
         //PrintComboLists();
     }
 
-    private void ExecuteCombo(PlayerBaseComboActionState combo)
+    private void ExecuteCombo(PlayerComboActionStateSO comboState)
     {
-        combo.Init(player);
-        player.ChangeState(combo);
-        //weapon.SetDamageRange(combo.BaseDamageRange);
-        SwingMeleeWeapon("Combo");
+        comboState.Init(player, this);
+        player.ChangeState(comboState);
     }
 
     private void GenerateComboLists()
     {
-        potentialCombos = new List<PlayerBaseComboActionState>();
-        predictedCombos = new List<PlayerBaseComboActionState>();
-        foreach (PlayerBaseComboActionState weaponCombo in weapon.Combos)
+        potentialCombos = new List<PlayerComboActionStateSO>();
+        predictedCombos = new List<PlayerComboActionStateSO>();
+        foreach (PlayerComboActionStateSO weaponCombo in Weapon.Combos)
         {
-            if (Combo.IsIn(weaponCombo.Actions, currentComboList)) potentialCombos.Add(weaponCombo);
-            if (Combo.IsPotentiallyIn(weaponCombo.Actions, currentComboList)) predictedCombos.Add(weaponCombo);
+            if (ComboData.IsIn(weaponCombo.ComboData.ComboInputs, currentComboList)) potentialCombos.Add(weaponCombo);
+            if (ComboData.IsPotentiallyIn(weaponCombo.ComboData.ComboInputs, currentComboList)) predictedCombos.Add(weaponCombo);
         }
     }
 
@@ -217,7 +209,7 @@ public class PlayerCombat : MonoBehaviour
 
         for (int i = 0; i < potentialCombos.Count; i++)
         {
-            result += potentialCombos[i].Name;
+            result += potentialCombos[i].ComboData.ComboName;
             if (i != potentialCombos.Count - 1) result += ",";
             result += " ";
         }
@@ -226,7 +218,7 @@ public class PlayerCombat : MonoBehaviour
 
         for (int i = 0; i < predictedCombos.Count; i++)
         {
-            result += predictedCombos[i].Name;
+            result += potentialCombos[i].ComboData.ComboName;
             if (i != predictedCombos.Count - 1) result += ",";
             result += " ";
         }
@@ -255,78 +247,23 @@ public class PlayerCombat : MonoBehaviour
         animator.runtimeAnimatorController = aoc;
     }
 
-    private void RotateTowardsAttackAngle()
+    private void HandleWeaponTriggers()
     {
-        if (player.IsMoving) return;
-
-        if (player.IsAttacking)
-        {
-            Quaternion targetRotation = Quaternion.Euler(0, instantaneousAttackAngle, 0);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 2f * rotationSpeed * Time.deltaTime);
-        }
-    }
-
-    private void SwingMeleeWeapon(string animationName)
-    {
-        if(!player.IsAttacking) currentSwingingCoroutine = StartCoroutine(SwingCoroutine(animationName, 0.25f));
-    }
-
-    private IEnumerator SwingCoroutine(string animationName, float animationFadeSpeed)
-    {
-        weapon.ClearEnemiesHitList();
-
-        //instantaneousAttackAngle = Mathf.Atan2(input.MoveDirection.x, input.MoveDirection.z) * Mathf.Rad2Deg + Camera.main.transform.rotation.eulerAngles.y;
-
-        player.IsAttacking = true;
-
-        //animator.CrossFadeInFixedTime(animationName, 0.05f);
-
-        isAnimationPlaying = true;
-        while (isAnimationPlaying)
-        {
-            yield return null;
-        }
-
-        player.ChangeState(player.DefaultState);
-        //animator.CrossFadeInFixedTime("FlatMovement", animationFadeSpeed);
-
-        player.IsAttacking = false;
-    }
-
-    private void CancelCurrentSwing()
-    {
-        if (currentSwingingCoroutine == null) return;
-
-        StopCoroutine(currentSwingingCoroutine);
-
-        FinishAnimation();
-
-        animator.CrossFadeInFixedTime("FlatMovement", 0.1f);
-
-        weapon.DisableTriggers();
-        player.IsAttacking = false;
-    }
-
-    private void HandleWeaponCollisions()
-    {
-        if (!player.IsAttacking)
-        {
-            DisableWeaponTriggers();
-        }
+        if (!player.IsAttacking) DisableWeaponTriggers();
     }
 
     public void EnableWeaponTriggers()
     {
-        weapon.EnableTriggers();
+        Weapon.EnableTriggers();
     }
 
     public void DisableWeaponTriggers()
     {
-        weapon.DisableTriggers();
+        Weapon.DisableTriggers();
     }
 
     public void FinishAnimation()
     {
-        isAnimationPlaying = false;
+        IsAnimationPlaying = false;
     }
 }

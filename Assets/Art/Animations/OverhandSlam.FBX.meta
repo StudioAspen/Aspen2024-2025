@@ -568,7 +568,7 @@ ModelImporter:
       takeName: Take 001
       internalID: 7400000
       firstFrame: 0
-      lastFrame: 53
+      lastFrame: 64
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -588,14 +588,14 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.67926544
+      - time: 0.5854531
         functionName: EnableWeaponTriggers
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 1
+      - time: 0.70658684
         functionName: DisableWeaponTriggers
         data: 
         objectReferenceParameter: {instanceID: 0}

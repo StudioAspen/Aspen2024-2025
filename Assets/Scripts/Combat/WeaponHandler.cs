@@ -22,7 +22,7 @@ public class WeaponHandler : MonoBehaviour
     private int currentHitFrame;
 
     [Header("Combo")]
-    public List<PlayerBaseComboActionState> Combos;
+    public List<PlayerComboActionStateSO> Combos;
     private Vector2Int damageRange;
 
     [Header("Impact Frames")]
