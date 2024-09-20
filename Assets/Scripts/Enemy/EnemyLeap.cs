@@ -109,6 +109,7 @@ public class EnemyLeap : MonoBehaviour
             transform.position = targetPositionHop;
             startPosition = targetPositionHop;
 
+            ///delete is now no longer efficent 
             //hopPastedTime = 0f;
 
        /*     while (hopPastedTime < hopDuration)

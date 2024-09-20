@@ -8,6 +8,7 @@ TagManager:
   - UnSelected
   - Border
   - Enemy
+  - Wall
   layers:
   - Default
   - TransparentFX
