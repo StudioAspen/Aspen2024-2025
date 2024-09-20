@@ -220,7 +220,7 @@
                     "id": "9d1f4fa9-7f7b-41bc-bac0-b4c7477b1126",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
-                    "processors": "ScaleVector2(x=3,y=3)",
+                    "processors": "ScaleVector2(x=5,y=5)",
                     "groups": "Gamepad",
                     "action": "CameraLook",
                     "isComposite": false,

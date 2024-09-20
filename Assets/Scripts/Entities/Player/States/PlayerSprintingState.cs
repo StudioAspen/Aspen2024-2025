@@ -13,8 +13,6 @@ public class PlayerSprintingState : PlayerBaseState
 
     public override void OnEnter()
     {
-        Debug.Log("Entering Sprint State");
-
         player.DefaultTransitionToAnimation("FlatMovement");
 
         player.SetSpeedModifier(player.SprintSpeedModifier);

@@ -11,8 +11,6 @@ public class PlayerSlideState : PlayerBaseState
 
     public override void OnEnter()
     {
-        Debug.Log("Entering Slide State");
-
         player.DefaultTransitionToAnimation("Falling");
     }
 

@@ -11,8 +11,6 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void OnEnter()
     {
-        Debug.Log("Entering Jump State");
-
         player.DefaultTransitionToAnimation("JumpingUp");
 
         player.Jump();
@@ -27,10 +25,17 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void Update()
     {
-        if(player.MoveDirection != Vector3.zero) player.ApplyRotationToNextMovement();
+        if (player.MoveDirection != Vector3.zero)
+        {
+            player.HandleMovingVelocity();
+            player.ApplyRotationToNextMovement();
+        }
+        else
+        {
+            player.HandleIdleVelocity();
+        }
 
         player.RotateToTargetRotation();
-        player.HandleMovingVelocity();
         player.SetGroundedSpeed(player.GetGroundedVelocity().magnitude);
         player.GroundedMove();
 

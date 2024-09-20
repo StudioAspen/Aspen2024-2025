@@ -15,8 +15,6 @@ public class PlayerDashState : PlayerBaseState
 
     public override void OnEnter()
     {
-        Debug.Log("Entering Dash State");
-
         player.Dash();
 
         isDashAnimationPlaying = false;

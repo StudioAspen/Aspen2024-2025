@@ -10,8 +10,6 @@ public class PlayerWalkingState : PlayerBaseState
 
     public override void OnEnter()
     {
-        Debug.Log("Entering Walk State");
-
         player.DefaultTransitionToAnimation("FlatMovement");
 
         player.SetSpeedModifier(1f);

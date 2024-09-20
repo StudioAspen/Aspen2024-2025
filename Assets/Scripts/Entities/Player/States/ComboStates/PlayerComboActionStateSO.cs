@@ -28,8 +28,6 @@ public class PlayerComboActionStateSO : PlayerBaseState
 
     public override void OnEnter()
     {
-        Debug.Log("Entering " + GetType().ToString() + " State");
-
         playerCombat.Weapon.ClearEnemiesHitList();
 
         playerCombat.Weapon.SetDamageRange(ComboData.ComboDamageRange);
@@ -40,6 +38,7 @@ public class PlayerComboActionStateSO : PlayerBaseState
 
         playerCombat.IsAnimationPlaying = true;
         player.IsAttacking = true;
+        player.ApplyRootMotion = ComboData.AttackHasRootMotion;
 
         player.ApplyRotationToNextMovement();
     }
@@ -48,6 +47,7 @@ public class PlayerComboActionStateSO : PlayerBaseState
     {
         playerCombat.IsAnimationPlaying = false;
         player.IsAttacking = false;
+        player.ApplyRootMotion = false;
         playerCombat.DisableWeaponTriggers();
 
         player.SetGroundedSpeed(0f);
@@ -58,6 +58,11 @@ public class PlayerComboActionStateSO : PlayerBaseState
         if(!playerCombat.IsAnimationPlaying) player.ChangeState(player.DefaultState);
 
         if (player.MoveDirection != Vector3.zero) player.ApplyRotationToNextMovement();
+
+        player.RotateToTargetRotation();
+        player.HandleMovingVelocity();
+        player.SetGroundedSpeed(player.GetGroundedVelocity().magnitude);
+        player.GroundedMove();
 
         player.RotateToTargetRotation();
     }

@@ -1,13 +1,13 @@
 using KBCore.Refs;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Burst.Intrinsics;
+using TMPro;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.Events;
 
 public class Player : Entity
 {
+    [Header("Player: Debug UI")]
+    [SerializeField] private TMP_Text stateText;
+
     [Header("Player: References")]
     [SerializeField, Self] private CharacterController controller;
     [SerializeField, Self] private InputReader input;
@@ -39,6 +39,7 @@ public class Player : Entity
     [HideInInspector] public bool IsChargingAttack;
     [HideInInspector] public bool CanAttack = true;
     [HideInInspector] public bool IsJumping;
+    [HideInInspector] public bool ApplyRootMotion;
     #endregion
 
     [field : Header("Player: Dash")]
@@ -109,12 +110,18 @@ public class Player : Entity
         HandleAnimations();
 
         Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
+
+        stateText.text = $"State: {CurrentState.GetType().ToString()}";
     }
 
     private void OnAnimatorMove()
     {
+        if (!IsAttacking) return;
+
+        if (!ApplyRootMotion) return;
+
         Vector3 desiredAnimationMovement = animator.deltaPosition;
-        desiredAnimationMovement.y = 0f;
+        //desiredAnimationMovement.y = 0f;
 
         controller.Move(desiredAnimationMovement);
     }

@@ -2,10 +2,15 @@ using KBCore.Refs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
+    [Header("Player: Debug UI")]
+    [SerializeField] private TMP_Text inputsText;
+    [SerializeField] private TMP_Text comboText;
+
     [Header("References")]
     [SerializeField, Self] private InputReader input;
     [SerializeField, Self] private Player player;
@@ -56,6 +61,8 @@ public class PlayerCombat : MonoBehaviour
     {
         HandleComboList();
         HandleWeaponTriggers();
+
+        DebugUICombos();
     }
 
     private void HandleAttack1HoldInput()
@@ -181,6 +188,8 @@ public class PlayerCombat : MonoBehaviour
     {
         comboState.Init(player, this);
         player.ChangeState(comboState);
+
+        comboText.text = "Combo: " + comboState.ComboData.ComboName;
     }
 
     private void GenerateComboLists()
@@ -192,6 +201,22 @@ public class PlayerCombat : MonoBehaviour
             if (ComboData.IsIn(weaponCombo.ComboData.ComboInputs, currentComboList)) potentialCombos.Add(weaponCombo);
             if (ComboData.IsPotentiallyIn(weaponCombo.ComboData.ComboInputs, currentComboList)) predictedCombos.Add(weaponCombo);
         }
+    }
+
+    private void DebugUICombos()
+    {
+        string inputs = "Inputs: ";
+
+        for (int i = 0; i < currentComboList.Count; i++)
+        {
+            inputs += currentComboList[i].ToString();
+            if (i != currentComboList.Count - 1) inputs += ",";
+            inputs += " ";
+        }
+
+        inputsText.text = inputs;
+
+        if (currentComboList.Count == 0) comboText.text = "Combo: ";
     }
 
     private void PrintComboLists()

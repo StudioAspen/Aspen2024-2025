@@ -9,8 +9,6 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void OnEnter()
     {
-        Debug.Log("Entering Idle State");
-
         player.DefaultTransitionToAnimation("FlatMovement");
 
         player.SetSpeedModifier(0f);

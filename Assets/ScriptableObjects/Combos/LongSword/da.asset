@@ -9,12 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a6930ec783baaa4d980dc4fde685503, type: 3}
+  m_Script: {fileID: 11500000, guid: 523667d6dec69e648a8d5637c027419c, type: 3}
   m_Name: da
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: da
-  <AnimationClip>k__BackingField: {fileID: 8361507392348291089, guid: 68165fc722d45c64c9b2cbaef724e597,
-    type: 3}
-  <AnimationSpeed>k__BackingField: 1.5
-  <BaseDamageRange>k__BackingField: {x: 15, y: 25}
-  <Actions>k__BackingField: 0100000002000000
+  <ComboData>k__BackingField:
+    <ComboName>k__BackingField: da
+    <ComboInputs>k__BackingField: 0100000002000000
+    <ComboClip>k__BackingField: {fileID: 8361507392348291089, guid: 68165fc722d45c64c9b2cbaef724e597,
+      type: 3}
+    <ComboClipAnimationSpeed>k__BackingField: 1.5
+    <AttackHasRootMotion>k__BackingField: 0
+    <ComboDamageRange>k__BackingField: {x: 15, y: 25}

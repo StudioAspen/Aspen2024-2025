@@ -10,8 +10,6 @@ public class PlayerFallState : PlayerBaseState
 
     public override void OnEnter()
     {
-        Debug.Log("Entering Fall State");
-
         player.TransitionToAnimation("Falling", 0.25f);
     }
 
@@ -22,10 +20,17 @@ public class PlayerFallState : PlayerBaseState
 
     public override void Update()
     {
-        if (player.MoveDirection != Vector3.zero) player.ApplyRotationToNextMovement();
-
-        player.RotateToTargetRotation();
-        player.HandleMovingVelocity();
+        if (player.MoveDirection != Vector3.zero)
+        {
+            player.HandleMovingVelocity();
+            player.ApplyRotationToNextMovement();
+        }
+        else
+        {
+            player.HandleIdleVelocity();
+        }
+            
+        player.RotateToTargetRotation(); 
         player.SetGroundedSpeed(player.GetGroundedVelocity().magnitude);
         player.GroundedMove();
 
