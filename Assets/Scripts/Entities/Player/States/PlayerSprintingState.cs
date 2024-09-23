@@ -1,19 +1,19 @@
 ﻿using UnityEngine;
 
-public class PlayerSprintingState : PlayerBaseState
+public class PlayerSprintingState : PlayerGroundedMoveState
 {
     private bool isSprintDependentOnTimer = false;
     private float duration;
     private float timer;
 
-    public override void Init(Entity entity)
+    public override void Init(Entity entity, int prio)
     {
-        base.Init(entity);
+        base.Init(entity, prio);
     }
 
     public override void OnEnter()
     {
-        player.DefaultTransitionToAnimation("FlatMovement");
+        base.OnEnter();
 
         player.SetSpeedModifier(player.SprintSpeedModifier);
     }
@@ -26,14 +26,15 @@ public class PlayerSprintingState : PlayerBaseState
 
     public override void Update()
     {
+        base.Update();
+
         player.ApplyRotationToNextMovement();
         player.RotateToTargetRotation();
-        player.HandleMovingVelocity();
-        player.GroundedMove();
+        player.AccelerateToTargetSpeed(player.MovementSpeed);
 
         if (player.MoveDirection == Vector3.zero)
         {
-            player.ChangeState(player.PlayerIdleState);
+            player.ChangeState(player.PlayerIdleState, false);
         }
 
         if (player.IsSprinting) isSprintDependentOnTimer = false;
@@ -44,7 +45,7 @@ public class PlayerSprintingState : PlayerBaseState
 
             if (timer > duration)
             {
-                player.ChangeState(player.PlayerWalkingState);
+                player.ChangeState(player.PlayerWalkingState, false);
             }
 
             return;
@@ -52,7 +53,7 @@ public class PlayerSprintingState : PlayerBaseState
 
         if (!player.IsSprinting)
         {
-            player.ChangeState(player.PlayerWalkingState);
+            player.ChangeState(player.PlayerWalkingState, false);
         }
     }
 

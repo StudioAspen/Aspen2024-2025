@@ -3,21 +3,23 @@ using UnityEngine;
 
 public abstract class BaseState : ScriptableObject
 {
-    public static S CreateState<S>(Entity entity) where S : BaseState
+    public int Priority { get; protected set; }
+
+    public static S CreateState<S>(Entity entity, int prio) where S : BaseState
     {
         // Create an instance of the ScriptableObject
         S state = ScriptableObject.CreateInstance<S>();
 
         // Initialize any fields or properties here if needed
         // For example, you might call an Init method if you define one in derived classes
-        state.Init(entity);
+        state.Init(entity, prio);
 
         return state;
     }
 
-    public virtual void Init(Entity entity)
+    public virtual void Init(Entity entity, int prio)
     {
-        
+        Priority = prio;
     }
 
     public abstract void OnEnter();

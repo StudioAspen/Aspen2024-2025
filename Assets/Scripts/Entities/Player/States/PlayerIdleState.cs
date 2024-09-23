@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 
-public class PlayerIdleState : PlayerBaseState
+public class PlayerIdleState : PlayerGroundedMoveState
 {
-    public override void Init(Entity entity)
+    public override void Init(Entity entity, int prio)
     {
-        base.Init(entity);
+        base.Init(entity, prio);
     }
 
     public override void OnEnter()
     {
-        player.DefaultTransitionToAnimation("FlatMovement");
+        base.OnEnter();
 
         player.SetSpeedModifier(0f);
     }
@@ -21,18 +21,19 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void Update()
     {
-        player.HandleIdleVelocity();
-        player.GroundedMove();
+        base.Update();
+
+        player.AccelerateToTargetSpeed(0f);
 
         if (player.MoveDirection != Vector3.zero && player.IsSprinting)
         {
-            player.ChangeState(player.PlayerSprintingState);
+            player.ChangeState(player.PlayerSprintingState, false);
             return;
         }
 
         if (player.MoveDirection != Vector3.zero)
         {
-            player.ChangeState(player.PlayerWalkingState);
+            player.ChangeState(player.PlayerWalkingState, false);
         }
     }
 

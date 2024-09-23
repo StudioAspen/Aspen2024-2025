@@ -3292,8 +3292,9 @@ MonoBehaviour:
   IsChargingAttack: 0
   CanAttack: 1
   IsJumping: 0
-  <DashDuration>k__BackingField: 0.5
-  <InitialDashVelocity>k__BackingField: 20
+  ApplyRootMotion: 0
+  <DashDuration>k__BackingField: 0.25
+  <InitialDashVelocity>k__BackingField: 75
   dashDelayDuration: 0.5
   <SprintDurationAfterDash>k__BackingField: 2
   shiftKeyPressMaxDurationForDash: 0.25

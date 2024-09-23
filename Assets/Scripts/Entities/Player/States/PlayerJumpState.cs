@@ -4,9 +4,9 @@ public class PlayerJumpState : PlayerBaseState
 {
     private float timer;
 
-    public override void Init(Entity entity)
+    public override void Init(Entity entity, int prio)
     {
-        base.Init(entity);
+        base.Init(entity, prio);
     }
 
     public override void OnEnter()
@@ -25,29 +25,31 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void Update()
     {
+        player.ApplyGravity();
+
         if (player.MoveDirection != Vector3.zero)
         {
-            player.HandleMovingVelocity();
+            player.AccelerateToTargetSpeed(player.MovementSpeed);
             player.ApplyRotationToNextMovement();
         }
         else
         {
-            player.HandleIdleVelocity();
+            player.AccelerateToTargetSpeed(0f);
         }
 
         player.RotateToTargetRotation();
-        player.SetGroundedSpeed(player.GetGroundedVelocity().magnitude);
+        player.InstantlySetSpeed(player.GetGroundedVelocity().magnitude);
         player.GroundedMove();
 
         timer += Time.deltaTime;
         if(timer > player.JumpTimeToFall)
         {
-            player.ChangeState(player.PlayerFallState);
+            player.ChangeState(player.PlayerFallState, false);
         }
 
         if (player.IsGrounded)
         {
-            player.ChangeState(player.PlayerIdleState);
+            player.ChangeState(player.PlayerIdleState, false);
         }
     }
 

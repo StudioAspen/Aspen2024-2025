@@ -87,12 +87,13 @@ public class Entity : MonoBehaviour
         DefaultState = state;
     }
 
-    public void ChangeState(BaseState state)
+    public void ChangeState(BaseState newState, bool overridePrio)
     {
-        if (CurrentState == state) return;
+        if (CurrentState == newState) return;
+        if (newState.Priority < CurrentState.Priority && !overridePrio) return;
 
         CurrentState.OnExit();
-        CurrentState = state;
+        CurrentState = newState;
         CurrentState.OnEnter();
     }
 
