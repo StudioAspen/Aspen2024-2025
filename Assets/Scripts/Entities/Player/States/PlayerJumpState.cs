@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerJumpState : PlayerBaseState
+public class PlayerJumpState : PlayerAirborneState
 {
     private float timer;
 
@@ -11,6 +11,8 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void OnEnter()
     {
+        base.OnEnter();
+
         player.DefaultTransitionToAnimation("JumpingUp");
 
         player.Jump();
@@ -25,31 +27,12 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void Update()
     {
-        player.ApplyGravity();
-
-        if (player.MoveDirection != Vector3.zero)
-        {
-            player.AccelerateToTargetSpeed(player.MovementSpeed);
-            player.ApplyRotationToNextMovement();
-        }
-        else
-        {
-            player.AccelerateToTargetSpeed(0f);
-        }
-
-        player.RotateToTargetRotation();
-        player.InstantlySetSpeed(player.GetGroundedVelocity().magnitude);
-        player.GroundedMove();
+        base.Update();
 
         timer += Time.deltaTime;
         if(timer > player.JumpTimeToFall)
         {
             player.ChangeState(player.PlayerFallState, false);
-        }
-
-        if (player.IsGrounded)
-        {
-            player.ChangeState(player.PlayerIdleState, false);
         }
     }
 
