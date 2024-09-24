@@ -21,7 +21,9 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void Update()
     {
-        player.HandleIdleVelocity();
+        player.ApplyGravity();
+
+        player.AccelerateToSpeed(0f);
         player.GroundedMove();
 
         if (player.MoveDirection != Vector3.zero && player.IsSprinting)

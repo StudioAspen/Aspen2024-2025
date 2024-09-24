@@ -186,6 +186,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void ExecuteCombo(PlayerComboActionStateSO comboState)
     {
+        if (player.CurrentState == player.PlayerSlideState) return;
+
         comboState.Init(player, this);
         player.ChangeState(comboState);
 

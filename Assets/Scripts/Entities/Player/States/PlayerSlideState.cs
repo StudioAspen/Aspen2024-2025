@@ -23,12 +23,21 @@ public class PlayerSlideState : PlayerBaseState
     {
         player.IsGrounded = true;
 
+        player.ApplyGravity();
         player.ApplySlide(slideDirection);
 
-        // moving stuff
-        player.ApplyRotationToNextMovement();
+        if (player.MoveDirection != Vector3.zero)
+        {
+            player.AccelerateToSpeed(player.MovementSpeed);
+            player.ApplyRotationToNextMovement();
+        }
+        else
+        {
+            player.AccelerateToSpeed(0f);
+        }
+
         player.RotateToTargetRotation();
-        player.HandleMovingVelocity();
+        player.InstantlySetSpeed(player.GetGroundedVelocity().magnitude);
         player.GroundedMove();
 
         if (!player.IsAbleToSlide()) player.ChangeState(player.DefaultState);

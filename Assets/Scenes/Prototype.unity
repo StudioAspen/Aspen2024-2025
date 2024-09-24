@@ -3292,8 +3292,9 @@ MonoBehaviour:
   IsChargingAttack: 0
   CanAttack: 1
   IsJumping: 0
-  <DashDuration>k__BackingField: 0.5
-  <InitialDashVelocity>k__BackingField: 20
+  ApplyRootMotion: 0
+  <DashDuration>k__BackingField: 0.25
+  <InitialDashVelocity>k__BackingField: 75
   dashDelayDuration: 0.5
   <SprintDurationAfterDash>k__BackingField: 2
   shiftKeyPressMaxDurationForDash: 0.25
@@ -3347,6 +3348,21 @@ PrefabInstance:
       propertyPath: <Weapon>k__BackingField
       value: 
       objectReference: {fileID: 1030289959}
+    - target: {fileID: 7237775664649881152, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_Height
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7237775664649881152, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_Radius
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7237775664649881152, guid: 19dae7578bc56674dae55670ec5dfbf5,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 0.9
+      objectReference: {fileID: 0}
     - target: {fileID: 7404623276546726143, guid: 19dae7578bc56674dae55670ec5dfbf5,
         type: 3}
       propertyPath: m_ActionEvents.Array.size

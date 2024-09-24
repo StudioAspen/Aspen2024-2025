@@ -22,9 +22,11 @@ public class PlayerWalkingState : PlayerBaseState
 
     public override void Update()
     {
+        player.ApplyGravity();
+
         player.ApplyRotationToNextMovement();
         player.RotateToTargetRotation();
-        player.HandleMovingVelocity();
+        player.AccelerateToSpeed(player.MovementSpeed);
         player.GroundedMove();
 
         if (player.MoveDirection == Vector3.zero)

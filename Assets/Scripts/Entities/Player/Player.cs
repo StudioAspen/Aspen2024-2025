@@ -15,7 +15,7 @@ public class Player : Entity
     [Header("Player: Grounded Movement")]
     [SerializeField] private float rotationSpeed = 5f;
     [field: SerializeField] public float SprintSpeedModifier { get; private set; } = 1.66f;
-    private float movementSpeed => movementOnSlopeSpeedModifier * speedModifier * baseSpeed;
+    public float MovementSpeed => movementOnSlopeSpeedModifier * speedModifier * baseSpeed;
     private float movementOnSlopeSpeedModifier = 1f;
     private float totalSpeedModifierForAnimation;
     public Vector3 MoveDirection => input.MoveDirection;
@@ -102,7 +102,6 @@ public class Player : Entity
         CheckGrounded();
         CheckSlopeSliding();
 
-        HandleGravity();
         HandleGrounded();
         HandleDashDelay();
         HandleDashTrail();
@@ -154,6 +153,7 @@ public class Player : Entity
     {
         if (!IsGrounded && currentJumpCount >= maxJumpCount) return;
         if (CurrentState == PlayerSlideState) return;
+        if (IsAttacking) return;
 
         ChangeState(PlayerJumpState);
     }
@@ -185,27 +185,17 @@ public class Player : Entity
         controller.Move(GetGroundedVelocity() * Time.deltaTime);
     }
 
-    public void HandleMovingVelocity()
+    public void AccelerateToSpeed(float speed)
     {
         Vector3 groundedVelocity = GetGroundedVelocity();
 
-        groundedVelocity = Vector3.Lerp(groundedVelocity, movementSpeed * targetForwardDirection, groundedAcceleration * Time.deltaTime);
+        groundedVelocity = Vector3.Lerp(groundedVelocity, speed * targetForwardDirection, groundedAcceleration * Time.deltaTime);
 
         velocity.x = groundedVelocity.x;
         velocity.z = groundedVelocity.z;
     }
 
-    public void HandleIdleVelocity()
-    {
-        Vector3 groundedVelocity = GetGroundedVelocity();
-
-        groundedVelocity = Vector3.Lerp(groundedVelocity, Vector3.zero, groundedAcceleration * Time.deltaTime);
-
-        velocity.x = groundedVelocity.x;
-        velocity.z = groundedVelocity.z;
-    }
-
-    public void SetGroundedSpeed(float speed)
+    public void InstantlySetSpeed(float speed)
     {
         Vector3 groundedVelocity = GetGroundedVelocity();
 
@@ -234,16 +224,21 @@ public class Player : Entity
                 fallVelocityApplied = true;
                 velocity.y = physicsSettings.FallingStartingYVelocity;
 
-                ChangeState(PlayerFallState);
+                if(!IsAttacking && CurrentState != PlayerDashState) ChangeState(PlayerFallState);
             }
             inAirTimer += Time.deltaTime;
             velocity.y += physicsSettings.Gravity * Time.deltaTime;
         }
     }
 
-    private void HandleGravity()
+    public void ApplyGravity()
     {
         controller.Move(Time.deltaTime * velocity.y * Vector3.up);
+    }
+
+    public void ResetYVelocity()
+    {
+        velocity.y = 0f;
     }
 
     public void RotateToTargetRotation()
@@ -296,6 +291,7 @@ public class Player : Entity
     {
         if (!IsGrounded) return false;
         if (hitBelow.collider == null) return false;
+        if (IsAttacking) return false;
 
         return hitBelowSlopeAngle > controller.slopeLimit;
     }

@@ -5116,6 +5116,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0c06260fec317c04885af3231d3e035c, type: 2}
   - {fileID: 11400000, guid: de3c699b086c95a4696397c7f0ba2f5a, type: 2}
   - {fileID: 11400000, guid: d43e8baa1b47eb44b800dec8bd0b30d5, type: 2}
+  - {fileID: 11400000, guid: 67970023bddd4534f8657dc5eeafe40c, type: 2}
   impactFramesDuration: 0.1
   trailObject: {fileID: 6918874709248315491}
 --- !u!136 &1259378818332639156

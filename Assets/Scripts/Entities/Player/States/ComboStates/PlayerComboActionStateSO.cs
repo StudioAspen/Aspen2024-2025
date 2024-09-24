@@ -50,18 +50,20 @@ public class PlayerComboActionStateSO : PlayerBaseState
         player.ApplyRootMotion = false;
         playerCombat.DisableWeaponTriggers();
 
-        player.SetGroundedSpeed(0f);
+        player.InstantlySetSpeed(0f);
     }
 
     public override void Update()
     {
+        player.ApplyGravity();
+
         if(!playerCombat.IsAnimationPlaying) player.ChangeState(player.DefaultState);
 
         if (player.MoveDirection != Vector3.zero) player.ApplyRotationToNextMovement();
 
         player.RotateToTargetRotation();
-        player.HandleMovingVelocity();
-        player.SetGroundedSpeed(player.GetGroundedVelocity().magnitude);
+        player.AccelerateToSpeed(0f);
+        player.InstantlySetSpeed(player.GetGroundedVelocity().magnitude);
         player.GroundedMove();
 
         player.RotateToTargetRotation();
