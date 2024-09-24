@@ -186,26 +186,22 @@ public class Player : Entity
         inAirTimer = 0f;
         fallVelocityApplied = false;
         IsJumping = false;
-    }
 
-    public bool IsFalling()
-    {
-        return !IsGrounded && !IsJumping && !fallVelocityApplied;
     }
 
     public void HandleAirborne()
     {
-        if (!IsJumping && !fallVelocityApplied) // falling without jumping
+        if(!IsGrounded)
         {
-            ChangeState(PlayerFallState, false);
-        }
-        inAirTimer += Time.deltaTime;
-    }
+            if (!IsJumping && !fallVelocityApplied) // falling without jumping
+            {
+                fallVelocityApplied = true;
+                velocity.y = physicsSettings.FallingStartingYVelocity;
 
-    public void StartFall()
-    {
-        fallVelocityApplied = true;
-        velocity.y = physicsSettings.FallingStartingYVelocity;
+                ChangeState(PlayerFallState, false);
+            }
+            inAirTimer += Time.deltaTime;
+        }
     }
 
     public void GroundedMove()

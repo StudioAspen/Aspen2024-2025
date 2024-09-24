@@ -27,10 +27,7 @@ public class PlayerGroundedMoveState : PlayerBaseState
         player.HandleGrounded();
         player.GroundedMove();
 
-        if (player.IsFalling())
-        {
-            player.ChangeState(player.PlayerFallState, false);
-        }
+        //if(!player.IsGrounded)
     }
 
     public override void FixedUpdate()
