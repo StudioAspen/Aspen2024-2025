@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
-public class PlayerSlideState : PlayerGroundedMoveState
+public class PlayerSlideState : PlayerBaseState
 {
     private Vector3 slideDirection;
 
-    public override void Init(Entity entity, int prio)
+    public override void Init(Entity entity)
     {
-        base.Init(entity, prio);
+        base.Init(entity);
     }
 
     public override void OnEnter()
@@ -21,23 +21,17 @@ public class PlayerSlideState : PlayerGroundedMoveState
 
     public override void Update()
     {
-        base.Update();
+        player.IsGrounded = true;
 
         player.ApplySlide(slideDirection);
 
-        if(player.MoveDirection != Vector3.zero)
-        {
-            player.AccelerateToTargetSpeed(player.MovementSpeed);
-            player.ApplyRotationToNextMovement();
-        }
-        else
-        {
-            player.AccelerateToTargetSpeed(0f);
-        }
-
+        // moving stuff
+        player.ApplyRotationToNextMovement();
         player.RotateToTargetRotation();
+        player.HandleMovingVelocity();
+        player.GroundedMove();
 
-        if (!player.IsAbleToSlide()) player.ChangeState(player.DefaultState, true);
+        if (!player.IsAbleToSlide()) player.ChangeState(player.DefaultState);
     }
 
     public override void FixedUpdate()

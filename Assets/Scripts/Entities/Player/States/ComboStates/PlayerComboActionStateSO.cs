@@ -22,7 +22,7 @@ public class PlayerComboActionStateSO : PlayerBaseState
 
     public void Init(Entity entity, PlayerCombat playerCombat)
     {
-        base.Init(entity, 2);
+        base.Init(entity);
         this.playerCombat = playerCombat;
     }
 
@@ -50,20 +50,18 @@ public class PlayerComboActionStateSO : PlayerBaseState
         player.ApplyRootMotion = false;
         playerCombat.DisableWeaponTriggers();
 
-        player.InstantlySetSpeed(0f);
+        player.SetGroundedSpeed(0f);
     }
 
     public override void Update()
     {
-        player.ApplyGravity();
-
-        if(!playerCombat.IsAnimationPlaying) player.ChangeState(player.DefaultState, true);
+        if(!playerCombat.IsAnimationPlaying) player.ChangeState(player.DefaultState);
 
         if (player.MoveDirection != Vector3.zero) player.ApplyRotationToNextMovement();
 
         player.RotateToTargetRotation();
-        player.AccelerateToTargetSpeed(0f);
-        player.InstantlySetSpeed(player.GetGroundedVelocity().magnitude);
+        player.HandleMovingVelocity();
+        player.SetGroundedSpeed(player.GetGroundedVelocity().magnitude);
         player.GroundedMove();
 
         player.RotateToTargetRotation();

@@ -4,9 +4,8 @@ public abstract class PlayerBaseState : BaseState
 {
     private protected Player player;
 
-    public override void Init(Entity entity, int prio)
+    public override void Init(Entity entity)
     {
-        base.Init(entity, prio);
         player = entity as Player;
     }
 }

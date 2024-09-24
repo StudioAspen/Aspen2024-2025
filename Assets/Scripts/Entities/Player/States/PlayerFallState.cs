@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class PlayerFallState : PlayerAirborneState
+public class PlayerFallState : PlayerBaseState
 {
-    public override void Init(Entity entity, int prio)
+    public override void Init(Entity entity)
     {
-        base.Init(entity, prio);
+        base.Init(entity);
     }
 
     public override void OnEnter()
@@ -20,54 +20,23 @@ public class PlayerFallState : PlayerAirborneState
 
     public override void Update()
     {
-        base.Update();
-    }
-
-    public override void FixedUpdate()
-    {
-
-    }
-
-}
-
-public class PlayerAirborneState : PlayerBaseState
-{
-    public override void Init(Entity entity, int prio)
-    {
-        base.Init(entity, prio);
-    }
-
-    public override void OnEnter()
-    {
-        
-    }
-
-    public override void OnExit()
-    {
-
-    }
-
-    public override void Update()
-    {
-        player.ApplyGravity();
-
         if (player.MoveDirection != Vector3.zero)
         {
-            player.AccelerateToTargetSpeed(player.MovementSpeed);
+            player.HandleMovingVelocity();
             player.ApplyRotationToNextMovement();
         }
         else
         {
-            player.AccelerateToTargetSpeed(0f);
+            player.HandleIdleVelocity();
         }
-
-        player.RotateToTargetRotation();
-        player.InstantlySetSpeed(player.GetGroundedVelocity().magnitude);
+            
+        player.RotateToTargetRotation(); 
+        player.SetGroundedSpeed(player.GetGroundedVelocity().magnitude);
         player.GroundedMove();
 
         if (player.IsGrounded)
         {
-            player.ChangeState(player.PlayerIdleState, false);
+            player.ChangeState(player.PlayerIdleState);
         }
     }
 

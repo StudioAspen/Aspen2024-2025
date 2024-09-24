@@ -187,7 +187,7 @@ public class PlayerCombat : MonoBehaviour
     private void ExecuteCombo(PlayerComboActionStateSO comboState)
     {
         comboState.Init(player, this);
-        player.ChangeState(comboState, false);
+        player.ChangeState(comboState);
 
         comboText.text = "Combo: " + comboState.ComboData.ComboName;
     }

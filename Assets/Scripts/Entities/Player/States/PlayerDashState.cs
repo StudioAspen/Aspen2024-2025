@@ -5,12 +5,11 @@ public class PlayerDashState : PlayerBaseState
 {
     private float timer;
 
-    private float currDashSpeed;
-    private float maxSpeed;
+    private bool isDashAnimationPlaying = false;
 
-    public override void Init(Entity entity, int prio)
+    public override void Init(Entity entity)
     {
-        base.Init(entity, prio);
+        base.Init(entity);
         player.DashTrailSetActive(false);
     }
 
@@ -18,36 +17,38 @@ public class PlayerDashState : PlayerBaseState
     {
         player.Dash();
 
-        player.DefaultTransitionToAnimation("Dash");
+        isDashAnimationPlaying = false;
+        if (player.IsGrounded)
+        {
+            player.DefaultTransitionToAnimation("Dash");
+            isDashAnimationPlaying = true;
+        }
 
         timer = 0f;
-        maxSpeed = player.GetMaxSpeed();
 
         player.ApplyRotationToNextMovement();
 
-        player.InstantlySetSpeed(player.InitialDashVelocity);
+        player.SetGroundedSpeed(player.InitialDashVelocity);
     }
 
     public override void OnExit()
     {
-        player.ResetYVelocity();
+        player.PlayerSprintingState.SetSprintDuration(player.SprintDurationAfterDash);
     }
 
     public override void Update()
     {
         DashUpdate();
 
+        if(!isDashAnimationPlaying && player.IsGrounded)
+        {
+            player.DefaultTransitionToAnimation("FlatMovement");
+            isDashAnimationPlaying = true;
+        }
+
         if (timer > player.DashDuration)
         {
-            if (player.IsGrounded)
-            {
-                player.ChangeState(player.PlayerSprintingState, true);
-                player.PlayerSprintingState.SetSprintDuration(player.SprintDurationAfterDash);
-            }
-            else
-            {
-                player.ChangeState(player.PlayerFallState, true);
-            }
+            player.ChangeState(player.PlayerSprintingState);
         }
 
         player.ResetDashDelay(); // keeps dash delay timer at 0 so that once you stop dashing, the timer goes up
@@ -61,12 +62,13 @@ public class PlayerDashState : PlayerBaseState
     private void DashUpdate()
     {
         timer += Time.deltaTime;
-        currDashSpeed = (player.InitialDashVelocity - maxSpeed) * (1 - Mathf.Sqrt(1 - Mathf.Pow(timer / player.DashDuration - 1, 2))) + maxSpeed;
 
-        if (player.MoveDirection != Vector3.zero) player.ApplyRotationToNextMovement();
+        if(player.MoveDirection != Vector3.zero) player.ApplyRotationToNextMovement();
+        
         player.RotateToTargetRotation();
 
-        player.InstantlySetSpeed(currDashSpeed);
+        player.HandleMovingVelocity();
+        player.SetGroundedSpeed(player.GetGroundedVelocity().magnitude);
         player.GroundedMove();
     }
 }
