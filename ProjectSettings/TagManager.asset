@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Collide
+  - Selected
+  - UnSelected
+  - Border
+  - Enemy
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -18,6 +23,9 @@ TagManager:
   - 
   - 
   - 
+  - IslandWall
+  - 
+  - IslandSelector
   - 
   - 
   - 

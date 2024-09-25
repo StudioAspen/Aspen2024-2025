@@ -6,8 +6,8 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField, Self] private Animator animator;
-    [SerializeField, Self] private Rigidbody rigidBody;
+    [SerializeField] private Animator animator;
+    [SerializeField] private Rigidbody rigidBody;
     [SerializeField, Self] private CapsuleCollider capsuleCollider;
     [SerializeField] private HitNumbers hitNumberPrefab;
 
@@ -40,7 +40,7 @@ public class Enemy : MonoBehaviour
 
     private void HandleAnimations()
     {
-        animator.SetBool("IsGrounded", IsGrounded);
+        //animator.SetBool("IsGrounded", IsGrounded);
     }
 
     private void IgnoreCollisionsWithSelf()
@@ -58,7 +58,7 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(int damage, Vector3 hitPoint)
     {
-        animator.CrossFadeInFixedTime("Hit", 0.1f);
+        //animator.CrossFadeInFixedTime("Hit", 0.1f);
 
         HitNumbers hitNumber = Instantiate(hitNumberPrefab, hitPoint, Quaternion.identity);
         hitNumber.ActivateHitNumberText(damage);
