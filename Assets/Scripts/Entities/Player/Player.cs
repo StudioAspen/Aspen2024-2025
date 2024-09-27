@@ -171,6 +171,7 @@ public class Player : Entity
             if (shiftKeyPressTimer < shiftKeyPressMaxDurationForDash)
             {
                 ChangeState(PlayerDashState);
+                IsSprinting = false;
             }
             else
             {

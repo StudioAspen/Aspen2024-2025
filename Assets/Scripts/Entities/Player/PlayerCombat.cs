@@ -77,6 +77,7 @@ public class PlayerCombat : MonoBehaviour
             player.IsChargingAttack = true;
 
             // play the animation matching the predicted potential combo
+            if (player.CurrentState != player.PlayerDashState) player.ChangeState(BaseState.CreateState<PlayerChargeState>(player));
         }
     }
 
@@ -110,6 +111,7 @@ public class PlayerCombat : MonoBehaviour
             player.IsChargingAttack = true;
 
             // play the animation matching the predicted potential combo
+            if(player.CurrentState != player.PlayerDashState) player.ChangeState(BaseState.CreateState<PlayerChargeState>(player));
         }
     }
 

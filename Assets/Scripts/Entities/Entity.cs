@@ -90,6 +90,7 @@ public class Entity : MonoBehaviour
     public void ChangeState(BaseState state)
     {
         if (CurrentState == state) return;
+        //if (CurrentState.GetType() == state.GetType()) return;
 
         CurrentState.OnExit();
         CurrentState = state;

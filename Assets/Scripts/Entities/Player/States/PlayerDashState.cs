@@ -33,7 +33,6 @@ public class PlayerDashState : PlayerBaseState
     {
         player.InstantlySetSpeed(maxSpeed);
         player.ResetYVelocity();
-        player.PlayerSprintingState.SetSprintDuration(player.SprintDurationAfterDash);
     }
 
     public override void Update()
@@ -42,8 +41,15 @@ public class PlayerDashState : PlayerBaseState
 
         if (timer > player.DashDuration)
         {
-            if (!player.IsGrounded) player.ChangeState(player.PlayerFallState);
-            else player.ChangeState(player.PlayerSprintingState);
+            if (!player.IsGrounded)
+            {
+                player.ChangeState(player.PlayerFallState);
+            }
+            else
+            {
+                player.PlayerSprintingState.SetSprintDuration(player.SprintDurationAfterDash);
+                player.ChangeState(player.PlayerSprintingState);
+            }  
         }
 
         player.ResetDashDelay(); // keeps dash delay timer at 0 so that once you stop dashing, the timer goes up
