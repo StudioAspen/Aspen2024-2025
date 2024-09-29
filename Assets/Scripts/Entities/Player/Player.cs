@@ -63,6 +63,8 @@ public class Player : Entity
     public PlayerFallState PlayerFallState { get; private set; }
     public PlayerDashState PlayerDashState { get; private set; }
     public PlayerSlideState PlayerSlideState { get; private set; }
+    public PlayerAttackState PlayerAttackState { get; private set; }
+    public PlayerChargeState PlayerChargeState { get; private set; }
 
     private void OnEnable()
     {
@@ -129,13 +131,15 @@ public class Player : Entity
     {
         base.InitializeStates();
 
-        PlayerIdleState = BaseState.CreateState<PlayerIdleState>(this);
-        PlayerWalkingState = BaseState.CreateState<PlayerWalkingState>(this);
-        PlayerSprintingState = BaseState.CreateState<PlayerSprintingState>(this);
-        PlayerJumpState = BaseState.CreateState<PlayerJumpState>(this);
-        PlayerFallState = BaseState.CreateState<PlayerFallState>(this);
-        PlayerDashState = BaseState.CreateState<PlayerDashState>(this);
-        PlayerSlideState = BaseState.CreateState<PlayerSlideState>(this);
+        PlayerIdleState = new PlayerIdleState(this);
+        PlayerWalkingState = new PlayerWalkingState(this);
+        PlayerSprintingState = new PlayerSprintingState(this);
+        PlayerJumpState = new PlayerJumpState(this);
+        PlayerFallState = new PlayerFallState(this);
+        PlayerDashState = new PlayerDashState(this);
+        PlayerSlideState = new PlayerSlideState(this);
+        PlayerAttackState = new PlayerAttackState(this);
+        PlayerChargeState = new PlayerChargeState(this);
     }
 
     private void CheckGrounded()

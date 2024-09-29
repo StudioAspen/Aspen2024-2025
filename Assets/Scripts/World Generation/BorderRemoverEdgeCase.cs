@@ -4,23 +4,8 @@ using UnityEngine;
 
 public class BorderRemoverEdgeCase : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private void OnCollisionStay(Collision collision)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    private void OnCollisionStay (Collider other)
-    {
-    
-        Debug.Log(other.gameObject.name + "Testing");
-       
-
+        Debug.Log(collision.gameObject.name + "Testing");
     }
 }

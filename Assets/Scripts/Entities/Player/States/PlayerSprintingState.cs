@@ -6,9 +6,9 @@ public class PlayerSprintingState : PlayerBaseState
     private float duration;
     private float timer;
 
-    public override void Init(Entity entity)
+    public PlayerSprintingState(Player player) : base(player)
     {
-        base.Init(entity);
+        this.player = player;
     }
 
     public override void OnEnter()

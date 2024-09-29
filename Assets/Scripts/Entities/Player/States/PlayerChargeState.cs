@@ -2,9 +2,9 @@
 
 public class PlayerChargeState : PlayerBaseState
 {
-    public override void Init(Entity entity)
+    public PlayerChargeState(Player player) : base(player)
     {
-        base.Init(entity);
+        this.player = player;
     }
 
     public override void OnEnter()
@@ -21,6 +21,8 @@ public class PlayerChargeState : PlayerBaseState
 
     public override void Update()
     {
+        player.DefaultTransitionToAnimation("Charge");
+
         player.ApplyGravity();
 
         if (player.MoveDirection != Vector3.zero)

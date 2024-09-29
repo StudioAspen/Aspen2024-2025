@@ -4,9 +4,9 @@ public class PlayerJumpState : PlayerBaseState
 {
     private float timer;
 
-    public override void Init(Entity entity)
+    public PlayerJumpState(Player player) : base(player)
     {
-        base.Init(entity);
+        this.player = player;
     }
 
     public override void OnEnter()

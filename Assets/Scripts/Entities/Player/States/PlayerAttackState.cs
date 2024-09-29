@@ -5,25 +5,15 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Data", menuName = "ComboState", order = 1)]
-
-public class PlayerComboActionStateSO : PlayerBaseState
+public class PlayerAttackState : PlayerBaseState
 {
     private PlayerCombat playerCombat;
 
-    [field: SerializeField] public ComboData ComboData { get; private set; }
+    public ComboDataSO ComboData { get; private set; }
 
-    private void OnValidate()
+    public PlayerAttackState(Player player) : base(player)
     {
-#if UNITY_EDITOR
-        ComboData.SetName(Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(this)));
-#endif
-    }
-
-    public void Init(Entity entity, PlayerCombat playerCombat)
-    {
-        base.Init(entity);
-        this.playerCombat = playerCombat;
+        this.player = player;
     }
 
     public override void OnEnter()
@@ -57,7 +47,7 @@ public class PlayerComboActionStateSO : PlayerBaseState
     {
         player.ApplyGravity();
 
-        if(!playerCombat.IsAnimationPlaying) player.ChangeState(player.DefaultState);
+        if (!playerCombat.IsAnimationPlaying) player.ChangeState(player.DefaultState);
 
         if (player.MoveDirection != Vector3.zero) player.ApplyRotationToNextMovement();
 
@@ -73,6 +63,11 @@ public class PlayerComboActionStateSO : PlayerBaseState
     {
 
     }
-}
 
+    public void SetCombo(PlayerCombat playerCombat, ComboDataSO comboData)
+    {
+        this.playerCombat = playerCombat;
+        ComboData = comboData;
+    }
+}
 

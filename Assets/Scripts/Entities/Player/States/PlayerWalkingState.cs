@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class PlayerWalkingState : PlayerBaseState
 {
-    public override void Init(Entity entity)
+    public PlayerWalkingState(Player player) : base(player)
     {
-        base.Init(entity);
+        this.player = player;
     }
 
     public override void OnEnter()

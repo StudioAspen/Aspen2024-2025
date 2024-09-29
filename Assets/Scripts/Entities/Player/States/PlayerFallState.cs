@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class PlayerFallState : PlayerBaseState
 {
-    public override void Init(Entity entity)
+    public PlayerFallState(Player player) : base(player)
     {
-        base.Init(entity);
+        this.player = player;
     }
 
     public override void OnEnter()

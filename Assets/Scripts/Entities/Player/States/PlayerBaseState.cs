@@ -4,8 +4,8 @@ public abstract class PlayerBaseState : BaseState
 {
     private protected Player player;
 
-    public override void Init(Entity entity)
+    public PlayerBaseState(Player player) : base(player)
     {
-        player = entity as Player;
+        this.player = player;
     }
 }

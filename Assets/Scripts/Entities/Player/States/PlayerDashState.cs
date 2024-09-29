@@ -8,10 +8,9 @@ public class PlayerDashState : PlayerBaseState
     private float currDashSpeed;
     private float maxSpeed;
 
-    public override void Init(Entity entity)
+    public PlayerDashState(Player player) : base(player)
     {
-        base.Init(entity);
-        player.DashTrailSetActive(false);
+        this.player = player;
     }
 
     public override void OnEnter()

@@ -24,8 +24,8 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float comboListenDuration = 1f;
     private float comboListenTimer;
     private List<PlayerActions> currentComboList = new List<PlayerActions>();
-    private List<PlayerComboActionStateSO> potentialCombos = new List<PlayerComboActionStateSO>();
-    private List<PlayerComboActionStateSO> predictedCombos = new List<PlayerComboActionStateSO>();
+    private List<ComboDataSO> potentialCombos = new List<ComboDataSO>();
+    private List<ComboDataSO> predictedCombos = new List<ComboDataSO>();
 
     [Header("Input")]
     [SerializeField] private float attackReleaseThreshold = 0.25f;
@@ -77,7 +77,7 @@ public class PlayerCombat : MonoBehaviour
             player.IsChargingAttack = true;
 
             // play the animation matching the predicted potential combo
-            if (player.CurrentState != player.PlayerDashState) player.ChangeState(BaseState.CreateState<PlayerChargeState>(player));
+            if (player.CurrentState != player.PlayerDashState) player.ChangeState(player.PlayerChargeState);
         }
     }
 
@@ -111,7 +111,7 @@ public class PlayerCombat : MonoBehaviour
             player.IsChargingAttack = true;
 
             // play the animation matching the predicted potential combo
-            if(player.CurrentState != player.PlayerDashState) player.ChangeState(BaseState.CreateState<PlayerChargeState>(player));
+            //if(player.CurrentState != player.PlayerDashState) player.ChangeState(player.PlayerChargeState);
         }
     }
 
@@ -158,7 +158,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void AttemptToExecuteACombo(PlayerActions incomingAction)
     {
-        PlayerComboActionStateSO comboToExecute = null;
+        ComboDataSO comboToExecute = null;
 
         if (predictedCombos.Count == 0) // if new action doesn't create any valid combos
         {
@@ -167,7 +167,7 @@ public class PlayerCombat : MonoBehaviour
 
             GenerateComboLists();
 
-            comboToExecute = ComboData.GetSingleActionCombo(Weapon.Combos, incomingAction);
+            comboToExecute = ComboDataSO.GetSingleActionCombo(Weapon.Combos, incomingAction);
             if (comboToExecute != null)
             {
                 ExecuteCombo(comboToExecute);
@@ -175,7 +175,7 @@ public class PlayerCombat : MonoBehaviour
         }
         else
         {
-            comboToExecute = ComboData.GetLongestCombo(potentialCombos);
+            comboToExecute = ComboDataSO.GetLongestCombo(potentialCombos);
 
             if (comboToExecute != null)
             {
@@ -186,24 +186,24 @@ public class PlayerCombat : MonoBehaviour
         //PrintComboLists();
     }
 
-    private void ExecuteCombo(PlayerComboActionStateSO comboState)
+    private void ExecuteCombo(ComboDataSO combo)
     {
         if (player.CurrentState == player.PlayerSlideState) return;
 
-        comboState.Init(player, this);
-        player.ChangeState(comboState);
+        player.PlayerAttackState.SetCombo(this, combo);
+        player.ChangeState(player.PlayerAttackState);
 
-        comboText.text = "Combo: " + comboState.ComboData.ComboName;
+        comboText.text = "Combo: " + combo.ComboName;
     }
 
     private void GenerateComboLists()
     {
-        potentialCombos = new List<PlayerComboActionStateSO>();
-        predictedCombos = new List<PlayerComboActionStateSO>();
-        foreach (PlayerComboActionStateSO weaponCombo in Weapon.Combos)
+        potentialCombos = new List<ComboDataSO>();
+        predictedCombos = new List<ComboDataSO>();
+        foreach (ComboDataSO weaponCombo in Weapon.Combos)
         {
-            if (ComboData.IsIn(weaponCombo.ComboData.ComboInputs, currentComboList)) potentialCombos.Add(weaponCombo);
-            if (ComboData.IsPotentiallyIn(weaponCombo.ComboData.ComboInputs, currentComboList)) predictedCombos.Add(weaponCombo);
+            if (ComboDataSO.IsIn(weaponCombo.ComboInputs, currentComboList)) potentialCombos.Add(weaponCombo);
+            if (ComboDataSO.IsPotentiallyIn(weaponCombo.ComboInputs, currentComboList)) predictedCombos.Add(weaponCombo);
         }
     }
 
@@ -238,7 +238,7 @@ public class PlayerCombat : MonoBehaviour
 
         for (int i = 0; i < potentialCombos.Count; i++)
         {
-            result += potentialCombos[i].ComboData.ComboName;
+            result += potentialCombos[i].ComboName;
             if (i != potentialCombos.Count - 1) result += ",";
             result += " ";
         }
@@ -247,7 +247,7 @@ public class PlayerCombat : MonoBehaviour
 
         for (int i = 0; i < predictedCombos.Count; i++)
         {
-            result += potentialCombos[i].ComboData.ComboName;
+            result += potentialCombos[i].ComboName;
             if (i != predictedCombos.Count - 1) result += ",";
             result += " ";
         }

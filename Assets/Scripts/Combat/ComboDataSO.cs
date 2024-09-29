@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 
-[Serializable]
-public class ComboData
+[CreateAssetMenu(fileName = "Data", menuName = "ComboData", order = 1)]
+public class ComboDataSO : ScriptableObject
 {
     [field: Header("[Combo Data]")]
     [field: SerializeField] public string ComboName { get; private set; } = "";
@@ -18,6 +20,13 @@ public class ComboData
 
     [field: Header("[Hit Options]")]
     [field: SerializeField] public Vector2Int ComboDamageRange { get; private set; } = new Vector2Int(10, 15);
+
+    private void OnValidate()
+    {
+#if UNITY_EDITOR
+        ComboName = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(this));
+#endif
+    }
 
     public void SetName(string name)
     {
@@ -75,11 +84,11 @@ public class ComboData
     /// <param name="combos"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static PlayerComboActionStateSO GetSingleActionCombo(List<PlayerComboActionStateSO> combos, PlayerActions action)
+    public static ComboDataSO GetSingleActionCombo(List<ComboDataSO> combos, PlayerActions action)
     {
-        foreach (PlayerComboActionStateSO combo in combos)
+        foreach (ComboDataSO combo in combos)
         {
-            if (combo.ComboData.ComboInputs.Count == 1 && combo.ComboData.ComboInputs.Contains(action)) return combo;
+            if (combo.ComboInputs.Count == 1 && combo.ComboInputs.Contains(action)) return combo;
         }
 
         return null;
@@ -90,14 +99,14 @@ public class ComboData
     /// </summary>
     /// <param name="combos"></param>
     /// <returns></returns>
-    public static PlayerComboActionStateSO GetLongestCombo(List<PlayerComboActionStateSO> combos)
+    public static ComboDataSO GetLongestCombo(List<ComboDataSO> combos)
     {
         if (combos.Count == 0) return null;
         if (combos.Count == 1) return combos[0];
 
-        PlayerComboActionStateSO result = null;
+        ComboDataSO result = null;
 
-        foreach (PlayerComboActionStateSO combo in combos)
+        foreach (ComboDataSO combo in combos)
         {
             if (result == null)
             {
@@ -105,7 +114,7 @@ public class ComboData
                 continue;
             }
 
-            if (combo.ComboData.ComboInputs.Count > result.ComboData.ComboInputs.Count)
+            if (combo.ComboInputs.Count > result.ComboInputs.Count)
             {
                 result = combo;
             }
