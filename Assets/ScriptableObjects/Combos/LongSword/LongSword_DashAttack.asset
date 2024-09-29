@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <ComboName>k__BackingField: LongSword_DashAttack
   <ComboInputs>k__BackingField: 0100000002000000
-  <ComboClip>k__BackingField: {fileID: 7400000, guid: 932a23924401be2408bc67bd87b3857f,
-    type: 2}
+  <ComboClip>k__BackingField: {fileID: 8361507392348291089, guid: 68165fc722d45c64c9b2cbaef724e597,
+    type: 3}
   <ComboClipAnimationSpeed>k__BackingField: 1.5
   <AttackHasRootMotion>k__BackingField: 1
   <ComboDamageRange>k__BackingField: {x: 20, y: 25}
