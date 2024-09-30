@@ -15,7 +15,7 @@ public class Entity : MonoBehaviour
     [HideInInspector] public bool IsGrounded;
 
     [SerializeField] protected float baseSpeed = 3f;
-    protected float speedModifier = 1f;
+    public float SpeedModifier { get; protected set; } = 1f;
     [SerializeField] protected private Vector3 velocity;
     [SerializeField] protected private LayerMask groundLayer;
     protected private float inAirTimer;
@@ -139,6 +139,6 @@ public class Entity : MonoBehaviour
 
     public void SetSpeedModifier(float speed)
     {
-        speedModifier = speed;
+        SpeedModifier = speed;
     }
 }

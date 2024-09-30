@@ -29,6 +29,7 @@ public class PlayerFallState : PlayerBaseState
         }
         else
         {
+            player.SetSpeedModifier(0.25f);
             player.AccelerateToSpeed(0f);
         }
             

@@ -15,7 +15,7 @@ public class Player : Entity
     [Header("Player: Grounded Movement")]
     [SerializeField] private float rotationSpeed = 5f;
     [field: SerializeField] public float SprintSpeedModifier { get; private set; } = 1.66f;
-    public float MovementSpeed => movementOnSlopeSpeedModifier * speedModifier * baseSpeed;
+    public float MovementSpeed => movementOnSlopeSpeedModifier * SpeedModifier * baseSpeed;
     private float movementOnSlopeSpeedModifier = 1f;
     private float totalSpeedModifierForAnimation;
     public Vector3 MoveDirection => input.MoveDirection;
@@ -316,7 +316,7 @@ public class Player : Entity
 
     private void HandleAnimations()
     {
-        totalSpeedModifierForAnimation = Mathf.Lerp(totalSpeedModifierForAnimation, movementOnSlopeSpeedModifier * speedModifier, groundedAcceleration * Time.deltaTime); 
+        totalSpeedModifierForAnimation = Mathf.Lerp(totalSpeedModifierForAnimation, movementOnSlopeSpeedModifier * SpeedModifier, groundedAcceleration * Time.deltaTime); 
 
         animator.SetFloat("MovementSpeed", totalSpeedModifierForAnimation);
         animator.SetFloat("InAirTimer", inAirTimer);
