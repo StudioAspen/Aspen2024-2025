@@ -15,7 +15,7 @@ public class PlayerDashState : PlayerBaseState
 
     public override void OnEnter()
     {
-        player.Dash();
+        player.ResetDashDelay();
 
         player.DefaultTransitionToAnimation("Dash");
 

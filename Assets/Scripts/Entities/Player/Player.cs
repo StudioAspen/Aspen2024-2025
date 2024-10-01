@@ -45,9 +45,7 @@ public class Player : Entity
     [field : SerializeField] public float InitialDashVelocity { get; private set; } = 25f;
     [SerializeField] private float dashDelayDuration = 0.5f;
     [field: SerializeField] public float SprintDurationAfterDash { get; private set; } = 2f;
-    [SerializeField] private float shiftKeyPressMaxDurationForDash = 0.25f;
     [SerializeField] private GameObject dashTrailObject;
-    private float shiftKeyPressTimer;
     private float dashDelayTimer = Mathf.Infinity;
     private Coroutine dashCoroutine;
 
@@ -68,14 +66,16 @@ public class Player : Entity
     {
         input.Jump.AddListener(HandleJumpInput);
         input.SprintHold.AddListener(HandleSprintInput);
-        input.SprintRelease.AddListener(HandleDashInput);
+        input.SprintRelease.AddListener(HandleSprintReleaseInput);
+        input.Dash.AddListener(HandleDashInput);
     }
 
     private void OnDisable()
     {
         input.Jump.RemoveListener(HandleJumpInput);
         input.SprintHold.RemoveListener(HandleSprintInput);
-        input.SprintRelease.RemoveListener(HandleDashInput);
+        input.SprintRelease.RemoveListener(HandleSprintReleaseInput);
+        input.Dash.RemoveListener(HandleDashInput);
     }
 
     protected override void OnAwake()
@@ -166,26 +166,24 @@ public class Player : Entity
     private void HandleSprintInput()
     {
         if (CurrentState == PlayerChargeState) return;
+        if (CurrentState == PlayerDashState) return;
 
         IsSprinting = true;
-        shiftKeyPressTimer += Time.unscaledDeltaTime;
+    }
+
+    private void HandleSprintReleaseInput()
+    {
+        IsSprinting = false;
     }
 
     private void HandleDashInput()
     {
-        if (dashDelayTimer > dashDelayDuration)
-        {
-            if (shiftKeyPressTimer < shiftKeyPressMaxDurationForDash)
-            {
-                if (CurrentState != PlayerChargeState) ChangeState(PlayerDashState);
-                IsSprinting = false;
-            }
-            else
-            {
-                IsSprinting = false;
-            }
-        }
-        shiftKeyPressTimer = 0f;
+        if (dashDelayTimer < dashDelayDuration) return;
+        if (CurrentState == PlayerChargeState) return;
+        if (CurrentState == PlayerDashState) return;
+
+        input.OnPlayerActionInput?.Invoke(PlayerActions.Dash);
+        ChangeState(PlayerDashState);
     }
 
     public void GroundedMove()
@@ -341,12 +339,6 @@ public class Player : Entity
         inAirTimer = 0.01f;
 
         currentJumpCount++;
-    }
-
-    public void Dash()
-    {
-        input.OnPlayerActionInput?.Invoke(PlayerActions.Dash);
-        dashDelayTimer = 0f;
     }
 
     public void DashTrailSetActive(bool b)
