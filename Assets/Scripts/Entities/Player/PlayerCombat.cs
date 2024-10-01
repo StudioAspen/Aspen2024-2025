@@ -68,14 +68,13 @@ public class PlayerCombat : MonoBehaviour
     private void HandleAttack1HoldInput()
     {
         if (!player.CanAttack) return;
-        if (player.IsAttacking) return;
+        if (player.CurrentState == player.PlayerChargeState) return;
+        if (player.CurrentState == player.PlayerAttackState) return;
 
         attack1HoldTimer += Time.unscaledDeltaTime;
 
         if (attack1HoldTimer > attackReleaseThreshold)
         {
-            player.IsChargingAttack = true;
-
             // play the animation matching the predicted potential combo
             if (player.CurrentState != player.PlayerDashState) player.ChangeState(player.PlayerChargeState);
         }
@@ -84,10 +83,11 @@ public class PlayerCombat : MonoBehaviour
     private void HandleAttack1ReleaseInput()
     {
         if (!player.CanAttack) return;
-        if (player.IsAttacking) return;
+        if (player.CurrentState == player.PlayerAttackState) return;
 
         if (attack1HoldTimer < attackReleaseThreshold) // regular swing 1
         {
+            if (player.CurrentState == player.PlayerChargeState) return;
             input.OnPlayerActionInput?.Invoke(PlayerActions.Attack1);
         }
         else // charged swing 1
@@ -95,33 +95,32 @@ public class PlayerCombat : MonoBehaviour
             input.OnPlayerActionInput?.Invoke(PlayerActions.ChargeAttack1);
         }
 
-        player.IsChargingAttack = false;
         attack1HoldTimer = 0;
     }
 
     private void HandleAttack2HoldInput()
     {
-        if (!player.CanAttack) return;
-        if (player.IsAttacking) return;
+/*        if (!player.CanAttack) return;
+        if (player.CurrentState == player.PlayerChargeState) return;
+        if (player.CurrentState == player.PlayerAttackState) return;
 
         attack2HoldTimer += Time.unscaledDeltaTime;
 
         if (attack2HoldTimer > attackReleaseThreshold)
         {
-            player.IsChargingAttack = true;
-
             // play the animation matching the predicted potential combo
             //if(player.CurrentState != player.PlayerDashState) player.ChangeState(player.PlayerChargeState);
-        }
+        }*/
     }
 
     private void HandleAttack2ReleaseInput()
     {
-        if (!player.CanAttack) return;
-        if (player.IsAttacking) return;
+/*        if (!player.CanAttack) return;
+        if (player.CurrentState == player.PlayerAttackState) return;
 
         if (attack2HoldTimer < attackReleaseThreshold) // regular swing 2
         {
+            if (player.CurrentState == player.PlayerChargeState) return;
             input.OnPlayerActionInput?.Invoke(PlayerActions.Attack2);
         }
         else // charged swing 2
@@ -129,13 +128,12 @@ public class PlayerCombat : MonoBehaviour
             input.OnPlayerActionInput?.Invoke(PlayerActions.ChargeAttack2);
         }
 
-        player.IsChargingAttack = false;
-        attack2HoldTimer = 0;
+        attack2HoldTimer = 0;*/
     }
 
     private void HandleComboList()
     {
-        if (!player.IsChargingAttack && !player.IsAttacking && comboListenTimer < comboListenDuration * 2f) comboListenTimer += Time.unscaledDeltaTime;
+        if (player.CurrentState != player.PlayerChargeState && player.CurrentState != player.PlayerAttackState && comboListenTimer < comboListenDuration * 2f) comboListenTimer += Time.unscaledDeltaTime;
 
         if (comboListenTimer > comboListenDuration)
         {
@@ -278,7 +276,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void HandleWeaponTriggers()
     {
-        if (!player.IsAttacking) DisableWeaponTriggers();
+        if (player.CurrentState != player.PlayerAttackState) DisableWeaponTriggers();
     }
 
     public void EnableWeaponTriggers()

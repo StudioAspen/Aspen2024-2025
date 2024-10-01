@@ -27,7 +27,6 @@ public class PlayerAttackState : PlayerBaseState
         player.TransitionToAnimation("Combo", 0.05f);
 
         playerCombat.IsAnimationPlaying = true;
-        player.IsAttacking = true;
         player.ApplyRootMotion = ComboData.AttackHasRootMotion;
 
         player.ApplyRotationToNextMovement();
@@ -36,7 +35,6 @@ public class PlayerAttackState : PlayerBaseState
     public override void OnExit()
     {
         playerCombat.IsAnimationPlaying = false;
-        player.IsAttacking = false;
         player.ApplyRootMotion = false;
         playerCombat.DisableWeaponTriggers();
 

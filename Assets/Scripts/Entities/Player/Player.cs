@@ -35,8 +35,6 @@ public class Player : Entity
     #region Flags
     [HideInInspector] public bool IsMoving => input.MoveDirection.sqrMagnitude > 0;
     [HideInInspector] public bool IsSprinting;
-    [HideInInspector] public bool IsAttacking;
-    [HideInInspector] public bool IsChargingAttack;
     [HideInInspector] public bool CanAttack = true;
     [HideInInspector] public bool IsJumping;
     [HideInInspector] public bool ApplyRootMotion;
@@ -105,6 +103,7 @@ public class Player : Entity
         CheckSlopeSliding();
 
         HandleGrounded();
+        HandleAirborne();
         HandleDashDelay();
         HandleDashTrail();
 
@@ -117,7 +116,7 @@ public class Player : Entity
 
     private void OnAnimatorMove()
     {
-        if (!IsAttacking) return;
+        if (CurrentState != PlayerAttackState) return;
 
         if (!ApplyRootMotion) return;
 
@@ -157,13 +156,17 @@ public class Player : Entity
     {
         if (!IsGrounded && currentJumpCount >= maxJumpCount) return;
         if (CurrentState == PlayerSlideState) return;
-        if (IsAttacking) return;
+        if(CurrentState == PlayerChargeState) return;
+        if (CurrentState == PlayerAttackState) return;
+
 
         ChangeState(PlayerJumpState);
     }
 
     private void HandleSprintInput()
     {
+        if (CurrentState == PlayerChargeState) return;
+
         IsSprinting = true;
         shiftKeyPressTimer += Time.unscaledDeltaTime;
     }
@@ -174,7 +177,7 @@ public class Player : Entity
         {
             if (shiftKeyPressTimer < shiftKeyPressMaxDurationForDash)
             {
-                ChangeState(PlayerDashState);
+                if (CurrentState != PlayerChargeState) ChangeState(PlayerDashState);
                 IsSprinting = false;
             }
             else
@@ -222,14 +225,18 @@ public class Player : Entity
             fallVelocityApplied = false;
             IsJumping = false;
         }
-        else // in air
+    }
+
+    public void HandleAirborne()
+    {
+        if (!IsGrounded)
         {
             if (!IsJumping && !fallVelocityApplied) // falling without jumping
             {
                 fallVelocityApplied = true;
                 velocity.y = physicsSettings.FallingStartingYVelocity;
 
-                if(!IsAttacking && CurrentState != PlayerDashState) ChangeState(PlayerFallState);
+                if (CurrentState != PlayerAttackState && CurrentState != PlayerDashState) ChangeState(PlayerFallState);
             }
             inAirTimer += Time.deltaTime;
             velocity.y += physicsSettings.Gravity * Time.deltaTime;
@@ -296,7 +303,7 @@ public class Player : Entity
     {
         if (!IsGrounded) return false;
         if (hitBelow.collider == null) return false;
-        if (IsAttacking) return false;
+        if (CurrentState == PlayerAttackState) return false;
 
         return hitBelowSlopeAngle > controller.slopeLimit;
     }

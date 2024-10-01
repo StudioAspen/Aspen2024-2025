@@ -19,6 +19,8 @@ public class DebugNavMesh : MonoBehaviour
    
     void OnDrawGizmos()
     {
+        if (agent == null) return;
+
         if (velocity) 
         {
             Gizmos.color = Color.green;
