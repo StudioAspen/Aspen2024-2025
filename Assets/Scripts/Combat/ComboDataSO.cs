@@ -15,7 +15,7 @@ public class ComboDataSO : ScriptableObject
 
     [field: Header("[Filter Options]")]
     [field: SerializeField] public bool AttackHasRootMotion { get; private set; } = true;
-    //[field: SerializeField] public bool IsAirCombo { get; private set; }
+    [field: SerializeField] public bool IsAirCombo { get; private set; }
     //[field: SerializeField] public bool IsSprintCombo { get; private set; }
 
     [field: Header("[Hit Options]")]

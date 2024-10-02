@@ -5100,26 +5100,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 784140094486146350}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b15be1641a6715409d644911d004bcd, type: 3}
+  m_Script: {fileID: 11500000, guid: d6783d80e507fcc4fb394fa75f758f87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   capsuleCollider: {fileID: 1259378818332639156}
+  trailObject: {fileID: 6918874709248315491}
   overrideAnimator: {fileID: 22100000, guid: 8456c80902e48ac49b8cccfaec465bf0, type: 2}
   damageableCollidersLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 128
   colliderStartTransform: {fileID: 2382167382557116116}
   colliderEndTransform: {fileID: 2628417811129990337}
   Combos:
   - {fileID: 11400000, guid: 01e6af0b21754fc43adb0d93d75b39fb, type: 2}
   - {fileID: 11400000, guid: 00d269358e037cb45b41ba880a256c9b, type: 2}
   - {fileID: 11400000, guid: 7fbb47c60cae2014f98ef5ea9907ae61, type: 2}
-  - {fileID: 11400000, guid: 4236e1f40557ee94793166f0de51999a, type: 2}
   - {fileID: 11400000, guid: 98aa89365c370534499455190c214f1b, type: 2}
   - {fileID: 11400000, guid: 046e4e3432103fc45a6c198aaf95c3a9, type: 2}
   - {fileID: 11400000, guid: e1a98987da9049e45a48d1c9cc1d34d3, type: 2}
-  impactFramesDuration: 0.1
-  trailObject: {fileID: 6918874709248315491}
+  - {fileID: 11400000, guid: 2544063d1ad4634409b17d12c1501932, type: 2}
+  - {fileID: 11400000, guid: ed3149a8ae9d6ab448475f34e98b4794, type: 2}
+  - {fileID: 11400000, guid: f7d03451ea410c944a4f215dc90eeb78, type: 2}
+  impactFramesDuration: 0.15
 --- !u!136 &1259378818332639156
 CapsuleCollider:
   m_ObjectHideFlags: 0

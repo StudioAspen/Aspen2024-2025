@@ -1,5 +1,4 @@
-﻿using RPGCharacterAnims.Lookups;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -39,11 +38,13 @@ public class PlayerAttackState : PlayerBaseState
         playerCombat.DisableWeaponTriggers();
 
         player.InstantlySetSpeed(0f);
+
+        if (ComboData.IsAirCombo) player.ResetYVelocity();
     }
 
     public override void Update()
     {
-        player.ApplyGravity();
+        if(!ComboData.IsAirCombo) player.ApplyGravity();
 
         if (!playerCombat.IsAnimationPlaying) player.ChangeState(player.DefaultState);
 

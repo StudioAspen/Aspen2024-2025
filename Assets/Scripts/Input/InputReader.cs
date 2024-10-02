@@ -123,13 +123,3 @@ public class InputReader : MonoBehaviour
         }
     }
 }
-
-public enum PlayerActions
-{
-    Jump,
-    Dash,
-    Attack1,
-    ChargeAttack1,
-    Attack2,
-    ChargeAttack2
-}

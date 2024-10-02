@@ -1,5 +1,4 @@
-﻿using RPGCharacterAnims.Actions;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerWalkingState : PlayerBaseState
 {

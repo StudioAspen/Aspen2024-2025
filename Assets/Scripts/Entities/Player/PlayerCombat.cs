@@ -17,7 +17,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField, Self] private Animator animator;
 
     [field: Header("Settings")]
-    [field: SerializeField] public WeaponHandler Weapon { get; private set; }
+    [field: SerializeField] public Weapon Weapon { get; private set; }
     [HideInInspector] public bool IsAnimationPlaying;
 
     [Header("Combo")]
@@ -70,7 +70,7 @@ public class PlayerCombat : MonoBehaviour
         if (player.CurrentState == player.PlayerChargeState) return;
         if (player.CurrentState == player.PlayerAttackState) return;
 
-        input.OnPlayerActionInput?.Invoke(PlayerActions.Attack1);
+        input.OnPlayerActionInput?.Invoke(PlayerActions.ATTACK1);
     }
 
     private void HandleAttack1ChargedInput()
@@ -78,7 +78,7 @@ public class PlayerCombat : MonoBehaviour
         if (!player.CanAttack) return;
         if (player.CurrentState == player.PlayerAttackState) return;
 
-        input.OnPlayerActionInput?.Invoke(PlayerActions.ChargeAttack1);
+        input.OnPlayerActionInput?.Invoke(PlayerActions.CHARGEDATTACK1);
     }
 
     private void HandleAttackChargingInput()
@@ -97,7 +97,7 @@ public class PlayerCombat : MonoBehaviour
         if (player.CurrentState == player.PlayerChargeState) return;
         if (player.CurrentState == player.PlayerAttackState) return;
 
-        input.OnPlayerActionInput?.Invoke(PlayerActions.Attack2);
+        input.OnPlayerActionInput?.Invoke(PlayerActions.ATTACK2);
     }
 
     private void HandleAttack2ChargedInput()
@@ -105,7 +105,7 @@ public class PlayerCombat : MonoBehaviour
         if (!player.CanAttack) return;
         if (player.CurrentState == player.PlayerAttackState) return;
 
-        input.OnPlayerActionInput?.Invoke(PlayerActions.ChargeAttack2);
+        input.OnPlayerActionInput?.Invoke(PlayerActions.CHARGEDATTACK2);
     }
 
     private void HandleComboList()

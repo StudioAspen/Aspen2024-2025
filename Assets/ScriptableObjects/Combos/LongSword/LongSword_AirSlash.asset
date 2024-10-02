@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b253543ac71d7f14eaf5a73906075e12, type: 3}
-  m_Name: LongSword_ChargeSlash
+  m_Name: LongSword_AirSlash
   m_EditorClassIdentifier: 
-  <ComboName>k__BackingField: LongSword_ChargeSlash
-  <ComboInputs>k__BackingField: 03000000
-  <ComboClip>k__BackingField: {fileID: 7400000, guid: 9a289e37796509b4e8b35c5dba78199a,
+  <ComboName>k__BackingField: LongSword_AirSlash
+  <ComboInputs>k__BackingField: 0000000002000000
+  <ComboClip>k__BackingField: {fileID: -1115183702260151492, guid: 3d21b82dff41d12438297e2cbeefb519,
     type: 3}
-  <ComboClipAnimationSpeed>k__BackingField: 1.1
-  <AttackHasRootMotion>k__BackingField: 1
-  <IsAirCombo>k__BackingField: 0
+  <ComboClipAnimationSpeed>k__BackingField: 2
+  <AttackHasRootMotion>k__BackingField: 0
+  <IsAirCombo>k__BackingField: 1
   <ComboDamageRange>k__BackingField: {x: 15, y: 20}

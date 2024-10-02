@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b253543ac71d7f14eaf5a73906075e12, type: 3}
-  m_Name: LongSword_DashAttack
+  m_Name: LongSword_AirTripleSlash
   m_EditorClassIdentifier: 
-  <ComboName>k__BackingField: LongSword_DashAttack
-  <ComboInputs>k__BackingField: 0100000002000000
-  <ComboClip>k__BackingField: {fileID: 7400000, guid: ce17781955d25c647922801319f24e9e,
+  <ComboName>k__BackingField: LongSword_AirTripleSlash
+  <ComboInputs>k__BackingField: 00000000020000000200000002000000
+  <ComboClip>k__BackingField: {fileID: -3891449819406770849, guid: 11c317ca660f7a740b666b9a9e0835e4,
     type: 3}
-  <ComboClipAnimationSpeed>k__BackingField: 1
-  <AttackHasRootMotion>k__BackingField: 1
-  <IsAirCombo>k__BackingField: 0
+  <ComboClipAnimationSpeed>k__BackingField: 2
+  <AttackHasRootMotion>k__BackingField: 0
+  <IsAirCombo>k__BackingField: 1
   <ComboDamageRange>k__BackingField: {x: 20, y: 25}
