@@ -182,7 +182,7 @@ public class Player : Entity
         if (CurrentState == PlayerChargeState) return;
         if (CurrentState == PlayerDashState) return;
 
-        input.OnPlayerActionInput?.Invoke(PlayerActions.DASH);
+        input.OnSuccessfulPlayerActionInput?.Invoke(PlayerActions.DASH);
         ChangeState(PlayerDashState);
     }
 
@@ -330,7 +330,7 @@ public class Player : Entity
 
     public void Jump()
     {
-        input.OnPlayerActionInput?.Invoke(PlayerActions.JUMP);
+        input.OnSuccessfulPlayerActionInput?.Invoke(PlayerActions.JUMP);
 
         IsJumping = true;
         IsGrounded = false;

@@ -41,7 +41,7 @@ public class PlayerCombat : MonoBehaviour
         input.Attack2Charged.AddListener(HandleAttack2ChargedInput);
         input.Attack2Charging.AddListener(HandleAttackChargingInput);*/
 
-        input.OnPlayerActionInput.AddListener(HandleOnPlayerActionInput);
+        input.OnSuccessfulPlayerActionInput.AddListener(HandleOnPlayerActionInput);
     }
 
     private void OnDisable()
@@ -53,7 +53,7 @@ public class PlayerCombat : MonoBehaviour
         input.Attack2Charged.RemoveListener(HandleAttack2ChargedInput);
         input.Attack2Charging.RemoveListener(HandleAttackChargingInput);*/
 
-        input.OnPlayerActionInput.RemoveListener(HandleOnPlayerActionInput);
+        input.OnSuccessfulPlayerActionInput.RemoveListener(HandleOnPlayerActionInput);
     }
 
     private void Update()
@@ -70,7 +70,7 @@ public class PlayerCombat : MonoBehaviour
         if (player.CurrentState == player.PlayerChargeState) return;
         if (player.CurrentState == player.PlayerAttackState) return;
 
-        input.OnPlayerActionInput?.Invoke(PlayerActions.ATTACK1);
+        input.OnSuccessfulPlayerActionInput?.Invoke(PlayerActions.ATTACK1);
     }
 
     private void HandleAttack1ChargedInput()
@@ -78,7 +78,7 @@ public class PlayerCombat : MonoBehaviour
         if (!player.CanAttack) return;
         if (player.CurrentState == player.PlayerAttackState) return;
 
-        input.OnPlayerActionInput?.Invoke(PlayerActions.CHARGEDATTACK1);
+        input.OnSuccessfulPlayerActionInput?.Invoke(PlayerActions.CHARGEDATTACK1);
     }
 
     private void HandleAttackChargingInput()
@@ -97,7 +97,7 @@ public class PlayerCombat : MonoBehaviour
         if (player.CurrentState == player.PlayerChargeState) return;
         if (player.CurrentState == player.PlayerAttackState) return;
 
-        input.OnPlayerActionInput?.Invoke(PlayerActions.ATTACK2);
+        input.OnSuccessfulPlayerActionInput?.Invoke(PlayerActions.ATTACK2);
     }
 
     private void HandleAttack2ChargedInput()
@@ -105,7 +105,7 @@ public class PlayerCombat : MonoBehaviour
         if (!player.CanAttack) return;
         if (player.CurrentState == player.PlayerAttackState) return;
 
-        input.OnPlayerActionInput?.Invoke(PlayerActions.CHARGEDATTACK2);
+        input.OnSuccessfulPlayerActionInput?.Invoke(PlayerActions.CHARGEDATTACK2);
     }
 
     private void HandleComboList()
