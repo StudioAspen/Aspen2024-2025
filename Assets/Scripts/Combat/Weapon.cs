@@ -78,6 +78,7 @@ public class Weapon : MonoBehaviour
         if (!capsuleCollider.enabled)
         {
             currentHitFrame = 0;
+
             return;
         }
 
@@ -96,7 +97,7 @@ public class Weapon : MonoBehaviour
 
                 CheckCollisionsWithRays(new Ray(prevPoint, currPoint-prevPoint), Vector3.Distance(currPoint, prevPoint));
 
-                Debug.DrawLine(currPoint, prevPoint, Color.red);
+                Debug.DrawLine(currPoint, prevPoint, Color.red, 2f);
             }
         }
 

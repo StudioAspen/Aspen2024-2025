@@ -78,7 +78,7 @@ public class PlayerCombat : MonoBehaviour
         if (!player.CanAttack) return;
         if (player.CurrentState == player.PlayerAttackState) return;
 
-        input.OnPlayerActionInput?.Invoke(PlayerActions.CHARGEDATTACK1);
+        input.OnPlayerActionInput?.Invoke(PlayerActions.CHARGED_ATTACK1);
     }
 
     private void HandleAttackChargingInput()
@@ -105,7 +105,7 @@ public class PlayerCombat : MonoBehaviour
         if (!player.CanAttack) return;
         if (player.CurrentState == player.PlayerAttackState) return;
 
-        input.OnPlayerActionInput?.Invoke(PlayerActions.CHARGEDATTACK2);
+        input.OnPlayerActionInput?.Invoke(PlayerActions.CHARGED_ATTACK2);
     }
 
     private void HandleComboList()
