@@ -33,7 +33,6 @@ public class Player : Entity
     private int currentJumpCount;
     
     #region Flags
-    [HideInInspector] public bool IsMoving => input.MoveDirection.sqrMagnitude > 0;
     [HideInInspector] public bool IsSprinting;
     [HideInInspector] public bool CanAttack = true;
     [HideInInspector] public bool IsJumping;

@@ -54,42 +54,41 @@ public class Weapon : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (!capsuleCollider.enabled) return;
+        HandleHitDetectionOnTrigger(other);
+    }
 
-        Enemy enemy = other.GetComponentInParent<Enemy>();
+    private void HandleHitDetectionOnTrigger(Collider other)
+    {
+        if (!capsuleCollider.enabled) return; // if weapon is not trying to hit, then dont bother to handle hit detection
+
+        Enemy enemy = other.GetComponentInParent<Enemy>(); // body parts dont contain the Enemy script but the parent does
 
         if (enemy == null) return;
 
-        if (enemiesHitByCurrentAttack.Contains(enemy)) return;
+        if (enemiesHitByCurrentAttack.Contains(enemy)) return; // stops if we already hit the enemy once
         enemiesHitByCurrentAttack.Add(enemy);
 
-        StartImpactFrames(0.1f);
-        CameraShakeManager.Instance.ShakeCamera(5f, 0.25f);
-
         Vector3 hitPoint = other.ClosestPointOnBounds(colliderStartTransform.position);
-
-        CreateTempHitVisual(hitPoint, Color.green, 1.5f);
-
-        enemy.TakeDamage(GetRandomDamage(), hitPoint);
+        HitEnemy(enemy, hitPoint, true);
     }
 
     private void HandleHitDetectionBetweenFrames()
     {
-        if (!capsuleCollider.enabled)
+        if (!capsuleCollider.enabled) // if weapon is not trying to hit, reset our current hit frame and dont bother to handle hit detection
         {
             currentHitFrame = 0;
-
             return;
         }
 
-        previousFrameCollisionRay = currentFrameCollisionRay;
+        previousFrameCollisionRay = currentFrameCollisionRay; // makes the previous ray always one frame behind the current by assigning this before the 2 lines below
 
-        Vector3 dir = colliderEndTransform.position - colliderStartTransform.position;
-        currentFrameCollisionRay = new Ray(colliderStartTransform.position, dir);
+        Vector3 hiltToTipVector = colliderEndTransform.position - colliderStartTransform.position;
+        currentFrameCollisionRay = new Ray(colliderStartTransform.position, hiltToTipVector); // the ray starting from the hilt to the tip
 
         if(currentHitFrame > 0)
         {
-            int segments = (int)Mathf.Ceil(dir.magnitude / capsuleCollider.radius);
+            // divides our sword into multiple segments to cast rays between the prev and curr frame. essentially works like a blade trail but with rays.
+            int segments = (int)Mathf.Ceil(hiltToTipVector.magnitude / capsuleCollider.radius);
             for(int i = 0; i <= segments; i++)
             {
                 Vector3 currPoint = currentFrameCollisionRay.origin + i / (float)segments * currentFrameCollisionRay.direction;
@@ -97,7 +96,7 @@ public class Weapon : MonoBehaviour
 
                 CheckCollisionsWithRays(new Ray(prevPoint, currPoint-prevPoint), Vector3.Distance(currPoint, prevPoint));
 
-                Debug.DrawLine(currPoint, prevPoint, Color.red, 2f);
+                Debug.DrawLine(currPoint, prevPoint, Color.red, 2f); // debug draw the trail gizmos for 2 seconds
             }
         }
 
@@ -106,30 +105,35 @@ public class Weapon : MonoBehaviour
 
     private void CheckCollisionsWithRays(Ray ray, float distance)
     {
-        RaycastHit[] hits = Physics.RaycastAll(ray, distance, damageableCollidersLayerMask);
+        RaycastHit[] hits = Physics.RaycastAll(ray, distance, damageableCollidersLayerMask); // grab all body parts hit
 
         if (hits == null) return;
         if (hits.Length == 0) return;
 
         foreach (RaycastHit hit in hits)
         {
-            Enemy enemy = hit.collider.GetComponentInParent<Enemy>();
+            Enemy enemy = hit.collider.GetComponentInParent<Enemy>(); // body parts dont contain the Enemy script but the parent does
 
             if (enemy == null) continue;
 
-            if (enemiesHitByCurrentAttack.Contains(enemy)) continue;
+            if (enemiesHitByCurrentAttack.Contains(enemy)) continue; // checks next hit if we already hit the enemy once
             enemiesHitByCurrentAttack.Add(enemy);
-
-            StartImpactFrames(0.1f);
-            CameraShakeManager.Instance.ShakeCamera(5f, 0.25f);
 
             Vector3 hitPoint = hit.collider.ClosestPointOnBounds(hit.point);
             if (hit.distance == 0) hitPoint = hit.collider.ClosestPointOnBounds((colliderStartTransform.position + colliderEndTransform.position) / 2);
 
-            CreateTempHitVisual(hitPoint, Color.red, 1.5f);
-
-            enemy.TakeDamage(GetRandomDamage(), hitPoint);
+            HitEnemy(enemy, hitPoint, false);
         }
+    }
+
+    private void HitEnemy(Enemy enemy, Vector3 hitPoint, bool fromTrigger)
+    {
+        StartImpactFrames(0.1f);
+        CameraShakeManager.Instance.ShakeCamera(5f, 0.25f);
+
+        CreateTempHitVisual(hitPoint, fromTrigger ? Color.green : Color.red, 1.5f);
+
+        enemy.TakeDamage(GetRandomDamage(), hitPoint);
     }
 
     private void CreateTempHitVisual(Vector3 pos, Color color, float duration)

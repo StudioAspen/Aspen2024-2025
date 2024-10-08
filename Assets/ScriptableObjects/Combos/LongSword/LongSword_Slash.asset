@@ -18,4 +18,5 @@ MonoBehaviour:
     type: 3}
   <ComboClipAnimationSpeed>k__BackingField: 2
   <AttackHasRootMotion>k__BackingField: 1
+  <IsAirCombo>k__BackingField: 0
   <ComboDamageRange>k__BackingField: {x: 10, y: 15}
