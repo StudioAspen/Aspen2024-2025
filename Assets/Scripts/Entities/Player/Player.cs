@@ -109,7 +109,7 @@ public class Player : Entity
 
         HandleAnimations();
 
-        Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
+        //Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
 
         stateText.text = $"State: {CurrentState.GetType().ToString()}";
     }
