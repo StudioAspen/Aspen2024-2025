@@ -24,8 +24,6 @@ public class EnemyDetection : MonoBehaviour
         nearbyEnemies.Clear();
         Collider[] colliders = Physics.OverlapSphere(transform.position, detectionRadius, enemyLayer);
 
-        Debug.Log(colliders.Length);
-
         foreach (var collider in colliders)
         {
             EnemyAgent enemy = collider.GetComponentInChildren<EnemyAgent>();

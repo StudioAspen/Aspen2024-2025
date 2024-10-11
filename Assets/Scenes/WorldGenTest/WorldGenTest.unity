@@ -182,32 +182,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 517022693}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &133130339
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 133130328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39a8a31f8795337438abef660c44478e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerCam: {fileID: 1795495321}
-  SelectionLayer:
-    serializedVersion: 2
-    m_Bits: 16384
-  islandToSpawn: {fileID: 2939626751093247222, guid: 006873e2de8d753499aa3b3f6548874b,
-    type: 3}
-  islandSpawnOffsetY: {x: 0, y: -5.5, z: 0}
-  islandSpawnOffsetZ: {x: 0, y: 0, z: 0}
-  islandSpawnOffsetX: {x: 0, y: 0, z: 0}
-  selectOptions: []
-  selected_Option: []
-  spotSelect: {x: 0, y: 0, z: 0}
-  borderRemove: {fileID: 0}
-  worldManage: {fileID: 0}
 --- !u!114 &133130350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -538,7 +512,7 @@ GameObject:
   m_Component:
   - component: {fileID: 396332847}
   m_Layer: 0
-  m_Name: Borders
+  m_Name: BorderHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -888,10 +862,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 474901539404587984, guid: c01a8aaa9efd93147a2c54ee37966c8c,
         type: 3}
       insertIndex: 2
-      addedObject: {fileID: 133130339}
-    - targetCorrespondingSourceObject: {fileID: 474901539404587984, guid: c01a8aaa9efd93147a2c54ee37966c8c,
-        type: 3}
-      insertIndex: 3
       addedObject: {fileID: 133130350}
   m_SourcePrefab: {fileID: 100100000, guid: c01a8aaa9efd93147a2c54ee37966c8c, type: 3}
 --- !u!1 &574716043
@@ -1063,26 +1033,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b1673f77022d4548b996ec9f2cf5ff2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnSqaure: {fileID: 0}
-  sqaureToSpawn: {fileID: 0}
-  currentSquareCount: 0
-  currentTotalOpenSides: 0
-  monstersAlive: 0
-  mapClear: 0
-  masterLevel: {fileID: 0}
-  skyView: 0
-  waveBuffer: 0
-  waveBufferTimer: 0
-  LevelIsands: 0
+  isInSkyView: 0
   playerCamera: {fileID: 2051743394}
   islandSelectCamera: {fileID: 152754436}
-  islandSelectTimer: 0
-  islandSelectTimerSet: 20
-  selecting: 0
-  islandTimertext: {fileID: 842008196}
-  islandSelectTimertext: {fileID: 842008198}
-  islandSelectPlaceHolder: {fileID: 0}
-  masterIsland: {fileID: 0}
 --- !u!4 &657163285
 Transform:
   m_ObjectHideFlags: 0
@@ -2332,14 +2285,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50e4cff50d823a04987f6b19da93f65c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  borders: []
-  allBorders: []
-  borderAmount: 0
-  masterBorders: {fileID: 0}
-  openSlotPlaceHolder: {fileID: 1481753692062898772, guid: 1c513cc1d267f7940a7ec5a82e5e8c40,
+  navMeshSurface: {fileID: 1675041089}
+  selectionLayer:
+    serializedVersion: 2
+    m_Bits: 16384
+  islandToSpawnPrefab: {fileID: 6052383663745716427, guid: 006873e2de8d753499aa3b3f6548874b,
     type: 3}
-  selectorOF: {x: 0, y: 10, z: 0}
-  navsurface: {fileID: 1675041089}
+  selectionSpherePrefab: {fileID: 7499526061839957552, guid: 1c513cc1d267f7940a7ec5a82e5e8c40,
+    type: 3}
+  selectorOffset: {x: 0, y: 20, z: 0}
 --- !u!114 &1675041089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2371,12 +2325,6 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
---- !u!20 &1795495321 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 5235712871058965093, guid: c01a8aaa9efd93147a2c54ee37966c8c,
-    type: 3}
-  m_PrefabInstance: {fileID: 517022693}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1832457525
 GameObject:
   m_ObjectHideFlags: 0
@@ -2551,27 +2499,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BaseCube
       objectReference: {fileID: 0}
-    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
-        type: 3}
-      propertyPath: leaper
-      value: 
-      objectReference: {fileID: 7557220100173712488, guid: a75dd20bd1ea5fa41abb2daa4ff94572,
-        type: 3}
-    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
-        type: 3}
-      propertyPath: charger
-      value: 
-      objectReference: {fileID: 7557220100173712488, guid: a75dd20bd1ea5fa41abb2daa4ff94572,
-        type: 3}
-    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
-        type: 3}
-      propertyPath: RateScale
-      value: 3.2
-      objectReference: {fileID: 0}
     - target: {fileID: 3999374681703134211, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.14
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3999374681703134211, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
@@ -2581,7 +2512,7 @@ PrefabInstance:
     - target: {fileID: 3999374681703134211, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3999374681703134211, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}

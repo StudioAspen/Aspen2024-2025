@@ -7,13 +7,13 @@ public class EnemyManager : MonoBehaviour
     public float maxShopCurrency;
     public float currentShopCurrency;
 
-    public bool finishedWave;
+    public bool IsWaveFinished;
 
     public float spawnTimerMax;
     public float spawnTimer;
     public bool spawnRdy;
     public int spawnLocation;
-    public SqaureManager SqaureManager;
+    public IslandManager SqaureManager;
 
     public int followerSpawnThreshhold;
     public int leaperSpawnThreshhold;
@@ -59,7 +59,7 @@ public class EnemyManager : MonoBehaviour
 
         ///not temp 
         WorldManager = GameObject.FindObjectOfType<WorldManager>();
-        SqaureManager = GameObject.FindObjectOfType<SqaureManager>();
+        SqaureManager = GameObject.FindObjectOfType<IslandManager>();
         maxShopCurrency = baseCurrency + (growthFactor * Mathf.Pow(SqaureManager.sqaureLevel,polynomialDegree));
         currentShopCurrency = maxShopCurrency;
        
@@ -76,13 +76,12 @@ public class EnemyManager : MonoBehaviour
 
         if (currentShopCurrency <= 0) 
         {
-            finishedWave = true;    
+            IsWaveFinished = true;    
         }
 
-        if (currentShopCurrency > 0 && WorldManager.waveBufferTimer <= 0) 
+        if (currentShopCurrency > 0) 
         {
-           
-            finishedWave = false;
+            IsWaveFinished = false;
             
             if (spawnRdy == true) 
             {
@@ -117,25 +116,25 @@ public class EnemyManager : MonoBehaviour
             {
                 if (spawnLocation == 1) 
                 {
-                    Instantiate(enemy.prefab, SqaureManager.enemySpawnPoint1.transform);
+                    Instantiate(enemy.prefab, SqaureManager.EnemySpawnPoint1.transform);
                 }   
 
 
                 if (spawnLocation == 2)
                 {
-                    Instantiate(enemy.prefab, SqaureManager.enemySpawnPoint2.transform);
+                    Instantiate(enemy.prefab, SqaureManager.EnemySpawnPoint2.transform);
                 }
 
 
                 if (spawnLocation == 3)
                 {
-                    Instantiate(enemy.prefab, SqaureManager.enemySpawnPoint3.transform);
+                    Instantiate(enemy.prefab, SqaureManager.EnemySpawnPoint3.transform);
                 }   
 
     
                 if (spawnLocation == 4)
                 {
-                    Instantiate(enemy.prefab, SqaureManager.enemySpawnPoint4.transform);
+                    Instantiate(enemy.prefab, SqaureManager.EnemySpawnPoint4.transform);
                 }
                 currentShopCurrency -= enemy.enemyCost;
                 break;

@@ -24,8 +24,6 @@ public class BaseEnemy : MonoBehaviour
 
 
         levelManager = GameObject.FindObjectOfType<WorldManager>();
-
-        levelManager.monstersAlive += 1;
     }
 
 
@@ -37,7 +35,6 @@ public class BaseEnemy : MonoBehaviour
             EnemyDeathState enemyDead = agent.attackStateMachine.GetState(EnemyStateId.Death) as EnemyDeathState;
             agent.attackStateMachine.ChangeState(EnemyStateId.Death);
             Destroy(gameObject);
-            levelManager.monstersAlive -= 1;
         }
 
         if (Input.GetKeyDown(KeyCode.K)) 

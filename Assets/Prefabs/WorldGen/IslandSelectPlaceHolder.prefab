@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5620710874661080343}
   - component: {fileID: 6674198468760755513}
-  - component: {fileID: 358621153493157283}
+  - component: {fileID: 7499526061839957552}
   - component: {fileID: 4181634061866010060}
   - component: {fileID: 4336316125713777539}
   - component: {fileID: -1469100566957660056}
@@ -44,7 +44,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1481753692062898772}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &358621153493157283
+--- !u!114 &7499526061839957552
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -53,14 +53,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1481753692062898772}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41bd0c3861f98894cacfd09466feed5f, type: 3}
+  m_Script: {fileID: 11500000, guid: 50ed336960f51774ab92dd17fd962c78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallsTouched: 0
-  selectorDropSpeed: {x: 0, y: 0.25, z: 0}
-  borders: []
-  bordersToRemove: []
-  Buffer: 0
+  spawnDuration: 1
 --- !u!23 &4181634061866010060
 MeshRenderer:
   m_ObjectHideFlags: 0
