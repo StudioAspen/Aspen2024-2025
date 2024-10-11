@@ -36,11 +36,5 @@ public class BaseEnemy : MonoBehaviour
             agent.attackStateMachine.ChangeState(EnemyStateId.Death);
             Destroy(gameObject);
         }
-
-        if (Input.GetKeyDown(KeyCode.K)) 
-        {
-            enemyCurrentHP -= 100;
-        }
-
     }
 }

@@ -13,7 +13,7 @@ public class WorldManager : MonoBehaviour
     [Header("Island Selection")]
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private GameObject islandSelectCamera;
-    private bool isSelecting;
+    public bool IsSelecting;
 
     private void Awake()
     {
@@ -22,12 +22,11 @@ public class WorldManager : MonoBehaviour
 
     void Update()
     {
-        if (AreAllWavesFinished() && !isSelecting)
+        if (AreAllWavesFinished() && !IsSelecting)
         {
-            isSelecting = true;
+            IsSelecting = true;
 
             masterLevelManager.SpawnSelectionSpheres();
-            PrepareForNextWave();
         }
       
 /*        if (Input.GetKeyDown(KeyCode.Q) && isInSkyView == false) 
@@ -62,7 +61,7 @@ public class WorldManager : MonoBehaviour
         return finished;
     }
 
-    private void PrepareForNextWave() 
+    public void PrepareForNextWave() 
     {
         foreach (IslandManager island in masterLevelManager.SpawnedIslands) 
         {

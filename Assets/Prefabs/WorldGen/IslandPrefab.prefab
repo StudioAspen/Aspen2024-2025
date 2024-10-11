@@ -64,7 +64,6 @@ GameObject:
   - component: {fileID: 3904052754136344162}
   - component: {fileID: 2713257828174539950}
   - component: {fileID: 2899528279627281944}
-  - component: {fileID: 2902516037097042625}
   - component: {fileID: 3688375034819025643}
   m_Layer: 12
   m_Name: Border
@@ -120,27 +119,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &2902516037097042625
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1516829291037030864}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3688375034819025643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,7 +344,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <EnemyManager>k__BackingField: {fileID: 3642624367869852063}
   navMeshSurface: {fileID: 8171416551064500414}
-  sqaureLevel: 0
+  level: 0
   WallLayerMask:
     serializedVersion: 2
     m_Bits: 4096
@@ -393,12 +371,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxShopCurrency: 0
   currentShopCurrency: 0
-  IsWaveFinished: 0
   spawnTimerMax: 0
   spawnTimer: 0
   spawnRdy: 0
   spawnLocation: 0
-  SqaureManager: {fileID: 0}
+  islandManager: {fileID: 6052383663745716427}
   followerSpawnThreshhold: 0
   leaperSpawnThreshhold: 0
   chargerSpawnThreshhold: 0
@@ -418,6 +395,7 @@ MonoBehaviour:
   baseCurrency: 10
   growthFactor: 1
   polynomialDegree: 2
+  CanSpawn: 0
   enemies: []
 --- !u!114 &8171416551064500414
 MonoBehaviour:
@@ -588,7 +566,6 @@ GameObject:
   - component: {fileID: 1686792245053314101}
   - component: {fileID: 934173520614831567}
   - component: {fileID: 5061941789919869376}
-  - component: {fileID: 4426977838872443214}
   - component: {fileID: 3339952415797423076}
   m_Layer: 12
   m_Name: Border
@@ -644,27 +621,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &4426977838872443214
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4998905503534102030}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3339952415797423076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -842,7 +798,6 @@ GameObject:
   - component: {fileID: 5453025064748644444}
   - component: {fileID: 4862459101237194586}
   - component: {fileID: 8417531159018293085}
-  - component: {fileID: 5522762396672082110}
   - component: {fileID: 4271741344995929924}
   m_Layer: 12
   m_Name: Border
@@ -898,27 +853,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &5522762396672082110
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6559994710892270204}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4271741344995929924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -931,7 +865,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb6fca8d967f39c48a56763605b65397, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <RelativeBorderPosition>k__BackingField: {x: 1, y: 0}
+  <RelativeBorderPosition>k__BackingField: {x: -1, y: 0}
   <WorldBorderPosition>k__BackingField: {x: 0, y: 0}
 --- !u!1 &7118055617377291321
 GameObject:
@@ -1059,7 +993,6 @@ GameObject:
   - component: {fileID: 462447320193338778}
   - component: {fileID: 2477258900539736400}
   - component: {fileID: 5999330607497321549}
-  - component: {fileID: 8820467898614780323}
   - component: {fileID: 8992238792902132451}
   m_Layer: 12
   m_Name: Border
@@ -1115,27 +1048,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &8820467898614780323
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8317939442544544968}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8992238792902132451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1148,7 +1060,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb6fca8d967f39c48a56763605b65397, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <RelativeBorderPosition>k__BackingField: {x: -1, y: 0}
+  <RelativeBorderPosition>k__BackingField: {x: 1, y: 0}
   <WorldBorderPosition>k__BackingField: {x: 0, y: 0}
 --- !u!1 &8867807461167188852
 GameObject:

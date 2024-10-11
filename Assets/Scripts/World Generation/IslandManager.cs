@@ -7,13 +7,13 @@ using UnityEngine;
 
 public class IslandManager : MonoBehaviour
 {
-    public Vector2Int GridPosition { get; private set; }
+    [field: SerializeField] public Vector2Int GridPosition { get; private set; }
     [field: SerializeField, Self] public EnemyManager EnemyManager { get; private set; }
     [SerializeField, Self] private NavMeshSurface navMeshSurface;
 
     [Header("Square Stats")]
     private MasterLevelManager masterLevelManager;
-    [SerializeField] public int sqaureLevel;
+    [SerializeField] public int level;
     private WorldManager worldManager;
 
     [SerializeField] LayerMask WallLayerMask;
@@ -38,12 +38,11 @@ public class IslandManager : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(UpdateNavMesh());
-        sqaureLevel = 1;
+        level = 1;
 
         InitializeBorders();
 
-        transform.DOMoveY(-5, 1f).SetEase(Ease.InBounce);
+        transform.DOMoveY(-5, 0.5f).SetEase(Ease.InBounce).OnComplete(()=>StartCoroutine(OnCompleteSpawn()));
     }
 
     
@@ -57,6 +56,17 @@ public class IslandManager : MonoBehaviour
         
     }
 
+    private IEnumerator OnCompleteSpawn()
+    {
+        masterLevelManager.RemoveConnectedBorders();
+
+        yield return null;
+
+        masterLevelManager.BuildNavMesh();
+
+        EnemyManager.CanSpawn = true;
+    }
+
     private void InitializeBorders()
     {
         foreach(IslandBorder border in borders)
@@ -66,20 +76,10 @@ public class IslandManager : MonoBehaviour
         }
     }
 
-    public IEnumerator UpdateNavMesh() 
-    {
-       
-        navMeshSurface.BuildNavMesh();
-
-        yield return new WaitForSeconds(3);
-
-        navMeshSurface.enabled = false;
-    }
-
     public void LevelUp()
     {
 
-        sqaureLevel += 1;
+        level += 1;
 
     }
 

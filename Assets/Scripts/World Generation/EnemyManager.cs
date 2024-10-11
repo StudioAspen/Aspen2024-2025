@@ -7,13 +7,13 @@ public class EnemyManager : MonoBehaviour
     public float maxShopCurrency;
     public float currentShopCurrency;
 
-    public bool IsWaveFinished;
+    public bool IsWaveFinished => currentShopCurrency <= 0 && enemiesSpawned.Count <= 0;
 
     public float spawnTimerMax;
     public float spawnTimer;
     public bool spawnRdy;
     public int spawnLocation;
-    public IslandManager SqaureManager;
+    public IslandManager islandManager;
 
     public int followerSpawnThreshhold;
     public int leaperSpawnThreshhold;
@@ -42,6 +42,10 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] public float growthFactor;
     [SerializeField] public int polynomialDegree;
 
+    public bool CanSpawn = false;
+    private List<GameObject> enemiesSpawned = new List<GameObject>();
+    private bool isSpawnDelayed = false;
+
     [System.Serializable]
     public class Enemy 
     {
@@ -59,8 +63,8 @@ public class EnemyManager : MonoBehaviour
 
         ///not temp 
         WorldManager = GameObject.FindObjectOfType<WorldManager>();
-        SqaureManager = GameObject.FindObjectOfType<IslandManager>();
-        maxShopCurrency = baseCurrency + (growthFactor * Mathf.Pow(SqaureManager.sqaureLevel,polynomialDegree));
+        islandManager = GetComponent<IslandManager>();
+        maxShopCurrency = baseCurrency + (growthFactor * Mathf.Pow(islandManager.level,polynomialDegree));
         currentShopCurrency = maxShopCurrency;
        
         ///not temp
@@ -68,45 +72,57 @@ public class EnemyManager : MonoBehaviour
         enemies.Add(new Enemy { prefab = leaper, enemyCost = leaperCost });
         enemies.Add(new Enemy { prefab = charger, enemyCost = chargerCost });
 
+
+        StartCoroutine(SpawnCoroutine());
     }
 
 
     void Update()
     {
+        RemoveDeadEnemies();
 
-        if (currentShopCurrency <= 0) 
+        if (currentShopCurrency <= 0) CanSpawn = false;
+
+        if (Input.GetKeyDown(KeyCode.K))
         {
-            IsWaveFinished = true;    
+            ClearWave();
         }
-
-        if (currentShopCurrency > 0) 
-        {
-            IsWaveFinished = false;
-            
-            if (spawnRdy == true) 
-            {
-                StartCoroutine(SpawnEnemy());
-                spawnTimer = spawnTimerMax;
-                spawnRdy = false;
-            }
-
-        }
-
-        if (spawnTimer <= 0 && spawnRdy == false) 
-        {
-            
-            spawnRdy = true;
-        }
-        spawnTimer -= Time.deltaTime;
     }
 
-    public IEnumerator SpawnEnemy() 
+    private IEnumerator SpawnCoroutine()
+    {
+        while (true)
+        {
+            if (!CanSpawn)
+            {
+                yield return null;
+                continue;
+            }
+
+            if (currentShopCurrency <= 0)
+            {
+                yield return null;
+                continue;
+            }
+
+            if (isSpawnDelayed)
+            {
+                yield return new WaitForSeconds(1f);
+                isSpawnDelayed = false;
+            }
+
+            SpawnEnemy();
+
+            yield return new WaitForSeconds(spawnTimerMax);
+        }
+    }
+
+    private void SpawnEnemy() 
     {
         CalculateWeight();
         randomValue = Random.Range(0f, 1f);
         cumalativeWeight = 0f;
         spawnLocation = Random.Range(1, 5);
-        yield return new WaitForSeconds(1);
 
         foreach (var enemy in enemies) 
         {
@@ -114,43 +130,57 @@ public class EnemyManager : MonoBehaviour
 
             if (randomValue < cumalativeWeight && currentShopCurrency >= enemy.enemyCost) 
             {
-                if (spawnLocation == 1) 
+                switch (spawnLocation)
                 {
-                    Instantiate(enemy.prefab, SqaureManager.EnemySpawnPoint1.transform);
-                }   
-
-
-                if (spawnLocation == 2)
-                {
-                    Instantiate(enemy.prefab, SqaureManager.EnemySpawnPoint2.transform);
-                }
-
-
-                if (spawnLocation == 3)
-                {
-                    Instantiate(enemy.prefab, SqaureManager.EnemySpawnPoint3.transform);
-                }   
-
-    
-                if (spawnLocation == 4)
-                {
-                    Instantiate(enemy.prefab, SqaureManager.EnemySpawnPoint4.transform);
+                    case 1:
+                        enemiesSpawned.Add(Instantiate(enemy.prefab, islandManager.EnemySpawnPoint1.transform));
+                        break;
+                    case 2:
+                        enemiesSpawned.Add(Instantiate(enemy.prefab, islandManager.EnemySpawnPoint2.transform));
+                        break;
+                    case 3:
+                        enemiesSpawned.Add(Instantiate(enemy.prefab, islandManager.EnemySpawnPoint3.transform));
+                        break;
+                    case 4:
+                        enemiesSpawned.Add(Instantiate(enemy.prefab, islandManager.EnemySpawnPoint4.transform));
+                        break;
+                    default:
+                        break;
                 }
                 currentShopCurrency -= enemy.enemyCost;
                 break;
             }
-        
-
         }
-
-
-        yield return new WaitForSeconds(1);
     } 
+
+    private void RemoveDeadEnemies()
+    {
+        foreach(GameObject enemy in new List<GameObject>(enemiesSpawned))
+        {
+            if(enemy == null) enemiesSpawned.Remove(enemy);
+        }
+    }
+
+    private void ClearWave()
+    {
+        currentShopCurrency = 0;
+
+        foreach (GameObject enemy in new List<GameObject>(enemiesSpawned))
+        {
+            Destroy(enemy);
+        }
+        enemiesSpawned.Clear();
+
+        CanSpawn = false;
+    }
 
     public void WaveReset() 
     {
-        maxShopCurrency = baseCurrency + (growthFactor * Mathf.Pow(SqaureManager.sqaureLevel,polynomialDegree));
+        maxShopCurrency = baseCurrency + (growthFactor * Mathf.Pow(islandManager.level,polynomialDegree));
         currentShopCurrency = maxShopCurrency;
+
+        CanSpawn = true;
+        isSpawnDelayed = true;
     }
 
     public void CalculateWeight() 
