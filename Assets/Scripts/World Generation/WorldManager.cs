@@ -26,7 +26,8 @@ public class WorldManager : MonoBehaviour
         {
             IsSelecting = true;
 
-            masterLevelManager.SpawnSelectionSpheres();
+            FindObjectOfType<IslandSelectUI>().PrepareIslandSelection();
+            //masterLevelManager.SpawnSelectionSpheres();
         }
       
 /*        if (Input.GetKeyDown(KeyCode.Q) && isInSkyView == false) 

@@ -12,7 +12,6 @@ public class IslandSelectUI : MonoBehaviour
     {
         public string islandName; // Name of the island
         public Sprite islandImage; // Image for the island (optional)
-
     }
 
     [SerializeField]
@@ -22,8 +21,6 @@ public class IslandSelectUI : MonoBehaviour
     public float spacing = 10f;  // Space between buttons
     public float bounceDuration = 5f; // Duration of the bounce
 
-
-
     void Start()
     {
         // Ensure all buttons are not active and not shown to the player
@@ -31,21 +28,17 @@ public class IslandSelectUI : MonoBehaviour
         {
             button.gameObject.SetActive(false);
         }
-        //   PrepareIslandSelction();
     }
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            Debug.Log("AugmentSelector script started");
-            Cursor.lockState = CursorLockMode.None; // Unlock the mouse
-            Cursor.visible = true; // Show the cursor
-            PrepareIslandSelction();
-        }
+
     }
-    public void PrepareIslandSelction()
+
+    public void PrepareIslandSelection()
     {
+        Time.timeScale = 0f; // Freeze the game
+
         Cursor.lockState = CursorLockMode.None; // Unlock the mouse
         Cursor.visible = true; // Show the cursor
         ///deal 4 random islands 
@@ -59,6 +52,7 @@ public class IslandSelectUI : MonoBehaviour
             Island island = selectedIslands[i];
             button.GetComponentInChildren<TMP_Text>().text = island.islandName;
             button.image.sprite = island.islandImage; // Set button image if you have one
+            button.interactable = false;
 
             // Set initial position to a random off-screen point
             Vector3 randomOffScreenPosition = new Vector3(Random.Range(-Screen.width * 2, 5000), Random.Range(-2000, 2000), 0);
@@ -70,10 +64,11 @@ public class IslandSelectUI : MonoBehaviour
 
             // Create a sequence for smooth movement with a bounce effect
             Sequence buttonSequence = DOTween.Sequence();
-            buttonSequence.Append(button.transform.DOLocalMove(targetPosition, animationDuration).SetEase(Ease.OutExpo));
-            buttonSequence.Append(button.transform.DOLocalMoveY(100, bounceDuration).SetEase(Ease.OutBounce)); // Bounce up
-            buttonSequence.Append(button.transform.DOLocalMoveY(0, bounceDuration).SetEase(Ease.OutBounce)); // Bounce down
+            buttonSequence.Append(button.transform.DOLocalMove(targetPosition, animationDuration).SetEase(Ease.OutExpo)).SetUpdate(true);
+            buttonSequence.Append(button.transform.DOLocalMoveY(100, bounceDuration).SetEase(Ease.OutBounce)).SetUpdate(true); // Bounce up
+            buttonSequence.Append(button.transform.DOLocalMoveY(0, bounceDuration).SetEase(Ease.OutBounce)).SetUpdate(true); // Bounce down
             buttonSequence.SetDelay(i * 0.25f); // Stagger the animations by 0.2 seconds
+            buttonSequence.OnComplete(() => { button.interactable = true; });
 
 
             // Add listener for selection
@@ -100,49 +95,44 @@ public class IslandSelectUI : MonoBehaviour
 
     public void OnButtonSelected(Button selectedButton, Island selectedIsland)
     {
+        Time.timeScale = 1f;
+
         Debug.Log(selectedIsland.islandName + " selected!");
 
         // Move the selected button to the top middle of the screen
         Vector3 targetPosition = new Vector3(0, Screen.height / 2, 0); // Adjust Y position as needed
 
         // Animate the selected button
-        selectedButton.transform.DOLocalMove(targetPosition, 0.5f).SetEase(Ease.OutBack);
+        selectedButton.transform.DOLocalMove(targetPosition, 0.5f).SetEase(Ease.OutBack).SetUpdate(true);
 
         // Perform the action based on the selected island
-        PlaceIsland(selectedIsland);
-
-
+        AssignIslandToSpheres(selectedIsland);
 
         // Hide other buttons
         foreach (Button button in isSelectPlaceHolder)
         {
+            button.interactable = false;
             if (button != selectedButton)
             {
                 button.gameObject.SetActive(false);
             }
         }
     }
-    void PlaceIsland(Island selectedIsland)
+    void AssignIslandToSpheres(Island selectedIsland)
     {
-
-
-        // Tell the spawn sphere what to do
-
-        ResetSelection();
-
-
-
+        // Drop the spheres
+        FindObjectOfType<MasterLevelManager>().SpawnSelectionSpheres();
     }
- 
-    void ResetSelection()
+
+
+    public void RemoveAllCards()
     {
-        // Re-enable all buttons and reset their positions
-        foreach (Button button in isSelectPlaceHolder)
+        for (int i = 0; i < isSelectPlaceHolder.Length; i++)
         {
-            button.gameObject.SetActive(true); // Show the button again
-
+            ///Disable and remove functionality of all buttons
+            Button button = isSelectPlaceHolder[i];
+            button.gameObject.SetActive(false);
+            button.onClick.RemoveAllListeners();
         }
-
     }
-
 }

@@ -93,6 +93,8 @@ public class MasterLevelManager : MonoBehaviour
         spawnedIsland.Init(x, y);
 
         SpawnedIslands.Add(spawnedIsland);
+
+        FindObjectOfType<IslandSelectUI>().RemoveAllCards();
     }
 
     public void SpawnSelectionSpheres() 

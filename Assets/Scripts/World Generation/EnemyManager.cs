@@ -107,7 +107,7 @@ public class EnemyManager : MonoBehaviour
 
             if (isSpawnDelayed)
             {
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(2f);
                 isSpawnDelayed = false;
             }
 

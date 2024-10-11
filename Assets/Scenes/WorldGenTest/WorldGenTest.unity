@@ -1075,6 +1075,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4018753641949143673, guid: c01a8aaa9efd93147a2c54ee37966c8c,
+        type: 3}
+      propertyPath: m_IgnoreTimeScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4028910900810408947, guid: c01a8aaa9efd93147a2c54ee37966c8c,
         type: 3}
       propertyPath: m_Name
