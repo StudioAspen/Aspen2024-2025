@@ -1,82 +1,125 @@
 using KBCore.Refs;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+public class Enemy : Entity
 {
-    [Header("References")]
-    [SerializeField] private Animator animator;
-    [SerializeField] private Rigidbody rigidBody;
+    [field: Header("Enemy: References")]
+    [field: SerializeField, Self] public NavMeshAgent NavMeshAgent { get; protected set; }
+    [SerializeField, Self] private Rigidbody rigidBody;
     [SerializeField, Self] private CapsuleCollider capsuleCollider;
-    [SerializeField] private HitNumbers hitNumberPrefab;
-    /*Temp*/
-    [SerializeField] public BaseEnemy enemyStats;
-    [SerializeField] public EnemyAgent agent;
+    [SerializeField] private TMP_Text debugStateText;
 
-    [SerializeField] private LayerMask groundLayer;
-    [HideInInspector] public bool IsGrounded = true;
+    [field: Header("Enemy: Settings")]
+    public float MovementSpeed => SpeedModifier * baseSpeed;
+    private float totalSpeedModifierForAnimation;
+    [field:SerializeField] public Entity Target { get; private set; }
+    [field: SerializeField] public int CircleEntityCountThreshold { get; private set; }  = 2;
 
-    private void OnValidate()
+    #region States
+    public EnemyIdleState EnemyIdleState { get; private set; }
+    public EnemyChaseState EnemyChaseState { get; private set; }
+    public EnemyCircleState EnemyCircleState { get; private set; }
+    #endregion
+
+    protected override void OnAwake()
     {
-        this.ValidateRefs();
+        base.OnAwake();
+
+        if(Ticker.Instance != null) Ticker.Instance.OnTick.AddListener(OnTick);
     }
 
-    private void Awake()
+    protected override void OnStart()
     {
-        agent = GameObject.FindObjectOfType<EnemyAgent>();
-        enemyStats = GameObject.FindObjectOfType<BaseEnemy>();
-        IgnoreCollisionsWithSelf();
+        base.OnStart();
+
+        ChangeTeam(1);
+
+        SetStartState(EnemyCircleState);
+        SetDefaultState(EnemyCircleState);
     }
 
-    private void Update()
+    protected override void OnUpdate()
     {
-        CheckGrounded();
+        base.OnUpdate();
 
         HandleAnimations();
-
-        if (Input.GetKeyDown(KeyCode.F)) LaunchUpwards(10f);
+        HandleNavAgentSpeed();
     }
 
-    private void CheckGrounded()
+    protected override void OnFixedUpdate()
     {
-        IsGrounded = Physics.CheckSphere(transform.position, capsuleCollider.radius, groundLayer);
+        base.OnFixedUpdate();
+    }
+
+    private void LateUpdate()
+    {
+        DebugState();
+    }
+
+    protected virtual void OnTick()
+    {
+        AssignTarget();
+    }
+
+    protected override void InitializeStates()
+    {
+        base.InitializeStates();
+
+        EnemyIdleState = new EnemyIdleState(this);
+        EnemyChaseState = new EnemyChaseState(this);
+        EnemyCircleState = new EnemyCircleState(this);
+    }
+
+    protected override void CheckGrounded()
+    {
+        IsGrounded = Physics.CheckSphere(transform.position + 9f * capsuleCollider.radius / 10f * Vector3.up, capsuleCollider.radius, physicsSettings.GroundLayer);
+    }
+
+    private void DebugState()
+    {
+        debugStateText.transform.parent.rotation = Quaternion.LookRotation(debugStateText.transform.parent.position - Camera.main.transform.position);
+
+        debugStateText.text = $"{CurrentState.GetType()}";
+    }
+
+    private void HandleNavAgentSpeed()
+    {
+        NavMeshAgent.speed = MovementSpeed;
     }
 
     private void HandleAnimations()
     {
-        //animator.SetBool("IsGrounded", IsGrounded);
+        totalSpeedModifierForAnimation = Mathf.Lerp(totalSpeedModifierForAnimation, SpeedModifier, NavMeshAgent.acceleration * Time.deltaTime);
+
+        animator.SetFloat("MovementSpeed", MovementSpeed);
     }
 
-    private void IgnoreCollisionsWithSelf()
+    protected override void OnDeath()
     {
-        Collider[] colliders = GetComponents<Collider>();
+        base.OnDeath();
 
-        foreach(Collider c1 in colliders)
-        {
-            foreach(Collider c2 in colliders)
-            {
-                Physics.IgnoreCollision(c1, c2);
-            }
-        }
-    }
-
-    public void TakeDamage(int damage, Vector3 hitPoint)
-    {
-        //animator.CrossFadeInFixedTime("Hit", 0.1f);
-
-        HitNumbers hitNumber = Instantiate(hitNumberPrefab, hitPoint, Quaternion.identity);
-        hitNumber.ActivateHitNumberText(damage);
-
-        //Temp
-        EnemyHitState enemyGotHit = agent.movementStateMachine.GetState(EnemyMovementStateId.Hit) as EnemyHitState;
-        //agent.movementStateMachine.ChangeState(EnemyMovementStateId.Hit);
-        enemyStats.enemyCurrentHP -= damage;
-        LaunchUpwards(0);
+        if (Ticker.Instance != null) Ticker.Instance.OnTick.RemoveListener(OnTick);
     }
 
     public void LaunchUpwards(float magnitude)
     {
         rigidBody.AddForce(magnitude * Vector3.up, ForceMode.Impulse);
+    }
+
+    protected virtual void AssignTarget()
+    {
+        List<Entity> targets = GetNearbyTargets();
+        if (targets.Count == 0)
+        {
+            Target = null;
+            return;
+        }
+
+        Target = targets[0];
     }
 }

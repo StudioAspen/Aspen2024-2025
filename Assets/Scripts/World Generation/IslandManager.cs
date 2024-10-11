@@ -8,7 +8,7 @@ using UnityEngine;
 public class IslandManager : MonoBehaviour
 {
     [field: SerializeField] public Vector2Int GridPosition { get; private set; }
-    [field: SerializeField, Self] public EnemyManager EnemyManager { get; private set; }
+    [field: SerializeField, Self] public EnemySpawner EnemySpawner { get; private set; }
     [SerializeField, Self] private NavMeshSurface navMeshSurface;
 
     [Header("Square Stats")]
@@ -64,7 +64,7 @@ public class IslandManager : MonoBehaviour
 
         masterLevelManager.BuildNavMesh();
 
-        EnemyManager.CanSpawn = true;
+        EnemySpawner.CanSpawn = true;
     }
 
     private void InitializeBorders()

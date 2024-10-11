@@ -62,6 +62,9 @@ public class Player : Entity
     public PlayerAttackState PlayerAttackState { get; private set; }
     public PlayerChargeState PlayerChargeState { get; private set; }
 
+    [SerializeField] private float nearbyEntityRadius = 2.5f;
+    public List<Entity> NearbyEntities; 
+
     private void OnEnable()
     {
         input.Jump.AddListener(HandleJumpInput);
@@ -87,8 +90,6 @@ public class Player : Entity
     {
         base.OnStart();
 
-        IgnoreMyOwnColliders();
-
         ChangeTeam(0);
 
         SetStartState(PlayerIdleState);
@@ -99,7 +100,8 @@ public class Player : Entity
     {
         base.OnUpdate();
 
-        CheckGrounded();
+        NearbyEntities = GetNearbyTargets(nearbyEntityRadius);
+
         CheckSlopeSliding();
 
         HandleGrounded();
@@ -108,6 +110,8 @@ public class Player : Entity
         HandleDashTrail();
 
         HandleAnimations();
+
+        if (Input.GetKeyDown(KeyCode.Alpha1)) TakeDamage(25, transform.position);
 
         //Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
 
@@ -141,7 +145,7 @@ public class Player : Entity
         PlayerChargeState = new PlayerChargeState(this);
     }
 
-    private void CheckGrounded()
+    protected override void CheckGrounded()
     {
         if (inAirTimer > 0f && inAirTimer < 0.1f)
         {
@@ -149,7 +153,7 @@ public class Player : Entity
             return;
         }
 
-        IsGrounded = Physics.CheckSphere(transform.position + 9f * controller.radius / 10f * Vector3.up, controller.radius, groundLayer);
+        IsGrounded = Physics.CheckSphere(transform.position + 9f * controller.radius / 10f * Vector3.up, controller.radius, physicsSettings.GroundLayer);
     }
 
     private void HandleJumpInput()
@@ -276,7 +280,7 @@ public class Player : Entity
             return;
         }
 
-        Physics.Raycast(transform.position, Vector3.down, out hitBelow, controller.height / 2, groundLayer, QueryTriggerInteraction.Ignore);
+        Physics.Raycast(transform.position, Vector3.down, out hitBelow, controller.height / 2, physicsSettings.GroundLayer, QueryTriggerInteraction.Ignore);
 
         if (hitBelow.collider == null)
         {
@@ -324,8 +328,6 @@ public class Player : Entity
         totalSpeedModifierForAnimation = Mathf.Lerp(totalSpeedModifierForAnimation, movementOnSlopeSpeedModifier * SpeedModifier, groundedAcceleration * Time.deltaTime); 
 
         animator.SetFloat("MovementSpeed", totalSpeedModifierForAnimation);
-        animator.SetFloat("InAirTimer", inAirTimer);
-        animator.SetBool("IsGrounded", IsGrounded);
     }
 
     public void Jump()
@@ -344,28 +346,6 @@ public class Player : Entity
     public void DashTrailSetActive(bool b)
     {
         dashTrailObject.SetActive(b);
-    }
-
-    private void IgnoreMyOwnColliders()
-    {
-        Collider baseCollider = GetComponent<Collider>();
-        Collider[] damageableColliders = GetComponentsInChildren<Collider>();
-        List<Collider> ignoreColliders = new List<Collider>();
-
-        foreach(Collider collider in damageableColliders)
-        {
-            ignoreColliders.Add(collider);
-        }
-
-        ignoreColliders.Add(baseCollider);
-
-        foreach(Collider c1 in ignoreColliders)
-        {
-            foreach(Collider c2 in ignoreColliders)
-            {
-                Physics.IgnoreCollision(c1, c2, true);
-            }
-        }
     }
 
     private float GetAndSetSlopeSpeedModifierOnAngle(float groundAngle)
@@ -387,16 +367,6 @@ public class Player : Entity
     public float GetMaxSpeed()
     {
         return SprintSpeedModifier * baseSpeed;
-    }
-
-    public void DefaultTransitionToAnimation(string animation)
-    {
-        animator.CrossFadeInFixedTime(animation, 0.1f);
-    }
-
-    public void TransitionToAnimation(string animation, float transitionDuration)
-    {
-        animator.CrossFadeInFixedTime(animation, transitionDuration);
     }
 
     private void HandleDashTrail()

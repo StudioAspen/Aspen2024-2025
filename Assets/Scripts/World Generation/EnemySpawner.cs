@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyManager : MonoBehaviour
+public class EnemySpawner : MonoBehaviour
 {
     public float maxShopCurrency;
     public float currentShopCurrency;

@@ -1,98 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4719758737615414894
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5953627180471919541}
-  - component: {fileID: 1050544412942856628}
-  - component: {fileID: 1637476404434337218}
-  m_Layer: 6
-  m_Name: AiAgent
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5953627180471919541
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4719758737615414894}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4428978600618366384}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1050544412942856628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4719758737615414894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c0f3e5f150647f4099bc1b251c57afa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialAttackState: 0
-  initialMovementState: 2
-  navMeshAgent: {fileID: 0}
-  enemyTransform: {fileID: 0}
-  playerTransform: {fileID: 0}
-  enemyRenderer: {fileID: 0}
-  enemyDistance: 0
-  lungeDetection: 3
-  lungeDistance: 5
-  lungeDuration: 1
-  lungeHeight: 2
-  hopDistance: 2
-  hopDuration: 1
-  hopHeight: 1
-  hopCount: 2
-  lungeCooldown: 4
-  lungeCooldownTimer: 0
-  isLunging: 0
-  canLunge: 0
-  lungeChanceColorIndicator: {r: 0.7264151, g: 0.66839164, b: 0.08566215, a: 0}
-  lungeColorIndicator: {r: 0.9716981, g: 0.03208439, b: 0.03208439, a: 0}
-  followingColorIndicator: {r: 0.22716807, g: 0.745283, b: 0.15819688, a: 0}
-  originalColor: {r: 0, g: 0, b: 0, a: 0}
-  enemyStats: {fileID: 0}
-  initialHoverDistance: 7
---- !u!136 &1637476404434337218
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4719758737615414894}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7557220100173712488
 GameObject:
   m_ObjectHideFlags: 0
@@ -129,8 +36,7 @@ Transform:
   m_LocalPosition: {x: -0.34, y: 1.92, z: 7.78}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
-  m_Children:
-  - {fileID: 5953627180471919541}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1510454206119848791

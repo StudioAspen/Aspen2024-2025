@@ -54,7 +54,7 @@ public class WorldManager : MonoBehaviour
 
         foreach(IslandManager island in masterLevelManager.SpawnedIslands)
         {
-            EnemyManager enemyManager = island.EnemyManager;
+            EnemySpawner enemyManager = island.EnemySpawner;
 
             if (!enemyManager.IsWaveFinished) finished = false;
         }
@@ -67,7 +67,7 @@ public class WorldManager : MonoBehaviour
         foreach (IslandManager island in masterLevelManager.SpawnedIslands) 
         {
             island.LevelUp();
-            island.EnemyManager.WaveReset();
+            island.EnemySpawner.WaveReset();
         }
     }
 }

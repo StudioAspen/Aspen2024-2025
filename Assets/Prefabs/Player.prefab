@@ -1577,15 +1577,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 2171180168782530629}
   physicsSettings: {fileID: 11400000, guid: 67b2e76ec1d37584e9d1e97a4e9ab48b, type: 2}
+  hitNumberPrefab: {fileID: 5332358636057589605, guid: 82d0321b56e44764eaafb464a992de85,
+    type: 3}
   <CurrentHealth>k__BackingField: 0
   <MaxHealth>k__BackingField: 0
   <Level>k__BackingField: 0
   IsGrounded: 0
   baseSpeed: 3
   velocity: {x: 0, y: 0, z: 0}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 256
   stateText: {fileID: 2611659999828033788}
   controller: {fileID: 7237775664649881152}
   input: {fileID: 6714409095086020908}

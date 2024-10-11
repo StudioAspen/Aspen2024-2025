@@ -15,3 +15,6 @@ MonoBehaviour:
   <Gravity>k__BackingField: -20
   <GroundedYVelocity>k__BackingField: -5
   <FallingStartingYVelocity>k__BackingField: 0
+  <GroundLayer>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 256
