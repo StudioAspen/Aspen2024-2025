@@ -45,8 +45,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c0f3e5f150647f4099bc1b251c57afa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialState: 0
+  initialAttackState: 0
+  initialMovementState: 2
   navMeshAgent: {fileID: 0}
+  enemyTransform: {fileID: 0}
+  playerTransform: {fileID: 0}
+  enemyRenderer: {fileID: 0}
+  enemyDistance: 0
+  lungeDetection: 3
+  lungeDistance: 5
+  lungeDuration: 1
+  lungeHeight: 2
+  hopDistance: 2
+  hopDuration: 1
+  hopHeight: 1
+  hopCount: 2
+  lungeCooldown: 4
+  lungeCooldownTimer: 0
+  isLunging: 0
+  canLunge: 0
+  lungeChanceColorIndicator: {r: 0.7264151, g: 0.66839164, b: 0.08566215, a: 0}
+  lungeColorIndicator: {r: 0.9716981, g: 0.03208439, b: 0.03208439, a: 0}
+  followingColorIndicator: {r: 0.22716807, g: 0.745283, b: 0.15819688, a: 0}
+  originalColor: {r: 0, g: 0, b: 0, a: 0}
+  enemyStats: {fileID: 0}
+  initialHoverDistance: 7
 --- !u!136 &1637476404434337218
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -89,7 +112,7 @@ GameObject:
   - component: {fileID: 8560979333881350555}
   m_Layer: 3
   m_Name: Follower
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -226,6 +249,7 @@ MonoBehaviour:
   enemyCurrentHP: 0
   enemyLevel: 0
   enemyMoveSpeed: 2
+  agent: {fileID: 0}
   levelManager: {fileID: 0}
 --- !u!114 &8315925594332262899
 MonoBehaviour:
@@ -259,6 +283,8 @@ MonoBehaviour:
   capsuleCollider: {fileID: 4892389299385301002}
   hitNumberPrefab: {fileID: 5332358636057589605, guid: 82d0321b56e44764eaafb464a992de85,
     type: 3}
+  enemyStats: {fileID: 0}
+  agent: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 0

@@ -6,6 +6,8 @@ using UnityEngine.AI;
 
 public class EnemyLeap : MonoBehaviour
 {
+
+    //Done 
     public Transform playerTransform;
     public Rigidbody rb;
     NavMeshAgent agent;

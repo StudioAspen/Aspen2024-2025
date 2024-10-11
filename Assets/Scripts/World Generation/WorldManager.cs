@@ -53,7 +53,7 @@ public class WorldManager : MonoBehaviour
    
     void Update()
     {
-        if (waveBufferTimer <= -3) 
+        if (waveBufferTimer <= 2) 
         {
 
             masterLevel.UpdateNavMesh();           

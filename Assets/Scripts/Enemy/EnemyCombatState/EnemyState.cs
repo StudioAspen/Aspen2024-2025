@@ -5,8 +5,10 @@ using UnityEngine;
 
 public enum EnemyStateId 
 {
-    ChasePlayer,
-    Death
+    Idle,
+    Death,
+    HopBack,
+    Leap,
 }
 public interface EnemyState
 {

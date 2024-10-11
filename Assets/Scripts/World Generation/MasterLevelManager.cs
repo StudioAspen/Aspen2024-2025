@@ -54,8 +54,6 @@ public class MasterLevelManager : MonoBehaviour
     {
         Debug.Log("Checking");
 
-        yield return new WaitForSeconds(0.5f);
-
 
         allBorders = CheckLevel(masterBorders);
 
@@ -66,7 +64,7 @@ public class MasterLevelManager : MonoBehaviour
           
         }
 
-
+        yield return null;
 
     }
 

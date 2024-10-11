@@ -10,6 +10,9 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Rigidbody rigidBody;
     [SerializeField, Self] private CapsuleCollider capsuleCollider;
     [SerializeField] private HitNumbers hitNumberPrefab;
+    /*Temp*/
+    [SerializeField] public BaseEnemy enemyStats;
+    [SerializeField] public EnemyAgent agent;
 
     [SerializeField] private LayerMask groundLayer;
     [HideInInspector] public bool IsGrounded = true;
@@ -21,6 +24,8 @@ public class Enemy : MonoBehaviour
 
     private void Awake()
     {
+        agent = GameObject.FindObjectOfType<EnemyAgent>();
+        enemyStats = GameObject.FindObjectOfType<BaseEnemy>();
         IgnoreCollisionsWithSelf();
     }
 
@@ -62,6 +67,12 @@ public class Enemy : MonoBehaviour
 
         HitNumbers hitNumber = Instantiate(hitNumberPrefab, hitPoint, Quaternion.identity);
         hitNumber.ActivateHitNumberText(damage);
+
+        //Temp
+        EnemyHitState enemyGotHit = agent.movementStateMachine.GetState(EnemyMovementStateId.Hit) as EnemyHitState;
+        //agent.movementStateMachine.ChangeState(EnemyMovementStateId.Hit);
+        enemyStats.enemyCurrentHP -= damage;
+        LaunchUpwards(0);
     }
 
     public void LaunchUpwards(float magnitude)

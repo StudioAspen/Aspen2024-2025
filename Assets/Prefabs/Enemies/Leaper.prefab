@@ -47,6 +47,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialState: 0
   navMeshAgent: {fileID: 0}
+  enemyTransform: {fileID: 0}
+  playerTransform: {fileID: 0}
+  enemyRenderer: {fileID: 0}
+  enemyDistance: 0
+  lungeDetection: 0
+  lungeDistance: 0
+  lungeDuration: 0
+  lungeHeight: 0
+  hopDistance: 0
+  hopDuration: 0
+  hopHeight: 0
+  hopCount: 0
+  lungeCooldown: 0
+  lungeCooldownTimer: 0
+  isLunging: 0
+  canLunge: 0
+  lungeChanceColorIndicator: {r: 0, g: 0, b: 0, a: 0}
+  lungeColorIndicator: {r: 0, g: 0, b: 0, a: 0}
+  followingColorIndicator: {r: 0, g: 0, b: 0, a: 0}
+  originalColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!136 &5633980859901803378
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -228,6 +248,7 @@ MonoBehaviour:
   enemyCurrentHP: 0
   enemyLevel: 0
   enemyMoveSpeed: 2
+  agent: {fileID: 0}
   levelManager: {fileID: 0}
 --- !u!114 &909462632077952146
 MonoBehaviour:
@@ -261,6 +282,8 @@ MonoBehaviour:
   capsuleCollider: {fileID: 3116557737963611981}
   hitNumberPrefab: {fileID: 5332358636057589605, guid: 82d0321b56e44764eaafb464a992de85,
     type: 3}
+  enemyStats: {fileID: 0}
+  agent: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -314,7 +337,7 @@ MonoBehaviour:
   hopDistance: 1
   hopDuration: 1
   hopHeight: 1
-  lungeCooldown: 2
+  lungeCooldown: 5
   canLunge: 0
   enemyRenderer: {fileID: 0}
   lungeChanceColorIndicator: {r: 0.9150943, g: 0.6311099, b: 0.10791205, a: 0}

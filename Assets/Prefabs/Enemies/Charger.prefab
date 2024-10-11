@@ -47,6 +47,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialState: 0
   navMeshAgent: {fileID: 0}
+  enemyTransform: {fileID: 0}
+  playerTransform: {fileID: 0}
+  enemyRenderer: {fileID: 0}
+  enemyDistance: 0
+  lungeDetection: 0
+  lungeDistance: 0
+  lungeDuration: 0
+  lungeHeight: 0
+  hopDistance: 0
+  hopDuration: 0
+  hopHeight: 0
+  hopCount: 0
+  lungeCooldown: 0
+  lungeCooldownTimer: 0
+  isLunging: 0
+  canLunge: 0
+  lungeChanceColorIndicator: {r: 0, g: 0, b: 0, a: 0}
+  lungeColorIndicator: {r: 0, g: 0, b: 0, a: 0}
+  followingColorIndicator: {r: 0, g: 0, b: 0, a: 0}
+  originalColor: {r: 0, g: 0, b: 0, a: 0}
+  maxActiveEnemies: 3
+  followRadius: 10
+  hoverRadius: 5
 --- !u!136 &6015337142228981799
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -228,6 +251,7 @@ MonoBehaviour:
   enemyCurrentHP: 0
   enemyLevel: 0
   enemyMoveSpeed: 2
+  agent: {fileID: 0}
   levelManager: {fileID: 0}
 --- !u!114 &8001588028673061532
 MonoBehaviour:
@@ -261,6 +285,8 @@ MonoBehaviour:
   capsuleCollider: {fileID: 7708080217675781244}
   hitNumberPrefab: {fileID: 5332358636057589605, guid: 82d0321b56e44764eaafb464a992de85,
     type: 3}
+  enemyStats: {fileID: 0}
+  agent: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -294,24 +320,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3527622954214605426}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 21b12f696483022439193e6e698fc166, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerTransform: {fileID: 0}
-  rb: {fileID: 0}
-  enemyStats: {fileID: 0}
-  enemyDistance: 10
-  height: {x: 0, y: 0, z: 0}
-  maxChargeSpeed: 0
-  chargeAcceleration: 2
+  maxSpeed: 10
+  acceleration: 5
+  chargeDistanceThreshold: 10
   chargeDuration: 10
+  knockbackDistance: 5
   stunDuration: 10
-  knockbackForce: 400
-  isCharging: 0
-  chargeTime: 0
-  chargeDirection: {x: 0, y: 0, z: 0}
 --- !u!208 &8241762459377732776
 NavMeshObstacle:
   m_ObjectHideFlags: 0

@@ -5,98 +5,133 @@ using UnityEngine.AI;
 
 public class EnemyCharge : MonoBehaviour
 {
-    public Transform playerTransform;
-    NavMeshAgent agent;
-    public Rigidbody rb;
+    public float maxSpeed = 10f;
+    public float acceleration = 5f;
+    public float chargeDistanceThreshold = 10f;
+    public float chargeDuration = 2f; // Duration of the charge
+    public float knockbackDistance = 5f;
+    public float stunDuration = 2f;
 
-    public BaseEnemy enemyStats;
-    public float enemyDistance;
-    public Vector3 height;
+    private NavMeshAgent navAgent;
+    private Rigidbody rb;
+    private Vector3 playerPosition;
+    private Vector3 previousPlayerPosition; // Store the previous player position
+    private bool isCharging = false;
+    private float currentSpeed = 0f;
+    private bool isStunned = false;
 
-    public float maxChargeSpeed;
-//public float chargeSpeed;
-    public float chargeAcceleration;
-    public float chargeDuration;
-    public float stunDuration;
-    public float knockbackForce;
-    public bool isCharging;
-    public float chargeTime;
-    public Vector3 chargeDirection;
-
+    private GameObject Playerobj;
 
     void Start()
     {
+        Playerobj = GameObject.Find("Player");
+        navAgent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
-        agent = GetComponent<NavMeshAgent>();
-        playerTransform = GameObject.Find("Player").transform;
-        enemyStats = GameObject.FindObjectOfType<BaseEnemy>();
     }
 
     void Update()
     {
-       
-        agent.speed = enemyStats.enemyMoveSpeed ;
-        agent.destination = playerTransform.position;
-        
-   
-        if (Vector3.Distance(transform.position, playerTransform.position) < enemyDistance && !isCharging) 
+        if (!isStunned)
         {
-            StartCharge();
-        }
+            UpdatePlayerPosition();
 
-        if (isCharging) 
-        {
-            ChargeToPlayer();
+            if (!isCharging && Vector3.Distance(transform.position, playerPosition) < chargeDistanceThreshold)
+            {
+                previousPlayerPosition = playerPosition; // Store the previous position
+                StartCharging();
+            }
+            else if (isCharging)
+            {
+                ChargeTowardsPreviousPosition();
+            }
+            else
+            {
+                FollowPlayer();
+            }
         }
-
     }
 
-    public void StartCharge() 
+    void StartCharging()
     {
         isCharging = true;
-        chargeTime = 0f;
-        agent.speed = 0f;
-
-        chargeDirection = (playerTransform.position - transform.position).normalized;
+        currentSpeed = 0f; // Reset speed at start of charge
+        navAgent.enabled = false; // Disable NavMeshAgent
+        StartCoroutine(ChargeCoroutine()); // Start charging coroutine
     }
-    public void ChargeToPlayer() 
+
+    void ChargeTowardsPreviousPosition()
     {
-        if (!isCharging) return;
+        currentSpeed = Mathf.Min(currentSpeed + acceleration * Time.deltaTime, maxSpeed);
+        Vector3 direction = (previousPlayerPosition - transform.position).normalized;
 
-    
-            enemyStats.enemyMoveSpeed += chargeAcceleration * Time.deltaTime;
-            enemyStats.enemyMoveSpeed = Mathf.Clamp(enemyStats.enemyMoveSpeed, 0, maxChargeSpeed);
+        // Move the enemy manually
+        rb.MovePosition(transform.position + direction * currentSpeed * Time.deltaTime);
+    }
 
-           
-            rb.velocity = chargeDirection * enemyStats.enemyMoveSpeed;
+    void FollowPlayer()
+    {
+        navAgent.SetDestination(playerPosition); // Use NavMeshAgent to follow
+    }
 
-        
-        if(chargeTime >= chargeDuration)
+    IEnumerator ChargeCoroutine()
+    {
+        yield return new WaitForSeconds(chargeDuration);
+
+        // Stop charging after the duration
+        isCharging = false;
+        navAgent.enabled = true; // Re-enable NavMeshAgent
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Wall"))
         {
+            // Stop any movement toward the player
             isCharging = false;
-            rb.velocity = Vector3.zero;
+            currentSpeed = 0f; // Reset speed immediately
+
+            KnockBack(collision); // Pass the collision object
+        }
+        else if (collision.gameObject.CompareTag("Enemy") && isCharging)
+        {
+            ThrowEnemy(collision.gameObject.GetComponent<Rigidbody>());
         }
     }
 
-    public IEnumerator WallStun() 
+    void KnockBack(Collision collision)
     {
-        yield return new WaitForSeconds(stunDuration);
+        Vector3 knockbackDirection = -collision.contacts[0].normal; // Ensure this is correct
+        Debug.DrawLine(transform.position, transform.position + knockbackDirection * 2, Color.red, 1f);
+
+        float hopDistance = 5f; // Adjust as needed
+        float upwardForce = 3f; // Adjust for hop height
+
+        Vector3 force = knockbackDirection.normalized * hopDistance + Vector3.up * upwardForce;
+        rb.AddForce(force, ForceMode.Impulse);
+
+        StartCoroutine(StunCoroutine());
+    }
+
+    IEnumerator StunCoroutine()
+    {
+        yield return new WaitForSeconds(0.1f);
+        isStunned = true;
+        isCharging = false; // Reset charging state
+        navAgent.enabled = false; // Disable NavMeshAgent during stun
+        yield return new WaitForSeconds(stunDuration); // Wait for stun duration
+        isStunned = false; // Reset stunned state
+        navAgent.enabled = true; // Re-enable NavMeshAgent after the stun
+    }
+
+    void UpdatePlayerPosition()
+    {
+        playerPosition = Playerobj.transform.position;
+    }
+
+    void ThrowEnemy(Rigidbody otherEnemyRb)
+    {
+        Vector3 force = (playerPosition - transform.position).normalized * currentSpeed;
+        otherEnemyRb.AddForce(force, ForceMode.Impulse);
+    }
     
-    }
-    public void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Wall")) 
-        {
-            isCharging = false;
-            rb.velocity = Vector3.zero;
-            
-            Vector3 knockbackDirection = -collision.contacts[0].normal;
-            
-            rb.AddForce(knockbackDirection * knockbackForce, ForceMode.VelocityChange);
-
-            rb.isKinematic = true;
-
-            StartCoroutine(WallStun());
-        }
-    }
 }

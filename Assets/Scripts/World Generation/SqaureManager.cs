@@ -54,7 +54,7 @@ public class SqaureManager : MonoBehaviour
     }
 
     
-    void Update()
+    void FixedUpdate()
     {
         Ray rayFront = new Ray(transform.position, transform.TransformDirection(Vector3.forward));
         Ray rayRight = new Ray(transform.position, transform.TransformDirection(Vector3.right));
@@ -133,8 +133,6 @@ public class SqaureManager : MonoBehaviour
         Border3.transform.SetParent(masterLevelparent);
         Border4.transform.SetParent(masterLevelparent);
 
-
-        yield return new WaitForSeconds(2);
 
         StartCoroutine(UpdateNavMesh());
 

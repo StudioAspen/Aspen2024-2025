@@ -66,7 +66,7 @@ GameObject:
   - component: {fileID: 2899528279627281944}
   - component: {fileID: 2902516037097042625}
   - component: {fileID: 7428552018563437308}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Wall 2
   m_TagString: Border
   m_Icon: {fileID: 0}
@@ -162,7 +162,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5580744585387981398}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -366,7 +366,7 @@ MonoBehaviour:
   masterLevelparent: {fileID: 0}
   sqaureLevel: 0
   WorldManager: {fileID: 0}
-  islandRiseSpeed: {x: 0, y: 0.25, z: 0}
+  islandRiseSpeed: {x: 0, y: 0.1, z: 0}
   openSides: 0
   sqaureScore: 0
   wallHitScore: 0
@@ -375,7 +375,7 @@ MonoBehaviour:
   wallHitScore4: 0
   WallLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   raycastoffset: {x: 0, y: 10, z: 0}
   Border1: {fileID: 8317939442544544968}
   Border2: {fileID: 1516829291037030864}
@@ -417,8 +417,8 @@ MonoBehaviour:
   chargerCost: 3
   follower: {fileID: 7557220100173712488, guid: a75dd20bd1ea5fa41abb2daa4ff94572,
     type: 3}
-  leaper: {fileID: 8000643584764449782, guid: ab708fbc5a72d01499dfd0b1bba237be, type: 3}
-  charger: {fileID: 3527622954214605426, guid: 52a509049aef3744898d4e0af0cf6329, type: 3}
+  leaper: {fileID: 7557220100173712488, guid: a75dd20bd1ea5fa41abb2daa4ff94572, type: 3}
+  charger: {fileID: 7557220100173712488, guid: a75dd20bd1ea5fa41abb2daa4ff94572, type: 3}
   WorldManager: {fileID: 0}
   totalWeight: 0
   randomValue: 0
@@ -470,7 +470,7 @@ GameObject:
   - component: {fileID: 911416572233436173}
   - component: {fileID: 3558932835620973001}
   - component: {fileID: 3466301855490996349}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: plane(1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -533,7 +533,7 @@ GameObject:
   - component: {fileID: 7847480029131579214}
   - component: {fileID: 8495882447424941370}
   - component: {fileID: 5178655445670972290}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Plane (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -599,7 +599,7 @@ GameObject:
   - component: {fileID: 5061941789919869376}
   - component: {fileID: 4426977838872443214}
   - component: {fileID: 7360576702848208969}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Wall 4
   m_TagString: Border
   m_Icon: {fileID: 0}
@@ -697,7 +697,7 @@ GameObject:
   - component: {fileID: 1716191683189417931}
   - component: {fileID: 309794707635229150}
   - component: {fileID: 6329865286019037565}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Plane (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -851,7 +851,7 @@ GameObject:
   - component: {fileID: 8417531159018293085}
   - component: {fileID: 5522762396672082110}
   - component: {fileID: 8267023187046251669}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Wall 3
   m_TagString: Border
   m_Icon: {fileID: 0}
@@ -947,7 +947,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8588888817446151613}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1031,7 +1031,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7475174909720386005}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1066,7 +1066,7 @@ GameObject:
   - component: {fileID: 5999330607497321549}
   - component: {fileID: 8820467898614780323}
   - component: {fileID: 1855977862924084702}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Wall 1
   m_TagString: Border
   m_Icon: {fileID: 0}
@@ -1164,7 +1164,7 @@ GameObject:
   - component: {fileID: 2261449540089703013}
   - component: {fileID: 6875156899872068527}
   - component: {fileID: 1092994776508744744}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Plane (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1225,7 +1225,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8202060884551530871}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}

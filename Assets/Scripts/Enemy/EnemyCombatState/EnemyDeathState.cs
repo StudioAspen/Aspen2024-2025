@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class EnemyDeathState : EnemyState
 {
-    public BaseEnemy enemyStats;
+
    
 
     public void Enter(EnemyAgent agent)
     {
-        enemyStats = GameObject.FindObjectOfType<BaseEnemy>();
+ 
        
     }
 
@@ -25,6 +25,6 @@ public class EnemyDeathState : EnemyState
 
     public void Update(EnemyAgent agent)
     {
-   
+        
     }
 }

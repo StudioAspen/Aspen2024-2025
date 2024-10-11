@@ -176,6 +176,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &133130328 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 474901539404587984, guid: c01a8aaa9efd93147a2c54ee37966c8c,
+    type: 3}
+  m_PrefabInstance: {fileID: 517022693}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &133130339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 133130328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39a8a31f8795337438abef660c44478e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCam: {fileID: 1795495321}
+  SelectionLayer:
+    serializedVersion: 2
+    m_Bits: 16384
+  islandToSpawn: {fileID: 2939626751093247222, guid: 006873e2de8d753499aa3b3f6548874b,
+    type: 3}
+  islandSpawnOffsetY: {x: 0, y: -5.5, z: 0}
+  islandSpawnOffsetZ: {x: 0, y: 0, z: 0}
+  islandSpawnOffsetX: {x: 0, y: 0, z: 0}
+  selectOptions: []
+  selected_Option: []
+  spotSelect: {x: 0, y: 0, z: 0}
+  borderRemove: {fileID: 0}
+  worldManage: {fileID: 0}
+--- !u!114 &133130350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 133130328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c8420cfc94640b4d9f731795de2a439, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectionRadius: 5
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  nearbyEnemies: []
 --- !u!1 &152754436
 GameObject:
   m_ObjectHideFlags: 0
@@ -777,6 +826,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DropInPlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 4028910900810408947, guid: c01a8aaa9efd93147a2c54ee37966c8c,
+        type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     - target: {fileID: 8047710518971268559, guid: c01a8aaa9efd93147a2c54ee37966c8c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -830,7 +884,15 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 474901539404587984, guid: c01a8aaa9efd93147a2c54ee37966c8c,
+        type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 133130339}
+    - targetCorrespondingSourceObject: {fileID: 474901539404587984, guid: c01a8aaa9efd93147a2c54ee37966c8c,
+        type: 3}
+      insertIndex: 3
+      addedObject: {fileID: 133130350}
   m_SourcePrefab: {fileID: 100100000, guid: c01a8aaa9efd93147a2c54ee37966c8c, type: 3}
 --- !u!1 &574716043
 GameObject:
@@ -844,7 +906,7 @@ GameObject:
   - component: {fileID: 574716046}
   - component: {fileID: 574716045}
   - component: {fileID: 574716044}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -946,9 +1008,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 637086427}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: 'Temp Obstructions '
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
@@ -1012,7 +1074,7 @@ MonoBehaviour:
   waveBuffer: 0
   waveBufferTimer: 0
   LevelIsands: 0
-  playerCamera: {fileID: 0}
+  playerCamera: {fileID: 2051743394}
   islandSelectCamera: {fileID: 152754436}
   islandSelectTimer: 0
   islandSelectTimerSet: 20
@@ -1419,7 +1481,7 @@ GameObject:
   - component: {fileID: 1159770135}
   - component: {fileID: 1159770134}
   - component: {fileID: 1159770133}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube (2)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -1592,6 +1654,8 @@ MonoBehaviour:
   capsuleCollider: {fileID: 1207252686}
   hitNumberPrefab: {fileID: 5332358636057589605, guid: 82d0321b56e44764eaafb464a992de85,
     type: 3}
+  enemyStats: {fileID: 0}
+  agent: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -1624,7 +1688,7 @@ GameObject:
   - component: {fileID: 1307719498}
   - component: {fileID: 1307719497}
   - component: {fileID: 1307719496}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube (3)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -1729,7 +1793,7 @@ GameObject:
   - component: {fileID: 1308767342}
   - component: {fileID: 1308767341}
   - component: {fileID: 1308767340}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube (1)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -2028,6 +2092,8 @@ MonoBehaviour:
   rigidBody: {fileID: 0}
   capsuleCollider: {fileID: 1519971246}
   hitNumberPrefab: {fileID: 0}
+  enemyStats: {fileID: 0}
+  agent: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -2305,6 +2371,12 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
+--- !u!20 &1795495321 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 5235712871058965093, guid: c01a8aaa9efd93147a2c54ee37966c8c,
+    type: 3}
+  m_PrefabInstance: {fileID: 517022693}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1832457525
 GameObject:
   m_ObjectHideFlags: 0
@@ -2385,6 +2457,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2100459017}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2051743394 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2144159578257334419, guid: c01a8aaa9efd93147a2c54ee37966c8c,
+    type: 3}
+  m_PrefabInstance: {fileID: 517022693}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2064046188 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2be0c0643d1b0f54e92d2c57b2545ce5,
@@ -2407,7 +2485,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 2be0c0643d1b0f54e92d2c57b2545ce5,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.06
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2be0c0643d1b0f54e92d2c57b2545ce5,
         type: 3}
@@ -2472,6 +2550,23 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BaseCube
+      objectReference: {fileID: 0}
+    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: leaper
+      value: 
+      objectReference: {fileID: 7557220100173712488, guid: a75dd20bd1ea5fa41abb2daa4ff94572,
+        type: 3}
+    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: charger
+      value: 
+      objectReference: {fileID: 7557220100173712488, guid: a75dd20bd1ea5fa41abb2daa4ff94572,
+        type: 3}
+    - target: {fileID: 3642624367869852063, guid: 006873e2de8d753499aa3b3f6548874b,
+        type: 3}
+      propertyPath: RateScale
+      value: 3.2
       objectReference: {fileID: 0}
     - target: {fileID: 3999374681703134211, guid: 006873e2de8d753499aa3b3f6548874b,
         type: 3}
