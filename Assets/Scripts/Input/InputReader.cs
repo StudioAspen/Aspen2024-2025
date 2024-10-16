@@ -23,6 +23,7 @@ public class InputReader : MonoBehaviour
     [HideInInspector] public UnityEvent Attack2;
     [HideInInspector] public UnityEvent Attack2Charged;
     [HideInInspector] public UnityEvent Attack2Charging;
+    [HideInInspector] public UnityEvent Attack1n2; //Simultaneous button press
 
     [HideInInspector] public UnityEvent<PlayerActions> OnPlayerActionInput;
 
@@ -34,6 +35,7 @@ public class InputReader : MonoBehaviour
     private float sprintHoldTimer;
     private float attack1HoldTimer;
     private float attack2HoldTimer;
+    private bool a1N2; // Attack 1+2 bool
 
     private void OnValidate()
     {
@@ -80,10 +82,13 @@ public class InputReader : MonoBehaviour
         }
         if (playerInput.actions["Attack1"].IsPressed()) attack1HoldTimer += Time.unscaledDeltaTime;
         if (playerInput.actions["Attack2"].IsPressed()) attack2HoldTimer += Time.unscaledDeltaTime;
+        
+        // Simultaneous Button Check
+        if (playerInput.actions["Attack2"].IsPressed() && playerInput.actions["Attack1"].IsPressed()) a1N2 = true;
 
         // Charging
-        if(attack1HoldTimer > attackReleaseThreshold) Attack1Charging?.Invoke();
-        if(attack2HoldTimer > attackReleaseThreshold) Attack2Charging?.Invoke();
+        if(attack1HoldTimer > attackReleaseThreshold && !a1N2) Attack1Charging?.Invoke();
+        if(attack2HoldTimer > attackReleaseThreshold && !a1N2) Attack2Charging?.Invoke();
 
         // Releasing
         if (playerInput.actions["Sprint"].WasReleasedThisFrame())
@@ -98,24 +103,40 @@ public class InputReader : MonoBehaviour
 
         if (playerInput.actions["Attack1"].WasReleasedThisFrame())
         {
-            if (attack1HoldTimer < attackReleaseThreshold) // regular swing
+            if (attack1HoldTimer < attackReleaseThreshold && a1N2) // attack 1+2 swing
+            {
+                Debug.Log("Attack now!");
+                Attack1n2?.Invoke();
+                a1N2 = false;
+            }
+
+            else if (attack1HoldTimer < attackReleaseThreshold && !a1N2) // regular swing
             {
                 Attack1?.Invoke();
             }
-            else // charged swing
+            else if (attack1HoldTimer > attackReleaseThreshold && !a1N2)// charged swing
             {
                 Attack1Charged?.Invoke();
             }
             attack1HoldTimer = 0f;
+            
         }
 
         if (playerInput.actions["Attack2"].WasReleasedThisFrame())
         {
-            if (attack2HoldTimer < attackReleaseThreshold) // regular swing
+            if (attack2HoldTimer < attackReleaseThreshold && a1N2) // attack 1+2 swing
+            {
+                // Debug.Log("Attack now!");
+                Attack1n2?.Invoke();
+                a1N2 = false;
+            }
+            
+            else if (attack2HoldTimer < attackReleaseThreshold && !a1N2) // regular swing
             {
                 Attack2?.Invoke();
             }
-            else // charged swing
+            
+            else if (attack2HoldTimer > attackReleaseThreshold && !a1N2) // charged swing
             {
                 Attack2Charged?.Invoke();
             }
