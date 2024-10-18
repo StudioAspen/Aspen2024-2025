@@ -10,8 +10,6 @@ TagManager:
   - Border
   - Enemy
   - Wall
-  - CloseButton
-  - OpenButton
   layers:
   - Default
   - TransparentFX

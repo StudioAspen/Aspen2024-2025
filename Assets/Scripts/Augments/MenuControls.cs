@@ -8,12 +8,11 @@ public class OpenMenu : MonoBehaviour
 {
 
     // public Button openMenu, closeMenu;
-    public GameObject openMenu, closeMenu;
+    public GameObject menu;
     private bool isOpen = false;
 
     public void Start() {
-        // openMenu.onClick.AddListener(PauseGame);
-        // closeMenu.onClick.AddListener(ResumeGame);
+
     }
 
     public void PauseGame() {
@@ -33,14 +32,12 @@ public class OpenMenu : MonoBehaviour
 
         if (isOpen) {
             PauseGame();
-            openMenu.SetActive(false);
-            closeMenu.SetActive(true);
+            menu.SetActive(true);
         }
 
         else {
             ResumeGame();
-            closeMenu.SetActive(false);
-            openMenu.SetActive(true);
+            menu.SetActive(false);
         }
     }
 }
