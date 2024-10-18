@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WorldGenTest/WorldGenTest.unity
     guid: d38e4f16ad86d31468c23a57d0e2e0fc
+  - enabled: 1
+    path: Assets/Scenes/AugmentsMenu.unity
+    guid: 70f3db8a0b6049b40af89a94d172a773
   m_configObjects: {}
