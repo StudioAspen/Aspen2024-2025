@@ -52,6 +52,7 @@ public class Player : Entity
     [Header("Player: Camera")]
     public bool CameraLocked = true;
 
+    #region States 
     public PlayerIdleState PlayerIdleState { get; private set; }
     public PlayerWalkingState PlayerWalkingState { get; private set; }
     public PlayerSprintingState PlayerSprintingState { get; private set; }
@@ -61,6 +62,7 @@ public class Player : Entity
     public PlayerSlideState PlayerSlideState { get; private set; }
     public PlayerAttackState PlayerAttackState { get; private set; }
     public PlayerChargeState PlayerChargeState { get; private set; }
+    #endregion
 
     [SerializeField] private float nearbyEntityRadius = 2.5f;
     public List<Entity> NearbyEntities; 
@@ -83,6 +85,7 @@ public class Player : Entity
 
     protected override void OnAwake()
     {
+        //calls OnAwake from the parent class, Entity
         base.OnAwake();
     }
 
@@ -147,12 +150,14 @@ public class Player : Entity
 
     protected override void CheckGrounded()
     {
+        //IsGrounded is always false for the first 0.1f seconds of being airborne
         if (inAirTimer > 0f && inAirTimer < 0.1f)
         {
             IsGrounded = false;
             return;
         }
 
+        //direct physics calls r faster than Unity collision boxes
         IsGrounded = Physics.CheckSphere(transform.position + 9f * controller.radius / 10f * Vector3.up, controller.radius, physicsSettings.GroundLayer);
     }
 
