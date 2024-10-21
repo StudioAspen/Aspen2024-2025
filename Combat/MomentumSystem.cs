@@ -21,7 +21,7 @@ public class MomentumSystem : MonoBehaviour
         timeBetween = baseTimeBetween;
         momentum = 0;
     }
-    void start {
+    void Start() {
         timeBetween = baseTimeBetween;
     }
     // Update is called once per frame
