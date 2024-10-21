@@ -1,0 +1,34 @@
+.container {
+    margin-left: 10px;
+    margin-right: 10px;
+    white-space: nowrap;
+    max-height: 40px;
+    -unity-text-align: middle-left;
+}
+
+.header {
+    border-left-width: 5px;
+    -unity-font-style: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.space {
+    height: 15px;
+    max-height: 15px;
+}
+
+.dropdown {
+    margin-right: 10px;
+    margin-left: 20px;
+    -unity-font-style: bold;
+}
+
+.tabButton {
+    width: 100px;
+    height: 30px;
+}
+
+.scrollView {
+    background-color: rgba(195, 58, 58, 0);
+}

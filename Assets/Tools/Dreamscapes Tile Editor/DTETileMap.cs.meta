@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 634c821e113535146b2491066bdca2f8
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _biomeManager: {fileID: 11400000, guid: 6a519a0b04ad7314984e2cef313b9b7e, type: 2}
+  - tilesContainer: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
