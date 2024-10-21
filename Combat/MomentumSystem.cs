@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class MomentumSystem : MonoBehaviour
 {
     private int momentum;
     private float timer;
@@ -21,7 +21,9 @@ public class NewBehaviourScript : MonoBehaviour
         timeBetween = baseTimeBetween;
         momentum = 0;
     }
-
+    void start {
+        timeBetween = baseTimeBetween;
+    }
     // Update is called once per frame
     void Update()
     {
