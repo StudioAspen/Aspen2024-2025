@@ -11,6 +11,23 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField]
     private Grid grid;
 
+    [SerializeField]
+    private ObjectDatabaseSO database;
+    private int selectedObjectIndex = -1;
+
+    [SerializeField]
+    private GameObject gridVisualization;
+
+    private void Start()
+    {
+        StopPlacement();
+    }
+
+    private void StopPlacement()
+    {
+        throw new NotImplementedException();
+    }
+
     private void Update()
     {
         Vector3 mousePosition = inputManager.GetSelectedMapPosition();
