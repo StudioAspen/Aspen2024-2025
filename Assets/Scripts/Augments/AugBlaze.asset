@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3254a55025dcd08d9921fa6876f7c432, type: 3}
-  m_Name: FireBomb
+  m_Name: AugBlaze
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Fire Bomb
+  <Name>k__BackingField: Fire Blaze
   <Icon>k__BackingField: {fileID: 0}
-  <Requirement>k__BackingField: 0
+  <Requirement>k__BackingField: 1
   isActive: 0
-  <Radius>k__BackingField: 0
-  <Strength>k__BackingField: 0
+  <Radius>k__BackingField: 2.5
+  <Strength>k__BackingField: 10
