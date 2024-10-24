@@ -3,20 +3,29 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Collide
+  - Selected
+  - UnSelected
+  - Border
+  - Enemy
+  - Wall
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Entity
   - Water
   - UI
+  - Damageable Entity
+  - Damage Collider
+  - Ground
   - 
   - 
   - 
+  - IslandWall
   - 
-  - 
-  - 
+  - IslandSelector
   - 
   - 
   - 
