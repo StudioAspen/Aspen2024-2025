@@ -39,6 +39,8 @@ public class IslandSelectUI : MonoBehaviour
     {
         Time.timeScale = 0f; // Freeze the game
 
+        FindObjectOfType<CameraController>().DisableCameraInputs();
+
         Cursor.lockState = CursorLockMode.None; // Unlock the mouse
         Cursor.visible = true; // Show the cursor
         ///deal 4 random islands 
@@ -96,6 +98,11 @@ public class IslandSelectUI : MonoBehaviour
     public void OnButtonSelected(Button selectedButton, Island selectedIsland)
     {
         Time.timeScale = 1f;
+
+        FindObjectOfType<CameraController>().EnableCameraInputs();
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false; // Show the cursor
 
         Debug.Log(selectedIsland.islandName + " selected!");
 

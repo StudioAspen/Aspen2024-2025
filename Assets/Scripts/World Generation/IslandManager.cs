@@ -7,23 +7,17 @@ using UnityEngine;
 
 public class IslandManager : MonoBehaviour
 {
-    [field: SerializeField] public Vector2Int GridPosition { get; private set; }
+    [Header("References")]
+    [SerializeField, Scene] private WorldManager worldManager;
     [field: SerializeField, Self] public EnemySpawner EnemySpawner { get; private set; }
+    [SerializeField, Anywhere] private MasterLevelManager masterLevelManager;
+    [field: SerializeField] public Vector2Int GridPosition { get; private set; }
     [SerializeField, Self] private NavMeshSurface navMeshSurface;
-
-    [Header("Square Stats")]
-    private MasterLevelManager masterLevelManager;
-    [SerializeField] public int level;
-    private WorldManager worldManager;
-
-    [SerializeField] LayerMask WallLayerMask;
-
     [SerializeField] private IslandBorder[] borders;
+    [SerializeField] private List<Transform> enemySpawnPoints;
 
-    [field: SerializeField] public GameObject EnemySpawnPoint1 { get; private set; }
-    [field: SerializeField] public GameObject EnemySpawnPoint2 { get; private set; }
-    [field: SerializeField] public GameObject EnemySpawnPoint3 { get; private set; }
-    [field: SerializeField] public GameObject EnemySpawnPoint4 { get; private set; }
+    [field: Header("Settings")]
+    [field:SerializeField] public int Level { get; private set; }
 
     private void OnValidate()
     {
@@ -32,28 +26,16 @@ public class IslandManager : MonoBehaviour
 
     private void Awake()
     {
-        masterLevelManager = FindObjectOfType<MasterLevelManager>();
-        worldManager = FindObjectOfType<WorldManager>();
+        masterLevelManager = GetComponentInParent<MasterLevelManager>();
     }
 
     void Start()
     {
-        level = 1;
+        Level = 1;
 
         InitializeBorders();
 
         transform.DOMoveY(-5, 0.5f).SetEase(Ease.InBounce).OnComplete(()=>StartCoroutine(OnCompleteSpawn()));
-    }
-
-    
-    void FixedUpdate()
-    {
-        Ray rayFront = new Ray(transform.position, transform.TransformDirection(Vector3.forward));
-        Ray rayRight = new Ray(transform.position, transform.TransformDirection(Vector3.right));
-        Ray rayLeft = new Ray(transform.position, transform.TransformDirection(Vector3.left));
-        Ray rayBack = new Ray(transform.position, transform.TransformDirection(Vector3.back));
-
-        
     }
 
     private IEnumerator OnCompleteSpawn()
@@ -78,14 +60,18 @@ public class IslandManager : MonoBehaviour
 
     public void LevelUp()
     {
-
-        level += 1;
-
+        Level += 1;
     }
 
     public void Init(int x, int y)
     {
         GridPosition = new Vector2Int(x, y);
+    }
+
+    public Transform GetRandomEnemySpawn()
+    {
+        int randomIndex = Random.Range(0, enemySpawnPoints.Count);
+        return enemySpawnPoints[randomIndex];
     }
 }
     
