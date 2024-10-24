@@ -2001,35 +2001,8 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 6839571156149016225}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3617256968821117999, guid: 19dae7578bc56674dae55670ec5dfbf5,
-        type: 3}
-      insertIndex: 2
-      addedObject: {fileID: 8124097359096299192}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 19dae7578bc56674dae55670ec5dfbf5, type: 3}
---- !u!1 &474901539404587984 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3617256968821117999, guid: 19dae7578bc56674dae55670ec5dfbf5,
-    type: 3}
-  m_PrefabInstance: {fileID: 3793196795259828223}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &8124097359096299192
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 474901539404587984}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c8420cfc94640b4d9f731795de2a439, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  detectionRadius: 5
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  nearbyEnemies: []
 --- !u!4 &6646361409649326001 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7536978621657743438, guid: 19dae7578bc56674dae55670ec5dfbf5,

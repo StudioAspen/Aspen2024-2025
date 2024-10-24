@@ -40,6 +40,9 @@ public class Entity : MonoBehaviour
 
     private void Awake()
     {
+        //We have to make custom OnAwake and OnStart functions
+        //because you cannot override the regular Awake() and Start() methods
+        //using inheritance
         OnAwake();
     }
 
@@ -70,6 +73,8 @@ public class Entity : MonoBehaviour
 
     protected virtual void OnUpdate()
     {
+        //if CurrentState isn't null, run it's Update function
+        //the states are regular C# scripts because if we did another Monobehavior, it'd add a second call to Update which isn't really necessary n takes extra resources..
         CurrentState?.Update();
 
         CheckGrounded();
@@ -87,6 +92,7 @@ public class Entity : MonoBehaviour
 
     protected virtual void InitializeStates()
     {
+        //makes new state scripts for the entity to use
         EntityEmptyState = new EntityEmptyState(this);
         EntityHitState = new EntityHitState(this);
         EntityDeathState = new EntityDeathState(this);
@@ -114,10 +120,8 @@ public class Entity : MonoBehaviour
         CurrentState.OnEnter();
     }
 
-    protected virtual void CheckGrounded()
-    {
+    protected virtual void CheckGrounded() { }
 
-    }
 
     protected virtual void OnDeath()
     {
@@ -141,6 +145,8 @@ public class Entity : MonoBehaviour
 
         CurrentHealth -= dmg;
 
+
+        //after calculating current health, check if the player has taken enough damage to die
         if(CurrentHealth <= 0 && MaxHealth > 0)
         {
             OnDeath();

@@ -14,7 +14,7 @@ public class Enemy : Entity
     [SerializeField, Self] private CapsuleCollider capsuleCollider;
     [SerializeField] private TMP_Text debugStateText;
 
-    [field: Header("Enemy: Settings")]
+    [field : Header("Enemy: Settings")]
     public float MovementSpeed => SpeedModifier * baseSpeed;
     private float totalSpeedModifierForAnimation;
     [field:SerializeField] public Entity Target { get; private set; }

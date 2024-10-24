@@ -44,8 +44,6 @@ public class EnemyAgent : MonoBehaviour
     public float detectionRadius; // Radius to detect nearby enemies
     public int maxChasingEnemies = 3; // Maximum number of enemies that can chase
 
-    public EnemyDetection enemyDetection;
-
 
 
 
@@ -58,7 +56,6 @@ public class EnemyAgent : MonoBehaviour
         playerTransform = GameObject.Find("Player").transform;
         canLunge = true;
         enemyStats = GameObject.FindObjectOfType<BaseEnemy>();
-        enemyDetection = GameObject.FindObjectOfType<EnemyDetection>();
         originalColor = enemyRenderer.material.color;
 
         ///Attack state
