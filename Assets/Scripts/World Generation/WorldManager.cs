@@ -11,20 +11,18 @@ public class WorldManager : MonoBehaviour
 
     [Header("Settings")]
     public bool IsSelecting;
+    private int activeLandCount;
 
     private void OnValidate()
     {
         this.ValidateRefs();
     }
 
-    void Update()
-    {
-        if (AreAllWavesFinished() && !IsSelecting)
-        {
-            IsSelecting = true;
+    void Update(){}
 
-            FindObjectOfType<IslandSelectUI>().PrepareIslandSelection();
-        }
+    private void Start()
+    {
+        activeLandCount = 1;
     }
 
     private bool AreAllWavesFinished()
@@ -43,10 +41,21 @@ public class WorldManager : MonoBehaviour
 
     public void PrepareForNextWave() 
     {
+        activeLandCount = masterLevelManager.SpawnedIslands.Count;
         foreach (IslandManager island in masterLevelManager.SpawnedIslands) 
         {
-            island.LevelUp();
             island.EnemySpawner.WaveReset();
         }
     }
+
+    public void DecrementActiveLandCount()
+    {
+        activeLandCount--;
+        if (activeLandCount == 0)
+        {
+            IsSelecting = true;
+            FindObjectOfType<IslandSelectUI>().PrepareIslandSelection();
+        }
+    }
+
 }

@@ -24,12 +24,17 @@ public class Enemy : Entity
     private bool lookAtPath;
 
     public Entity Target { get; private set; }
+    private EnemySpawner spawner;
 
     #region States
     public EnemyIdleState EnemyIdleState { get; private set; }
     public EnemyChaseState EnemyChaseState { get; private set; }
     #endregion
 
+    public void Init(EnemySpawner e)
+    {
+        spawner = e;
+    }
     protected override void OnAwake()
     {
         base.OnAwake();
@@ -144,7 +149,7 @@ public class Enemy : Entity
     protected override void OnDeath()
     {
         base.OnDeath();
-
+        spawner.RemoveEnemyFromList(this);
         if (Ticker.Instance != null) Ticker.Instance.OnTick.RemoveListener(OnTick);
     }
 

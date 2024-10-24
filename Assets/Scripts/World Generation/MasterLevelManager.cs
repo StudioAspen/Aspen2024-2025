@@ -99,7 +99,7 @@ public class MasterLevelManager : MonoBehaviour
 
     public void SpawnSelectionSpheres() 
     {
-        DeleteAllSelectionSpheres();
+        DeleteAllSelectionSpheres(); //just in case spheres still exist
 
         for (int i = 0; i < bordersList.Count; i++)
         {
