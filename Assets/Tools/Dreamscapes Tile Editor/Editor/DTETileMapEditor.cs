@@ -789,11 +789,11 @@ namespace Dreamscapes.TileEditor
 					// Offset snap depending on grid size
 					float xPos, zPos;
 					xPos = (tileMap.gridSize.x % 2 == 1) 
-						? hitInfo.point.x.Round(gridSnapSize) 
-						: hitInfo.point.x.Round(gridSnapSize, tileMap.biomeManager.tileSize.x / 2); 
+						? hitInfo.point.x.Round(CalculateGridSnapSize(gridSnapSize))
+						: hitInfo.point.x.Round(CalculateGridSnapSize(gridSnapSize), tileMap.biomeManager.tileSize.x / 2); 
 					zPos = (tileMap.gridSize.y % 2 == 1) 
-						? hitInfo.point.z.Round(gridSnapSize)
-						: hitInfo.point.z.Round(gridSnapSize, tileMap.biomeManager.tileSize.y / 2);
+						? hitInfo.point.z.Round(CalculateGridSnapSize(gridSnapSize))
+						: hitInfo.point.z.Round(CalculateGridSnapSize(gridSnapSize), tileMap.biomeManager.tileSize.y / 2);
 					selectedAssetPreview.transform.position = new Vector3(xPos, hitInfo.point.y, zPos);
 				}
 				else
@@ -843,7 +843,12 @@ namespace Dreamscapes.TileEditor
 			previewImage.image = previewTexture;
 			button.Add(previewImage);
 		}
-		
-	}
 
+		///-//////////////////////////////////////////////////////////////////
+		///
+		private float CalculateGridSnapSize(float gridSnap)
+		{
+			return gridSnap * tileMap.biomeManager.tileSize.x;
+		}
+	}
 }
