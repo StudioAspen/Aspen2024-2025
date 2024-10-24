@@ -3,12 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
+using UnityEngine.Events;
+using static EnemySpawner;
+using UnityEngine.InputSystem.HID;
+using DG.Tweening;
 
 public class Weapon : MonoBehaviour
 {
     [Header("Weapon: References")]
     [SerializeField, Self] private CapsuleCollider capsuleCollider;
     [SerializeField, Anywhere] private GameObject trailObject;
+    [SerializeField, Parent] private Entity holderEntity;
     private Animator animator;
 
     [Header("Weapon: Settings")]
@@ -21,6 +26,7 @@ public class Weapon : MonoBehaviour
     private Ray currentFrameCollisionRay;
     private Ray previousFrameCollisionRay;
     private int currentHitFrame;
+    [HideInInspector] public UnityEvent<Entity, Entity, Vector3> OnWeaponHit = new UnityEvent<Entity, Entity, Vector3>();
 
     [Header("Weapon: Combo")]
     public List<ComboDataSO> Combos;
@@ -28,8 +34,7 @@ public class Weapon : MonoBehaviour
 
     [Header("Weapon: Impact Frames")]
     [SerializeField] private float impactFramesDuration = 0.15f;
-    private Coroutine impactFramesCoroutine;
-    private List<Enemy> enemiesHitByCurrentAttack = new List<Enemy>();
+    private List<Entity> enemiesHitByCurrentAttack = new List<Entity>();
 
     private void OnValidate()
     {
@@ -56,21 +61,11 @@ public class Weapon : MonoBehaviour
     {
         if (!capsuleCollider.enabled) return;
 
-        Enemy enemy = other.GetComponentInParent<Enemy>();
-
-        if (enemy == null) return;
-
-        if (enemiesHitByCurrentAttack.Contains(enemy)) return;
-        enemiesHitByCurrentAttack.Add(enemy);
-
-        StartImpactFrames(0.1f);
-        CameraShakeManager.Instance.ShakeCamera(5f, 0.25f);
+        Entity enemy = other.GetComponentInParent<Entity>();
 
         Vector3 hitPoint = other.ClosestPointOnBounds(colliderStartTransform.position);
 
-        CreateTempHitVisual(hitPoint, Color.green, 1.5f);
-
-        enemy.TakeDamage(GetRandomDamage(), hitPoint);
+        AttemptToHitEnemy(enemy, hitPoint, true);
     }
 
     private void HandleHitDetectionBetweenFrames()
@@ -113,23 +108,37 @@ public class Weapon : MonoBehaviour
 
         foreach (RaycastHit hit in hits)
         {
-            Enemy enemy = hit.collider.GetComponentInParent<Enemy>();
-
-            if (enemy == null) continue;
-
-            if (enemiesHitByCurrentAttack.Contains(enemy)) continue;
-            enemiesHitByCurrentAttack.Add(enemy);
-
-            StartImpactFrames(0.1f);
-            CameraShakeManager.Instance.ShakeCamera(5f, 0.25f);
-
             Vector3 hitPoint = hit.collider.ClosestPointOnBounds(hit.point);
             if (hit.distance == 0) hitPoint = hit.collider.ClosestPointOnBounds((colliderStartTransform.position + colliderEndTransform.position) / 2);
 
-            CreateTempHitVisual(hitPoint, Color.red, 1.5f);
+            Entity enemy = hit.collider.GetComponentInParent<Entity>();
 
-            enemy.TakeDamage(GetRandomDamage(), hitPoint);
+            AttemptToHitEnemy(enemy, hitPoint, false);
         }
+    }
+
+    private void AttemptToHitEnemy(Entity victim, Vector3 hitPoint, bool fromTrigger)
+    {
+        if (victim == null) return;
+        if (victim.Team == holderEntity.Team) return;
+        if (victim.CurrentState == victim.EntityDeathState) return;
+
+        if (enemiesHitByCurrentAttack.Contains(victim)) return;
+        enemiesHitByCurrentAttack.Add(victim);
+
+        HitEnemy(victim, hitPoint, fromTrigger);
+    }
+
+    private void HitEnemy(Entity victim, Vector3 hitPoint, bool fromTrigger)
+    {
+        StartImpactFrames(0.1f);
+        CameraShakeManager.Instance.ShakeCamera(5f, 0.25f);
+
+        CreateTempHitVisual(hitPoint, fromTrigger ? Color.green : Color.red, 1.5f);
+
+        victim.TakeDamage(GetRandomDamage(), hitPoint, holderEntity);
+
+        OnWeaponHit?.Invoke(holderEntity, victim, hitPoint);
     }
 
     private void CreateTempHitVisual(Vector3 pos, Color color, float duration)
@@ -145,25 +154,14 @@ public class Weapon : MonoBehaviour
 
     private void StartImpactFrames(float timeScale)
     {
-        if (impactFramesCoroutine != null) StopCoroutine(impactFramesCoroutine);
-        StartCoroutine(ImpactFramesCoroutine(timeScale, impactFramesDuration));
-    }
-
-    private IEnumerator ImpactFramesCoroutine(float timeScale, float duration)
-    {
-        float speedUpTime = duration / 4;
-
-        Time.timeScale = timeScale;
-
-        yield return new WaitForSecondsRealtime(duration - speedUpTime);
-
-        for (float t = 0; t < speedUpTime; t += Time.unscaledDeltaTime)
-        {
-            Time.timeScale = Mathf.Lerp(timeScale, 1f, t / speedUpTime);
-            yield return null;
-        }
-
+        DOTween.Kill("ImpactFrames");
         Time.timeScale = 1f;
+
+        float speedUpTime = impactFramesDuration / 4f;
+
+        Sequence impactFrameSequence = DOTween.Sequence().SetId("ImpactFrames");
+        impactFrameSequence.Append(DOTween.To(() => Time.timeScale, x => Time.timeScale = x, timeScale, impactFramesDuration - speedUpTime).SetEase(Ease.OutQuint)).SetUpdate(true);
+        impactFrameSequence.Append(DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1f, speedUpTime).SetEase(Ease.InCubic)).SetUpdate(true);
     }
 
     private void AssignColliderStartEndPositions()

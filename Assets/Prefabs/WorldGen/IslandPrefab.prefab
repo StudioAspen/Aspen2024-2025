@@ -342,22 +342,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd7d4e9a65cdd5147b6ec50cb5ee5ff4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <GridPosition>k__BackingField: {x: 0, y: 0}
+  worldManager: {fileID: 0}
   <EnemySpawner>k__BackingField: {fileID: 3642624367869852063}
+  masterLevelManager: {fileID: 0}
+  <GridPosition>k__BackingField: {x: 0, y: 0}
   navMeshSurface: {fileID: 8171416551064500414}
-  level: 0
-  WallLayerMask:
-    serializedVersion: 2
-    m_Bits: 4096
   borders:
   - {fileID: 8992238792902132451}
   - {fileID: 3688375034819025643}
   - {fileID: 4271741344995929924}
   - {fileID: 3339952415797423076}
-  <EnemySpawnPoint1>k__BackingField: {fileID: 1941014675470506877}
-  <EnemySpawnPoint2>k__BackingField: {fileID: 5911963136775035400}
-  <EnemySpawnPoint3>k__BackingField: {fileID: 7497599066430522912}
-  <EnemySpawnPoint4>k__BackingField: {fileID: 1069167050198721364}
+  enemySpawnPoints:
+  - {fileID: 8661195311268004729}
+  - {fileID: 262600604663446260}
+  - {fileID: 209724545201421855}
+  - {fileID: 4446345457396114121}
+  <Level>k__BackingField: 0
 --- !u!114 &3642624367869852063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -370,34 +370,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f02db51567371a4439e810df791d4573, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxShopCurrency: 0
-  currentShopCurrency: 0
-  spawnTimerMax: 3
-  spawnTimer: 0
-  spawnRdy: 0
-  spawnLocation: 0
   islandManager: {fileID: 6052383663745716427}
-  followerSpawnThreshhold: 0
-  leaperSpawnThreshhold: 0
-  chargerSpawnThreshhold: 0
-  enemyCost: 0
-  followerCost: 1
-  leaperCost: 1
-  chargerCost: 1
-  follower: {fileID: 2211407975701868877, guid: 8c2e001ff766d794788a1bcb1e2d778e,
-    type: 3}
-  leaper: {fileID: 2211407975701868877, guid: 8c2e001ff766d794788a1bcb1e2d778e, type: 3}
-  charger: {fileID: 2211407975701868877, guid: 8c2e001ff766d794788a1bcb1e2d778e, type: 3}
-  WorldManager: {fileID: 0}
-  totalWeight: 0
-  randomValue: 0
-  cumalativeWeight: 0
-  RateScale: 0
+  enemyPrefabs:
+  - {fileID: -4810948276731600067, guid: 8c2e001ff766d794788a1bcb1e2d778e, type: 3}
+  weightingSkewFactor: 2.2
+  spawnInterval: 3
   baseCurrency: 2
   growthFactor: 1
   polynomialDegree: 1
   CanSpawn: 0
-  enemies: []
 --- !u!114 &8171416551064500414
 MonoBehaviour:
   m_ObjectHideFlags: 0

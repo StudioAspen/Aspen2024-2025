@@ -2,22 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using KBCore.Refs;
 
 public class WorldManager : MonoBehaviour
 {
-    private MasterLevelManager masterLevelManager;
+    [Header("References")]
+    [SerializeField, Scene] private MasterLevelManager masterLevelManager;
 
-    [Header("Misc Controls")]
-    [SerializeField] public bool isInSkyView;
-
-    [Header("Island Selection")]
-    [SerializeField] private GameObject playerCamera;
-    [SerializeField] private GameObject islandSelectCamera;
+    [Header("Settings")]
     public bool IsSelecting;
 
-    private void Awake()
+    private void OnValidate()
     {
-        masterLevelManager = FindAnyObjectByType<MasterLevelManager>();
+        this.ValidateRefs();
     }
 
     void Update()
@@ -27,25 +24,7 @@ public class WorldManager : MonoBehaviour
             IsSelecting = true;
 
             FindObjectOfType<IslandSelectUI>().PrepareIslandSelection();
-            //masterLevelManager.SpawnSelectionSpheres();
         }
-      
-/*        if (Input.GetKeyDown(KeyCode.Q) && isInSkyView == false) 
-        {
-            islandTimertext.SetActive(true);
-            islandSelectCamera.SetActive(true);
-            playerCamera.SetActive(false);
-            isInSkyView = true;
-        }
-
-        if (Input.GetKeyDown(KeyCode.E) && isInSkyView == true)
-        {
-           
-            islandSelectCamera.SetActive(false);
-            playerCamera.SetActive(true);
-            islandTimertext.SetActive(false);
-            isInSkyView = false;
-        }*/
     }
 
     private bool AreAllWavesFinished()

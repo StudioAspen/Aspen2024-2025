@@ -14,14 +14,8 @@ public class Ticker : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     private void Update()
@@ -33,7 +27,6 @@ public class Ticker : MonoBehaviour
             tickTimer = 0f;
 
             OnTick?.Invoke();
-            Debug.Log("Tick");
         }
     }
 }

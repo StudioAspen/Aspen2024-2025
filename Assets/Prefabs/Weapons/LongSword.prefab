@@ -5105,12 +5105,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   capsuleCollider: {fileID: 1259378818332639156}
   trailObject: {fileID: 6918874709248315491}
+  holderEntity: {fileID: 0}
   overrideAnimator: {fileID: 22100000, guid: 8456c80902e48ac49b8cccfaec465bf0, type: 2}
   damageableCollidersLayerMask:
     serializedVersion: 2
     m_Bits: 128
   colliderStartTransform: {fileID: 2382167382557116116}
   colliderEndTransform: {fileID: 2628417811129990337}
+  OnWeaponHit:
+    m_PersistentCalls:
+      m_Calls: []
   Combos:
   - {fileID: 11400000, guid: 01e6af0b21754fc43adb0d93d75b39fb, type: 2}
   - {fileID: 11400000, guid: 00d269358e037cb45b41ba880a256c9b, type: 2}
@@ -5141,7 +5145,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.15
+  m_Radius: 0.25
   m_Height: 1.663404
   m_Direction: 1
   m_Center: {x: 0, y: 0.6578853, z: 0}
