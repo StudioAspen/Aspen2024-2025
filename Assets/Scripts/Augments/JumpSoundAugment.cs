@@ -14,10 +14,14 @@ public class JumpSoundAugment : Augment
     public override void Start()
     {
         base.Start();
-        Branch = AugmentBranch.MARIO_BRANCH;
-        Level = 1;
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.clip = jumpSound;
+    }
+
+    public void Awake()
+    {
+        Branch = AugmentBranch.MARIO_BRANCH;
+        Level = 1;
     }
 
     // Update is called once per frame
