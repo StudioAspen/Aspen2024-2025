@@ -9,6 +9,7 @@ public enum EnemyStateId
     Death,
     HopBack,
     Leap,
+    Attack,
 }
 public interface EnemyState
 {
@@ -16,5 +17,6 @@ public interface EnemyState
     void Enter(EnemyAgent agent);
     void Update(EnemyAgent agent);
     void Exit(EnemyAgent agent);
-
+    
+    
 }
