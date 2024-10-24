@@ -1,0 +1,27 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Tools/Dreamscapes%20Tile%20Editor/UI/DTEStyles.uss?fileID=7433441132597879392&amp;guid=97eff7ecbcf3b3e458c9289135523967&amp;type=3#DTEStyles" />
+    <ui:VisualElement name="DreamscapesTileEditor" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: column;">
+        <ui:VisualElement name="Space" class="space" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);" />
+        <ui:Label tabindex="-1" text="Tilemap Properties" display-tooltip-when-elided="true" name="TileMapPropertiesLabel" class="header" />
+        <ui:VisualElement name="BiomeTypeContainer" class="container" style="flex-direction: row;">
+            <ui:Label tabindex="-1" text="Biome Type" display-tooltip-when-elided="true" name="BiomeTypeLabel" style="width: 25%; -unity-text-align: middle-left;" />
+            <ui:EnumField type="Dreamscapes.TileEditor.BiomeType, Assembly-CSharp" name="BiomeTypeField" style="transform-origin: center; align-self: auto; width: 75%;" />
+        </ui:VisualElement>
+        <ui:SliderInt picking-mode="Ignore" label="Biome Seed" value="0" high-value="100" name="BiomeSeedSlider" show-input-field="true" direction="Horizontal" inverted="false" usage-hints="None" tabindex="0" class="container" style="visibility: visible;" />
+        <ui:Vector2IntField label="Grid Size" name="GridSizeField" class="container" style="max-height: 35px;" />
+        <ui:VisualElement name="Space" class="space" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);" />
+        <ui:Label tabindex="-1" text="Tool Settings" display-tooltip-when-elided="true" name="ToolSettingsLabel" class="header" />
+        <ui:VisualElement name="ToolSettingsContainer" class="container" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); max-height: 40px;">
+            <ui:Slider picking-mode="Ignore" label="Grid Snap" value="42" high-value="1" name="GridSnapSlider" show-input-field="true" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Space" class="space" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);" />
+        <ui:VisualElement name="TabsContainer" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); width: auto; max-height: 30px; flex-direction: row;">
+            <ui:Button text="Tile Brush" display-tooltip-when-elided="true" name="TileBrushTab" class="tabButton" style="margin-left: 1px; margin-right: 1px; margin-top: 0; margin-bottom: 0;" />
+            <ui:Button text="Biome Assets" display-tooltip-when-elided="true" name="BiomeAssetsTab" class="tabButton" style="margin-left: 1px; margin-right: 1px; margin-top: 0; margin-bottom: 0;" />
+        </ui:VisualElement>
+        <ui:ScrollView name="ScrollView" mode="Horizontal" focusable="true" class="scrollView" style="height: 300px; background-color: rgba(0, 0, 0, 0); flex-direction: row; flex-wrap: wrap;">
+            <ui:VisualElement name="TileBrushContainer" style="flex-grow: 1; background-color: rgba(84, 84, 84, 0); flex-direction: row; flex-wrap: wrap; background-image: none; -unity-background-image-tint-color: rgb(41, 41, 41); display: none; -unity-background-scale-mode: scale-and-crop;" />
+            <ui:VisualElement name="BiomeAssetsContainer" style="flex-grow: 1; background-color: rgba(46, 46, 46, 0); flex-direction: row; flex-wrap: wrap; background-image: none; -unity-background-image-tint-color: rgb(41, 41, 41); display: flex; -unity-background-scale-mode: scale-and-crop; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgba(0, 0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0);" />
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>
