@@ -1398,7 +1398,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1018934854}
-  - component: {fileID: 1018934853}
+  - component: {fileID: 1018934856}
+  - component: {fileID: 1018934855}
   m_Layer: 0
   m_Name: AugmentManager
   m_TagString: Untagged
@@ -1406,19 +1407,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1018934853
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1018934852}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21f21a8e8ff5e7446ac75ab26f8a7f55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 780043833}
 --- !u!4 &1018934854
 Transform:
   m_ObjectHideFlags: 0
@@ -1434,6 +1422,32 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1018934855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1018934852}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ff356b9081f1604e87d8e04f2133925, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpSound: {fileID: 8300000, guid: 0c3ac4f74258b1e42b5be9b157e2e751, type: 3}
+--- !u!114 &1018934856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1018934852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21f21a8e8ff5e7446ac75ab26f8a7f55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Player: {fileID: 780043833}
 --- !u!1 &1156896643
 GameObject:
   m_ObjectHideFlags: 3

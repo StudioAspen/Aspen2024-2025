@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class JumpSoundAugment : Augment
 {
-    private Player player;
     private AudioSource audioSource;
 
     private bool soundTriggered = false;
 
+    [Header("Augment Parameters")]
     [SerializeField] private AudioClip jumpSound;
 
-    void Awake()
+    public override void Start()
     {
-        jumpSound = (AudioClip)Resources.Load("sm64_mario_yahoo");
-        player = GetComponent<Player>();
+        base.Start();
+        Branch = AugmentBranch.MARIO_BRANCH;
+        Level = 1;
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.clip = jumpSound;
     }
@@ -32,7 +33,4 @@ public class JumpSoundAugment : Augment
             soundTriggered = false;
         }
     }
-
-    public override AugmentBranch GetBranch() { return AugmentBranch.MARIO_BRANCH;  }
-    public override int GetLevel() { return 1; }
 }
