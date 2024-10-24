@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Windows;
 
 public class Entity : MonoBehaviour
 {
@@ -14,16 +16,21 @@ public class Entity : MonoBehaviour
     [field: SerializeField] public int CurrentHealth { get; private set; }
     [field: SerializeField] public int MaxHealth { get; private set; }
     [field: SerializeField] public int Level { get; private set; }
-    [HideInInspector] public bool IsGrounded;
 
-    [SerializeField] protected float baseSpeed = 3f;
-    public float SpeedModifier { get; protected set; } = 1f;
-    [SerializeField] protected private Vector3 velocity;
-    [SerializeField] private protected float targetDetectionRadius = 10f;
+    [HideInInspector] public bool IsGrounded;
     protected private float inAirTimer;
     protected private bool fallVelocityApplied;
 
+    public float SpeedModifier { get; protected set; } = 1f;
+    [SerializeField] protected private float baseSpeed = 3f;
+    [SerializeField] protected private Vector3 velocity;
+    [SerializeField] protected private float rotationSpeed = 5f;
+
+    [SerializeField] private protected float targetDetectionRadius = 10f;
+
     public int Team { get; private set; }
+
+    protected private Entity lastHitSource;
 
     #region States
     public BaseState CurrentState { get; private set; }
@@ -122,7 +129,6 @@ public class Entity : MonoBehaviour
 
     protected virtual void CheckGrounded() { }
 
-
     protected virtual void OnDeath()
     {
         ChangeState(EntityDeathState);
@@ -133,7 +139,7 @@ public class Entity : MonoBehaviour
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
     }
 
-    public void TakeDamage(int dmg, Vector3 hitPoint)
+    public void TakeDamage(int dmg, Vector3 hitPoint, Entity source)
     {
         if (CurrentState == EntityDeathState) return;
 
@@ -145,6 +151,7 @@ public class Entity : MonoBehaviour
 
         CurrentHealth -= dmg;
 
+        lastHitSource = source;
 
         //after calculating current health, check if the player has taken enough damage to die
         if(CurrentHealth <= 0 && MaxHealth > 0)
@@ -160,7 +167,7 @@ public class Entity : MonoBehaviour
 
     public void Kill()
     {
-        TakeDamage(int.MaxValue, transform.position);
+        TakeDamage(int.MaxValue, transform.position, this);
     }
 
     public void ChangeTeam(int newTeam)
@@ -198,9 +205,19 @@ public class Entity : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public float Distance(Transform transform)
+    public void LookAt(Vector3 target)
     {
-        return Vector3.Distance(transform.position, this.transform.position);
+        Vector3 dir = target - transform.position;
+
+        float angle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+        Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
+
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+    }
+
+    public float Distance(Vector3 target)
+    {
+        return Vector3.Distance(target, transform.position);
     }
 
     public float Distance(Entity entity)

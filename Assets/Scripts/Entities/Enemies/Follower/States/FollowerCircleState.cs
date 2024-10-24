@@ -1,25 +1,32 @@
 ﻿using UnityEngine;
 
-public class EnemyCircleState : EnemyBaseState
+public class FollowerCircleState : EnemyBaseState
 {
+    private Follower follower;
+
     private bool cwCircle;
 
     private float changeDirInterval = 0.25f;
     private float changeDirTimer;
     private float circlingRadius = 5f;
 
-    public EnemyCircleState(Enemy enemy) : base(enemy)
+    private float canChaseTimer;
+    private float canChaseCooldown = 3f;
+
+    public FollowerCircleState(Follower enemy) : base(enemy)
     {
-        this.enemy = enemy;
+        follower = enemy;
     }
 
     public override void OnEnter()
     {
         enemy.DefaultTransitionToAnimation("FlatMovement");
 
-        enemy.SetSpeedModifier(1f);
+        enemy.SetSpeedModifier(0.5f);
 
         changeDirTimer = 0f;
+
+        canChaseTimer = 0f;
     }
 
     public override void OnExit()
@@ -35,18 +42,20 @@ public class EnemyCircleState : EnemyBaseState
             return;
         }
 
+        canChaseTimer += Time.deltaTime;
+
         if (enemy.Target.TryGetComponent(out Player player))
         {
             if (player.NearbyEntities.Count > 0)
             {
-                if (player.NearbyEntities.Count < enemy.CircleEntityCountThreshold)
+                if (player.NearbyEntities.Count < follower.CircleEntityCountThreshold && canChaseTimer > canChaseCooldown)
                 {
                     enemy.ChangeState(enemy.EnemyChaseState);
                 }
 
-                for (int i = 0; i < Mathf.Min(enemy.CircleEntityCountThreshold, player.NearbyEntities.Count); i++)
+                for (int i = 0; i < Mathf.Min(follower.CircleEntityCountThreshold, player.NearbyEntities.Count); i++)
                 {
-                    if (player.NearbyEntities[i].gameObject == enemy.gameObject)
+                    if (player.NearbyEntities[i] == enemy)
                     {
                         enemy.ChangeState(enemy.EnemyChaseState);
                     }
@@ -59,9 +68,11 @@ public class EnemyCircleState : EnemyBaseState
         if(changeDirTimer > changeDirInterval)
         {
             changeDirTimer = 0f;
-            enemy.NavMeshAgent.SetDestination(CalculateCircleDestination());
+            enemy.SetDestination(CalculateCircleDestination(), false);
             cwCircle = Random.Range(0, 25) == 0 ? !cwCircle : cwCircle;
         }
+
+        enemy.LookAt(enemy.Target.transform.position);
     }
 
     public override void FixedUpdate()

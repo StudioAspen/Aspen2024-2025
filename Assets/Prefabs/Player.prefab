@@ -1580,15 +1580,16 @@ MonoBehaviour:
   hitNumberPrefab: {fileID: 5332358636057589605, guid: 82d0321b56e44764eaafb464a992de85,
     type: 3}
   <CurrentHealth>k__BackingField: 0
-  <MaxHealth>k__BackingField: 0
+  <MaxHealth>k__BackingField: 100
   <Level>k__BackingField: 0
   IsGrounded: 0
   baseSpeed: 3
   velocity: {x: 0, y: 0, z: 0}
+  rotationSpeed: 10
+  targetDetectionRadius: 10
   stateText: {fileID: 2611659999828033788}
   controller: {fileID: 7237775664649881152}
   input: {fileID: 6714409095086020908}
-  rotationSpeed: 10
   <SprintSpeedModifier>k__BackingField: 1.66
   jumpHeight: 2
   maxJumpCount: 1
@@ -1603,7 +1604,8 @@ MonoBehaviour:
   dashDelayDuration: 0.5
   <SprintDurationAfterDash>k__BackingField: 2
   dashTrailObject: {fileID: 3883737560833677611}
-  CameraLocked: 1
+  nearbyEntityRadius: 3
+  NearbyEntities: []
 --- !u!114 &5620550920081884860
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2665,7 +2667,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6409948338435817524
 Transform:
   m_ObjectHideFlags: 0
@@ -9020,6 +9022,11 @@ PrefabInstance:
       propertyPath: animator
       value: 
       objectReference: {fileID: 2171180168782530629}
+    - target: {fileID: 618815233110515994, guid: d172d41f775a35d4593cc6dec1b8eed0,
+        type: 3}
+      propertyPath: holderEntity
+      value: 
+      objectReference: {fileID: 8852926688546275590}
     - target: {fileID: 784140094486146350, guid: d172d41f775a35d4593cc6dec1b8eed0,
         type: 3}
       propertyPath: m_Name

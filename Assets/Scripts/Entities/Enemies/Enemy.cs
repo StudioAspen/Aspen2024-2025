@@ -3,27 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Enemy : Entity
 {
     [field: Header("Enemy: References")]
-    [field: SerializeField, Self] public NavMeshAgent NavMeshAgent { get; protected set; }
     [SerializeField, Self] private Rigidbody rigidBody;
     [SerializeField, Self] private CapsuleCollider capsuleCollider;
-    [SerializeField] private TMP_Text debugStateText;
+    [SerializeField, Child] private TMP_Text debugStateText;
 
     [field : Header("Enemy: Settings")]
+    [field: SerializeField] public int Cost { get; protected set; }
     public float MovementSpeed => SpeedModifier * baseSpeed;
     private float totalSpeedModifierForAnimation;
-    [field:SerializeField] public Entity Target { get; private set; }
-    [field: SerializeField] public int CircleEntityCountThreshold { get; private set; }  = 2;
+
+    public Vector3 Destination {  get; protected set; }
+    private List<Vector3> path;
+    private bool lookAtPath;
+
+    public Entity Target { get; private set; }
 
     #region States
     public EnemyIdleState EnemyIdleState { get; private set; }
     public EnemyChaseState EnemyChaseState { get; private set; }
-    public EnemyCircleState EnemyCircleState { get; private set; }
     #endregion
 
     protected override void OnAwake()
@@ -39,8 +43,8 @@ public class Enemy : Entity
 
         ChangeTeam(1);
 
-        SetStartState(EnemyCircleState);
-        SetDefaultState(EnemyCircleState);
+        SetStartState(EnemyIdleState);
+        SetDefaultState(EnemyIdleState);
     }
 
     protected override void OnUpdate()
@@ -48,7 +52,8 @@ public class Enemy : Entity
         base.OnUpdate();
 
         HandleAnimations();
-        HandleNavAgentSpeed();
+
+        MoveTowardsDestination();
     }
 
     protected override void OnFixedUpdate()
@@ -72,7 +77,6 @@ public class Enemy : Entity
 
         EnemyIdleState = new EnemyIdleState(this);
         EnemyChaseState = new EnemyChaseState(this);
-        EnemyCircleState = new EnemyCircleState(this);
     }
 
     protected override void CheckGrounded()
@@ -87,16 +91,54 @@ public class Enemy : Entity
         debugStateText.text = $"{CurrentState.GetType()}";
     }
 
-    private void HandleNavAgentSpeed()
-    {
-        NavMeshAgent.speed = MovementSpeed;
-    }
-
     private void HandleAnimations()
     {
-        totalSpeedModifierForAnimation = Mathf.Lerp(totalSpeedModifierForAnimation, SpeedModifier, NavMeshAgent.acceleration * Time.deltaTime);
+        totalSpeedModifierForAnimation = Mathf.Lerp(totalSpeedModifierForAnimation, SpeedModifier, 5f * Time.deltaTime);
 
         animator.SetFloat("MovementSpeed", MovementSpeed);
+    }
+
+    private List<Vector3> GetPathToDestination(Vector3 dest)
+    {
+        NavMeshPath path = new NavMeshPath();
+
+        bool hasPath = NavMesh.CalculatePath(transform.position, dest, NavMesh.AllAreas, path);
+
+        if (!hasPath) return null;
+        if(path.corners.Length == 0) return null;
+
+        return path.corners.ToList();
+    }
+
+    private void MoveTowardsDestination()
+    {
+        if (path == null) return;
+        if(path.Count < 2) return;
+
+        #region Debug
+/*        Vector3 prevCorner = transform.position;
+        foreach (Vector3 wayPoint in path)
+        {
+            Debug.DrawLine(prevCorner, wayPoint, Color.red);
+            prevCorner = wayPoint;
+        }*/
+        #endregion
+
+        Vector3 currDest = path[1];
+        if (lookAtPath) LookAt(currDest);
+        transform.position = Vector3.MoveTowards(transform.position, currDest, MovementSpeed * Time.deltaTime);
+
+        if (Distance(currDest) < 0.05f)
+        {
+            path.RemoveAt(0);
+        }
+    }
+
+    public void SetDestination(Vector3 dest, bool lookAtPath)
+    {
+        Destination = dest;
+        path = GetPathToDestination(dest);
+        this.lookAtPath = lookAtPath;
     }
 
     protected override void OnDeath()
@@ -104,11 +146,6 @@ public class Enemy : Entity
         base.OnDeath();
 
         if (Ticker.Instance != null) Ticker.Instance.OnTick.RemoveListener(OnTick);
-    }
-
-    public void LaunchUpwards(float magnitude)
-    {
-        rigidBody.AddForce(magnitude * Vector3.up, ForceMode.Impulse);
     }
 
     protected virtual void AssignTarget()

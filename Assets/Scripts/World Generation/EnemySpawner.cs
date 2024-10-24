@@ -1,78 +1,44 @@
+using KBCore.Refs;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public float maxShopCurrency;
-    public float currentShopCurrency;
+    [Header("References")]
+    [SerializeField, Self] private IslandManager islandManager;
+    [SerializeField, Anywhere] private List<Enemy> enemyPrefabs = new List<Enemy>();
+    private List<float> enemyNormalizedWeights = new List<float>();
 
+    [Header("Settings")]
+    [SerializeField] private float weightingSkewFactor = 2.2f;
+    [SerializeField] private float spawnInterval = 3f;
+    [SerializeField] private float baseCurrency;
+    [SerializeField] private float growthFactor;
+    [SerializeField] private int polynomialDegree;
+    private float maxShopCurrency;
+    private float currentShopCurrency;
     public bool IsWaveFinished => currentShopCurrency <= 0 && enemiesSpawned.Count <= 0;
 
-    public float spawnTimerMax;
-    public float spawnTimer;
-    public bool spawnRdy;
-    public int spawnLocation;
-    public IslandManager islandManager;
-
-    public int followerSpawnThreshhold;
-    public int leaperSpawnThreshhold;
-    public int chargerSpawnThreshhold;
-
-    
-    public int enemyCost;
-    public int followerCost;
-    public int leaperCost;
-    public int chargerCost;
-
-    public GameObject follower;
-    public GameObject leaper;
-    public GameObject charger;
-
-    public WorldManager WorldManager;
-
-    [Header("Enemy Weight Process")]
-    [SerializeField] public float totalWeight;
-    [SerializeField] public float randomValue;
-    [SerializeField] public float cumalativeWeight;
-    public float RateScale;
-
-    [Header("Currency calculation")]
-    [SerializeField] public float baseCurrency;
-    [SerializeField] public float growthFactor;
-    [SerializeField] public int polynomialDegree;
-
-    public bool CanSpawn = false;
-    private List<GameObject> enemiesSpawned = new List<GameObject>();
+    [HideInInspector] public bool CanSpawn = false;
+    private List<Enemy> enemiesSpawned = new List<Enemy>();
     private bool isSpawnDelayed = false;
 
-    [System.Serializable]
-    public class Enemy 
+    private void OnValidate()
     {
-        public GameObject prefab;
-        public float weight;
-        public float weightNormalized;
-        public int enemyCost;
+        this.ValidateRefs();
     }
 
-    public List<Enemy> enemies = new List<Enemy>();
+    private void Awake()
+    {
+        CalculateNormalizedWeights();
+    }
+
     void Start()
     {
-        ////temp
-        spawnTimerMax = 3;
-
-        ///not temp 
-        WorldManager = GameObject.FindObjectOfType<WorldManager>();
-        islandManager = GetComponent<IslandManager>();
-        maxShopCurrency = baseCurrency + (growthFactor * Mathf.Pow(islandManager.level,polynomialDegree));
+        maxShopCurrency = baseCurrency + (growthFactor * Mathf.Pow(islandManager.Level,polynomialDegree));
         currentShopCurrency = maxShopCurrency;
-       
-        ///not temp
-        enemies.Add(new Enemy { prefab = follower, enemyCost = followerCost });
-        enemies.Add(new Enemy { prefab = leaper, enemyCost = leaperCost });
-        enemies.Add(new Enemy { prefab = charger, enemyCost = chargerCost });
-
-
+      
         StartCoroutine(SpawnCoroutine());
     }
 
@@ -83,10 +49,7 @@ public class EnemySpawner : MonoBehaviour
 
         if (currentShopCurrency <= 0) CanSpawn = false;
 
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            ClearWave();
-        }
+        if (Input.GetKeyDown(KeyCode.K)) ClearWave();
     }
 
     private IEnumerator SpawnCoroutine()
@@ -113,41 +76,28 @@ public class EnemySpawner : MonoBehaviour
 
             SpawnEnemy();
 
-            yield return new WaitForSeconds(spawnTimerMax);
+            yield return new WaitForSeconds(spawnInterval);
         }
     }
 
     private void SpawnEnemy() 
     {
-        CalculateWeight();
-        randomValue = Random.Range(0f, 1f);
-        cumalativeWeight = 0f;
-        spawnLocation = Random.Range(1, 5);
+        float randomValue = Random.Range(0f, 1f);
+        int spawnLocation = Random.Range(1, 5);
+        float cumalativeWeight = 0f;
 
-        foreach (var enemy in enemies) 
+        for(int i = 0; i < enemyPrefabs.Count; i++)
         {
-            cumalativeWeight += enemy.weightNormalized;
+            cumalativeWeight += enemyNormalizedWeights[i];
 
-            if (randomValue < cumalativeWeight && currentShopCurrency >= enemy.enemyCost) 
+            if (currentShopCurrency < enemyPrefabs[i].Cost) continue;
+
+            if(randomValue < cumalativeWeight)
             {
-                switch (spawnLocation)
-                {
-                    case 1:
-                        enemiesSpawned.Add(Instantiate(enemy.prefab, islandManager.EnemySpawnPoint1.transform));
-                        break;
-                    case 2:
-                        enemiesSpawned.Add(Instantiate(enemy.prefab, islandManager.EnemySpawnPoint2.transform));
-                        break;
-                    case 3:
-                        enemiesSpawned.Add(Instantiate(enemy.prefab, islandManager.EnemySpawnPoint3.transform));
-                        break;
-                    case 4:
-                        enemiesSpawned.Add(Instantiate(enemy.prefab, islandManager.EnemySpawnPoint4.transform));
-                        break;
-                    default:
-                        break;
-                }
-                currentShopCurrency -= enemy.enemyCost;
+                enemiesSpawned.Add(Instantiate(enemyPrefabs[i], islandManager.GetRandomEnemySpawn().position, Quaternion.identity));
+
+                currentShopCurrency -= enemyPrefabs[i].Cost;
+
                 break;
             }
         }
@@ -155,7 +105,7 @@ public class EnemySpawner : MonoBehaviour
 
     private void RemoveDeadEnemies()
     {
-        foreach(GameObject enemy in new List<GameObject>(enemiesSpawned))
+        foreach(Enemy enemy in new List<Enemy>(enemiesSpawned))
         {
             if(enemy == null) enemiesSpawned.Remove(enemy);
         }
@@ -165,9 +115,9 @@ public class EnemySpawner : MonoBehaviour
     {
         currentShopCurrency = 0;
 
-        foreach (GameObject enemy in new List<GameObject>(enemiesSpawned))
+        foreach (Enemy enemy in new List<Enemy>(enemiesSpawned))
         {
-            Destroy(enemy);
+            Destroy(enemy.gameObject);
         }
         enemiesSpawned.Clear();
 
@@ -176,26 +126,29 @@ public class EnemySpawner : MonoBehaviour
 
     public void WaveReset() 
     {
-        maxShopCurrency = baseCurrency + (growthFactor * Mathf.Pow(islandManager.level,polynomialDegree));
+        maxShopCurrency = baseCurrency + (growthFactor * Mathf.Pow(islandManager.Level,polynomialDegree));
         currentShopCurrency = maxShopCurrency;
 
         CanSpawn = true;
         isSpawnDelayed = true;
     }
 
-    public void CalculateWeight() 
+    private void CalculateNormalizedWeights() 
     {
-        totalWeight = 0f;
+        enemyNormalizedWeights = new List<float>();
 
-        foreach (var enemy in enemies) 
+        float totalWeight = 0f;
+
+        foreach (Enemy enemy in enemyPrefabs) 
         {
-            enemy.weight = 1f / Mathf.Pow(enemy.enemyCost, RateScale);
-            totalWeight += enemy.weight;
+            totalWeight += 1f / Mathf.Pow(enemy.Cost, weightingSkewFactor);
         }
 
-        foreach (var enemy in enemies) 
+        for(int i = 0; i < enemyPrefabs.Count; i++)
         {
-            enemy.weightNormalized = enemy.weight / totalWeight;
+            float weight = 1f / Mathf.Pow(enemyPrefabs[i].Cost, weightingSkewFactor);
+
+            enemyNormalizedWeights.Add(weight / totalWeight);
         }
     }
 }

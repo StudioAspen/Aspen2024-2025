@@ -12,8 +12,7 @@ public class Player : Entity
     [SerializeField, Self] private CharacterController controller;
     [SerializeField, Self] private InputReader input;
 
-    [Header("Player: Grounded Movement")]
-    [SerializeField] private float rotationSpeed = 5f;
+    [field: Header("Player: Grounded Movement")]
     [field: SerializeField] public float SprintSpeedModifier { get; private set; } = 1.66f;
     public float MovementSpeed => movementOnSlopeSpeedModifier * SpeedModifier * baseSpeed;
     private float movementOnSlopeSpeedModifier = 1f;
@@ -48,9 +47,6 @@ public class Player : Entity
     [SerializeField] private GameObject dashTrailObject;
     private float dashDelayTimer = Mathf.Infinity;
     private Coroutine dashCoroutine;
-
-    [Header("Player: Camera")]
-    public bool CameraLocked = true;
 
     #region States 
     public PlayerIdleState PlayerIdleState { get; private set; }
@@ -97,6 +93,8 @@ public class Player : Entity
 
         SetStartState(PlayerIdleState);
         SetDefaultState(PlayerIdleState);
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     protected override void OnUpdate()
@@ -114,9 +112,7 @@ public class Player : Entity
 
         HandleAnimations();
 
-        if (Input.GetKeyDown(KeyCode.Alpha1)) TakeDamage(25, transform.position);
-
-        //Cursor.lockState = CameraLocked ? CursorLockMode.Locked : CursorLockMode.None;
+        if (Input.GetKeyDown(KeyCode.Alpha1)) TakeDamage(25, transform.position, this);
 
         stateText.text = $"State: {CurrentState.GetType().ToString()}";
     }
@@ -150,7 +146,14 @@ public class Player : Entity
 
     protected override void CheckGrounded()
     {
-        //IsGrounded is always false for the first 0.1f seconds of being airborne
+        //IsGrounded is always false until the apex of the jump
+        if (IsJumping && inAirTimer > 0f && inAirTimer < Mathf.Sqrt(jumpHeight * -2f * physicsSettings.Gravity) / Mathf.Abs(physicsSettings.Gravity))
+        {
+            IsGrounded = false;
+            return;
+        }
+
+        //IsGrounded is always false for the first 0.1 seconds in air
         if (inAirTimer > 0f && inAirTimer < 0.1f)
         {
             IsGrounded = false;

@@ -14,21 +14,18 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Entity
+  - Player
   - Water
   - UI
   - Damageable Entity
   - Damage Collider
   - Ground
+  - Enemy
   - 
   - 
   - 
-  - IslandWall
   - 
-  - IslandSelector
-  - 
-  - 
-  - 
+  - SelectionSphere
   - 
   - 
   - 
