@@ -205,7 +205,7 @@ public class Entity : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void LookAt(Vector3 target)
+    public virtual void LookAt(Vector3 target)
     {
         Vector3 dir = target - transform.position;
 

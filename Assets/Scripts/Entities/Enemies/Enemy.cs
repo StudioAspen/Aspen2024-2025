@@ -52,13 +52,13 @@ public class Enemy : Entity
         base.OnUpdate();
 
         HandleAnimations();
-
-        MoveTowardsDestination();
     }
 
     protected override void OnFixedUpdate()
     {
         base.OnFixedUpdate();
+        
+        MoveTowardsDestination();
     }
 
     private void LateUpdate()
@@ -126,7 +126,12 @@ public class Enemy : Entity
 
         Vector3 currDest = path[1];
         if (lookAtPath) LookAt(currDest);
-        transform.position = Vector3.MoveTowards(transform.position, currDest, MovementSpeed * Time.deltaTime);
+
+        Vector3 dir = currDest - transform.position;
+        dir.y = 0f;
+        dir.Normalize();
+
+        rigidBody.MovePosition(transform.position + MovementSpeed * Time.deltaTime * dir);
 
         if (Distance(currDest) < 0.05f)
         {
@@ -158,5 +163,15 @@ public class Enemy : Entity
         }
 
         Target = targets[0];
+    }
+
+    public override void LookAt(Vector3 target)
+    {
+        Vector3 dir = target - transform.position;
+
+        float angle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+        Quaternion targetRotation = Quaternion.Euler(0, angle, 0);
+
+        rigidBody.MoveRotation(Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime));
     }
 }

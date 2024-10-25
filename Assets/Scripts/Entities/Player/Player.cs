@@ -384,11 +384,6 @@ public class Player : Entity
         DashTrailSetActive(GetGroundedVelocity().magnitude > maxSpeed);
     }
 
-    public float Distance(Vector3 pos)
-    {
-        return Vector3.Distance(transform.position, pos);
-    }
-
     public void ReplaceComboAnimationClip(AnimationClip newClip)
     {
         AnimatorOverrideController aoc = new AnimatorOverrideController(animator.runtimeAnimatorController);
